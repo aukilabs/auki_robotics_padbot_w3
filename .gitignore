@@ -77,4 +77,31 @@ temp/
 # Project specific large files
 path/to/large/assets/
 path/to/large/database/
-path/to/videos/ 
+path/to/videos/
+
+# Project specific paths
+RobotGUI/node_modules/
+RobotGUI/dist/
+RobotGUI/build/
+RobotGUI/.env*
+
+# ROS specific
+build/
+devel/
+logs/
+.catkin_workspace
+*.bag
+
+# Python specific
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+
+# Python specific
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python 
