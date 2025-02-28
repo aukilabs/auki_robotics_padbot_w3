@@ -17,6 +17,36 @@ dist/
 **/dist/
 out/
 
+# Android specific
+**/android/app/build/
+**/android/.gradle/
+**/android/build/
+*.so
+*.apk
+*.aab
+*.dex
+*.class
+
+# iOS specific
+**/ios/build/
+**/ios/Pods/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+project.xcworkspace
+
 # Environment
 .env
 .env.*
