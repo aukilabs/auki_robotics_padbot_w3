@@ -1,1 +1,0 @@
-/Users/phillipshaw/Documents/Repos/auki_padbot_w3/RobotGUI/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt
