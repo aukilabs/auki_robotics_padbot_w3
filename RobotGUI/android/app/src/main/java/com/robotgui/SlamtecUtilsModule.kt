@@ -6,15 +6,15 @@ import java.net.HttpURLConnection
 import java.net.URL
 import kotlinx.coroutines.*
 
-class NetworkModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
-    private val TAG = "NetworkModule"
+class SlamtecUtilsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+    private val TAG = "SlamtecUtilsModule"
     private val scope = CoroutineScope(Dispatchers.IO + Job())
     private val SLAM_IP = "127.0.0.1"  // Local SLAM service
     private val SLAM_PORT = 1448
     private val TIMEOUT_MS = 1000 // 1 second timeout
     private val HEALTH_ENDPOINT = "api/core/system/v1/robot/health"  // New health endpoint
 
-    override fun getName(): String = "NetworkModule"
+    override fun getName(): String = "SlamtecUtils"  // This is the name used in JavaScript/TypeScript
 
     @ReactMethod
     fun checkConnection(promise: Promise) {

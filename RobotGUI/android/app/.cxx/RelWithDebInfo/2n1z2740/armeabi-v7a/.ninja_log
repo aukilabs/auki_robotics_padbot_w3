@@ -1,0 +1,5 @@
+# ninja log v5
+0	11	0	/Users/phillipshaw/Documents/Repos/auki_padbot_w3/RobotGUI/android/app/.cxx/RelWithDebInfo/2n1z2740/armeabi-v7a/CMakeFiles/cmake.verify_globs	32ae373190f16eb9
+0	1222	1740785938994470286	CMakeFiles/appmodules.dir/Users/phillipshaw/Documents/Repos/auki_padbot_w3/RobotGUI/android/app/build/generated/autolinking/src/main/jni/autolinking.cpp.o	49125ffece64abb5
+0	1388	1740785939160826217	CMakeFiles/appmodules.dir/OnLoad.cpp.o	ed675e7eb3e9e8a0
+1388	1433	1740785939209625972	/Users/phillipshaw/Documents/Repos/auki_padbot_w3/RobotGUI/android/app/build/intermediates/cxx/RelWithDebInfo/2n1z2740/obj/armeabi-v7a/libappmodules.so	32305d7b26763791

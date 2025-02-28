@@ -1,0 +1,42 @@
+{
+  "buildFiles": [
+    "/Users/phillipshaw/Documents/Repos/auki_padbot_w3/RobotGUI/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/phillipshaw/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/phillipshaw/Documents/Repos/auki_padbot_w3/RobotGUI/android/app/.cxx/RelWithDebInfo/2n1z2740/x86_64",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/phillipshaw/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/phillipshaw/Documents/Repos/auki_padbot_w3/RobotGUI/android/app/.cxx/RelWithDebInfo/2n1z2740/x86_64",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "appmodules::@6890427a1f51a3e7e1df": {
+      "toolchain": "toolchain",
+      "abi": "x86_64",
+      "artifactName": "appmodules",
+      "output": "/Users/phillipshaw/Documents/Repos/auki_padbot_w3/RobotGUI/android/app/build/intermediates/cxx/RelWithDebInfo/2n1z2740/obj/x86_64/libappmodules.so",
+      "runtimeFiles": [
+        "/Users/phillipshaw/.gradle/caches/8.12/transforms/bbbd7faada6db350ac59925f93ab342e/transformed/fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86_64/libfbjni.so",
+        "/Users/phillipshaw/.gradle/caches/8.12/transforms/cb126fe6e83b8cfe95e537dc5f53828e/transformed/react-android-0.78.0-release/prefab/modules/jsi/libs/android.x86_64/libjsi.so",
+        "/Users/phillipshaw/.gradle/caches/8.12/transforms/cb126fe6e83b8cfe95e537dc5f53828e/transformed/react-android-0.78.0-release/prefab/modules/reactnative/libs/android.x86_64/libreactnative.so"
+      ]
+    }
+  },
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "/Users/phillipshaw/Library/Android/sdk/ndk/27.1.12297006/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang.lld",
+      "cppCompilerExecutable": "/Users/phillipshaw/Library/Android/sdk/ndk/27.1.12297006/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++.lld"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

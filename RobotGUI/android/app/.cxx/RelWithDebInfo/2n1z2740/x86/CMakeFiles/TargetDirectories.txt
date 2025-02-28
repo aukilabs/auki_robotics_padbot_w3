@@ -1,0 +1,3 @@
+/Users/phillipshaw/Documents/Repos/auki_padbot_w3/RobotGUI/android/app/.cxx/RelWithDebInfo/2n1z2740/x86/CMakeFiles/appmodules.dir
+/Users/phillipshaw/Documents/Repos/auki_padbot_w3/RobotGUI/android/app/.cxx/RelWithDebInfo/2n1z2740/x86/CMakeFiles/edit_cache.dir
+/Users/phillipshaw/Documents/Repos/auki_padbot_w3/RobotGUI/android/app/.cxx/RelWithDebInfo/2n1z2740/x86/CMakeFiles/rebuild_cache.dir

@@ -37,13 +37,14 @@ function App(): React.JSX.Element {
   useEffect(() => {
     const checkConnection = async () => {
       try {
-        if (NativeModules.NetworkModule) {
-          const details = await NativeModules.NetworkModule.checkConnection();
+        if (NativeModules.SlamtecUtils) {
+          const details = await NativeModules.SlamtecUtils.checkConnection();
           setConnectionDetails(details);
           addDebugMessage(`Connection check: ${details.deviceFound ? 'SLAM service found!' : 'SLAM service not found'}`);
         }
-      } catch (error) {
-        addDebugMessage(`Connection error: ${error.message}`);
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        addDebugMessage(`Connection error: ${message}`);
       }
     };
 
