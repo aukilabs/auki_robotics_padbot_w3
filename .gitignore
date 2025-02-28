@@ -1,14 +1,53 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
 # Dependencies
 node_modules/
 vendor/
-.env
 
-# Build outputs
-dist/
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build and output
 build/
+dist/
 out/
+
+# ROS specific
+devel/
+logs/
+.catkin_workspace
+*.bag
+
+# Python
 *.pyc
 __pycache__/
+*.pyo
+*.pyd
+.Python
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.vs/
+
+# Project specific paths
+RobotGUI/node_modules/
+RobotGUI/dist/
+RobotGUI/build/
+RobotGUI/.env*
 
 # Large media files
 *.mp4
@@ -31,41 +70,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# IDE specific files
-.idea/
-.vscode/
-*.swp
-*.swo
-*.swn
-.vs/
-
-# Large data files
-*.csv
-*.dat
-*.db
-*.sqlite
-*.sql
-*.tar
-*.tar.gz
-*.zip
-*.7z
-*.rar
-
-# Local development
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
 # Coverage directories
 coverage/
 .nyc_output/
@@ -77,31 +81,4 @@ temp/
 # Project specific large files
 path/to/large/assets/
 path/to/large/database/
-path/to/videos/
-
-# Project specific paths
-RobotGUI/node_modules/
-RobotGUI/dist/
-RobotGUI/build/
-RobotGUI/.env*
-
-# ROS specific
-build/
-devel/
-logs/
-.catkin_workspace
-*.bag
-
-# Python specific
-*.pyc
-__pycache__/
-*.pyo
-*.pyd
-.Python
-
-# Python specific
-*.pyc
-__pycache__/
-*.pyo
-*.pyd
-.Python 
+path/to/videos/ 
