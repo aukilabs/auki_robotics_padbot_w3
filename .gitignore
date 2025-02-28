@@ -21,11 +21,23 @@ out/
 **/android/app/build/
 **/android/.gradle/
 **/android/build/
+**/.cxx/
 *.so
 *.apk
 *.aab
 *.dex
 *.class
+*.hprof
+
+# Android Studio
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/captures
+.externalNativeBuild
+.cxx
 
 # iOS specific
 **/ios/build/
