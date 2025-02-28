@@ -1,0 +1,3 @@
+/Users/phillipshaw/Documents/Padbot/DeliveryRobot/RobotGUI/android/app/.cxx/RelWithDebInfo/4i3k4s5g/arm64-v8a/CMakeFiles/appmodules.dir
+/Users/phillipshaw/Documents/Padbot/DeliveryRobot/RobotGUI/android/app/.cxx/RelWithDebInfo/4i3k4s5g/arm64-v8a/CMakeFiles/edit_cache.dir
+/Users/phillipshaw/Documents/Padbot/DeliveryRobot/RobotGUI/android/app/.cxx/RelWithDebInfo/4i3k4s5g/arm64-v8a/CMakeFiles/rebuild_cache.dir

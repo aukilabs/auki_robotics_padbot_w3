@@ -1,0 +1,11 @@
+# ninja log v5
+9	42	1740728677428439533	build.ninja	b27bd56030812667
+0	9	0	/Users/phillipshaw/Documents/Padbot/DeliveryRobot/RobotGUI/android/app/.cxx/RelWithDebInfo/4i3k4s5g/x86_64/CMakeFiles/cmake.verify_globs	39faf1b5f67314b8
+0	5	0	clean	72ef15f5c15e29c3
+3	1297	1740728439300192299	CMakeFiles/appmodules.dir/Users/phillipshaw/Documents/Padbot/DeliveryRobot/RobotGUI/android/app/build/generated/autolinking/src/main/jni/autolinking.cpp.o	4b48dc06002e578c
+3	1477	1740728439480405202	CMakeFiles/appmodules.dir/OnLoad.cpp.o	6cd3af610588936d
+1477	1526	1740728439534796889	/Users/phillipshaw/Documents/Padbot/DeliveryRobot/RobotGUI/android/app/build/intermediates/cxx/RelWithDebInfo/4i3k4s5g/obj/x86_64/libappmodules.so	8584654ee76e8e14
+0	8	0	/Users/phillipshaw/Documents/Padbot/DeliveryRobot/RobotGUI/android/app/.cxx/RelWithDebInfo/4i3k4s5g/x86_64/CMakeFiles/cmake.verify_globs	39faf1b5f67314b8
+4	1278	1740728678730382948	CMakeFiles/appmodules.dir/Users/phillipshaw/Documents/Padbot/DeliveryRobot/RobotGUI/android/app/build/generated/autolinking/src/main/jni/autolinking.cpp.o	4b48dc06002e578c
+4	1453	1740728678904976390	CMakeFiles/appmodules.dir/OnLoad.cpp.o	6cd3af610588936d
+1453	1506	1740728678962844787	/Users/phillipshaw/Documents/Padbot/DeliveryRobot/RobotGUI/android/app/build/intermediates/cxx/RelWithDebInfo/4i3k4s5g/obj/x86_64/libappmodules.so	8584654ee76e8e14
