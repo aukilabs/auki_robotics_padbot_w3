@@ -104,8 +104,25 @@ android {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.debug
-            minifyEnabled enableProguardInReleaseBuilds
+            minifyEnabled false  // Temporarily disable minification
+            debuggable true     // Enable debugging
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            if (variant.buildType.name == 'release') {
+                outputFileName = "CactusAssistant.apk"
+            } else {
+                outputFileName = "CactusAssistant-${variant.buildType.name}.apk"
+            }
+        }
+    }
+
+    sourceSets {
+        main {
+            assets.srcDirs = ['src/main/assets']
         }
     }
 }
@@ -119,4 +136,14 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    implementation 'org.yaml:snakeyaml:2.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
+    implementation 'com.squareup.okhttp3:okhttp-urlconnection:4.9.1'
 }
+
+project.ext.vectoricons = [
+    iconFontNames: [ 'Ionicons.ttf' ]
+]
+
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"

@@ -29,6 +29,9 @@ out/
 *.class
 *.hprof
 
+# Generated icons (optional)
+android/app/src/main/res/mipmap-*/ic_launcher.png
+
 # Android Studio
 *.iml
 .gradle
@@ -111,4 +114,7 @@ coverage/
 # Project specific large files
 path/to/large/assets/
 path/to/large/database/
-path/to/videos/ 
+path/to/videos/
+
+# Config files
+# android/app/src/main/assets/config.yaml  # Comment out to include config file 

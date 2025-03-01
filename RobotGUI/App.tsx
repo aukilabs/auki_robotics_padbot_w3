@@ -5,101 +5,52 @@
  * @format
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
   Text,
   View,
-  ScrollView,
-  NativeModules,
   TouchableOpacity,
   BackHandler,
 } from 'react-native';
 
-interface ConnectionDetails {
-  slamApiAvailable: boolean;
-  status: string;
-  deviceFound: boolean;
-  error?: string;
-  responseCode?: number;
-  response?: string;
-}
+import Icon from 'react-native-vector-icons/Ionicons';
+import ConfigScreen from './src/screens/ConfigScreen';
 
 function App(): React.JSX.Element {
-  const [connectionDetails, setConnectionDetails] = useState<ConnectionDetails | null>(null);
-  const [debugLog, setDebugLog] = useState<string[]>([]);
-
-  const addDebugMessage = (message: string) => {
-    setDebugLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
-  };
+  const [showConfig, setShowConfig] = useState(false);
 
   useEffect(() => {
-    const checkConnection = async () => {
-      try {
-        if (NativeModules.SlamtecUtils) {
-          const details = await NativeModules.SlamtecUtils.checkConnection();
-          setConnectionDetails(details);
-          addDebugMessage(`Connection check: ${details.deviceFound ? 'SLAM service found!' : 'SLAM service not found'}`);
-        }
-      } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : 'Unknown error';
-        addDebugMessage(`Connection error: ${message}`);
-      }
-    };
-
-    checkConnection();
-    const interval = setInterval(checkConnection, 5000);
-    return () => clearInterval(interval);
+    // Add error boundary for initialization
+    try {
+      // Your initialization code
+    } catch (error) {
+      console.error('App initialization error:', error);
+    }
   }, []);
 
   const handleClose = () => {
     BackHandler.exitApp();
   };
 
+  if (showConfig) {
+    return <ConfigScreen onClose={() => setShowConfig(false)} />;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-        <Text style={styles.closeButtonText}>✕</Text>
-      </TouchableOpacity>
-      <ScrollView style={styles.scrollView}>
-        {connectionDetails && (
-          <View style={styles.connectionSection}>
-            <Text style={styles.sectionTitle}>SLAM Service Status</Text>
-            <Text style={[
-              styles.connectionStatus,
-              { color: connectionDetails.deviceFound ? '#4CAF50' : '#F44336' }
-            ]}>
-              {connectionDetails.status}
-            </Text>
-            <View style={styles.detailsSection}>
-              <Text style={styles.detailsTitle}>Connection Details:</Text>
-              <Text style={styles.detailsText}>URL: http://127.0.0.1:1448/api/core/system/v1/robot/health</Text>
-              {connectionDetails.responseCode && (
-                <Text style={styles.detailsText}>
-                  Response Code: {connectionDetails.responseCode}
-                </Text>
-              )}
-              {connectionDetails.error && (
-                <Text style={styles.errorText}>
-                  Error: {connectionDetails.error}
-                </Text>
-              )}
-              {connectionDetails.response && (
-                <Text style={styles.detailsText}>
-                  Response: {connectionDetails.response}
-                </Text>
-              )}
-            </View>
-          </View>
-        )}
-        <View style={styles.debugSection}>
-          <Text style={styles.debugTitle}>Debug Log:</Text>
-          {debugLog.map((log, index) => (
-            <Text key={index} style={styles.debugText}>{log}</Text>
-          ))}
-        </View>
-      </ScrollView>
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
+          <Text style={styles.closeButtonText}>✕</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.configButton} onPress={() => setShowConfig(true)}>
+          <Icon name="settings-outline" size={24} color="#000" />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.content}>
+        <Text style={styles.title}>Auki Labs</Text>
+      </View>
     </SafeAreaView>
   );
 }
@@ -109,66 +60,31 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  scrollView: {
-    padding: 20,
-  },
-  connectionSection: {
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 15,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  connectionStatus: {
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  debugSection: {
-    padding: 15,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-  },
-  debugTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  debugText: {
-    fontSize: 12,
-    color: '#666',
-    fontFamily: 'monospace',
   },
   closeButton: {
-    padding: 15,
+    padding: 5,
   },
   closeButtonText: {
-    fontSize: 20,
+    fontSize: 24,
     color: '#000',
   },
-  detailsSection: {
-    marginTop: 10,
-    padding: 10,
-    backgroundColor: '#fff',
-    borderRadius: 4,
+  configButton: {
+    padding: 5,
   },
-  detailsTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 5,
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  detailsText: {
-    fontSize: 12,
-    color: '#666',
-    fontFamily: 'monospace',
-  },
-  errorText: {
-    fontSize: 12,
-    color: '#F44336',
-    fontFamily: 'monospace',
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#000',
   },
 });
 

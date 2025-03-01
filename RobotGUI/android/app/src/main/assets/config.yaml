@@ -1,0 +1,20 @@
+# Default configuration
+email: ""
+domain_id: ""
+slam_ip: "127.0.0.1"
+slam_port: 1448
+timeout_ms: 1000
+
+# SLAM Configuration
+slam_ip: "127.0.0.1"
+slam_port: 1448
+
+# Domain Configuration
+domain:
+  raycast_endpoint: "https://dsc.dev.aukiverse.com/spatial/raycast"
+  map_endpoint: "https://dsc.dev.aukiverse.com/spatial/crosssection"
+  navmesh_endpoint: "https://dsc.dev.aukiverse.com/spatial/restricttonavmesh"
+  domain_server: "https://ap-east-1.domains.prod.aukiverse.com"
+
+# Home Dock Position [x, y, z, yaw, pitch, roll]
+homedock: [0.1036, 1.869, 0, 3.111, 0, 0] 
