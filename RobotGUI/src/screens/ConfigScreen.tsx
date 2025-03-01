@@ -86,7 +86,12 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
     }
 
     try {
-      const result = await NativeModules.DomainUtils.authenticate(email, password, domainId);
+      // Get the actual stored password if using masked password
+      const actualPassword = hasStoredPassword ? 
+        (await NativeModules.DomainUtils.getStoredCredentials()).password : 
+        password;
+
+      const result = await NativeModules.DomainUtils.authenticate(email, actualPassword, domainId);
       Alert.alert(
         'Test Results', 
         'Connection test successful!\n\n' +
@@ -200,15 +205,10 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
             <Text style={styles.buttonText}>Test Credentials</Text>
           </TouchableOpacity>
           <TouchableOpacity 
-            style={[styles.button, isProcessing && styles.buttonDisabled]}
-            onPress={handleGetMap}
-            disabled={isProcessing}
+            style={[styles.button, styles.buttonDisabled]}
+            disabled={true}
           >
-            {isProcessing ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.buttonText}>Get and Process Map</Text>
-            )}
+            <Text style={[styles.buttonText, { color: '#999' }]}>Get and Process Map</Text>
           </TouchableOpacity>
         </View>
       </View>
