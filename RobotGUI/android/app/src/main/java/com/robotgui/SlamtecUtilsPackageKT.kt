@@ -7,9 +7,9 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ReactShadowNode
 import com.facebook.react.uimanager.ViewManager
 
-class SlamtecUtilsPackage : ReactPackage {
+class SlamtecUtilsPackageKT : ReactPackage {
     override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-        return listOf(SlamtecUtilsModule(reactContext))
+        return listOf(SlamtecUtilsModuleKT(reactContext))
     }
 
     override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {

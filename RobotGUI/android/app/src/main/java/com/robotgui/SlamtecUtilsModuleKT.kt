@@ -9,7 +9,7 @@ import org.json.JSONObject
 import java.io.File
 import org.json.JSONArray
 
-class SlamtecUtilsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+class SlamtecUtilsModuleKT(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
     private val TAG = "SlamtecUtilsModule"
     private val scope = CoroutineScope(Dispatchers.IO + Job())
     private val SLAM_IP = ConfigManager.getString("slam_ip", "127.0.0.1")

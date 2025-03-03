@@ -1,0 +1,898 @@
+package com.robotgui;
+
+import android.util.Log;
+import com.facebook.react.bridge.*;
+import org.json.JSONObject;
+import org.json.JSONArray;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import android.os.Handler;
+import android.os.Looper;
+
+public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
+    private static final String TAG = "SlamtecUtilsModule";
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private final ConfigManager configManager;
+    private final String SLAM_IP;
+    private final int SLAM_PORT;
+    private final int TIMEOUT_MS;
+    private final String BASE_URL;
+
+    public SlamtecUtilsModule(ReactApplicationContext reactContext) {
+        super(reactContext);
+        this.configManager = ConfigManager.INSTANCE;
+        this.SLAM_IP = configManager.getString("slam_ip", "127.0.0.1");
+        this.SLAM_PORT = configManager.getInt("slam_port", 1448);
+        this.TIMEOUT_MS = configManager.getInt("timeout_ms", 1000);
+        this.BASE_URL = "http://" + SLAM_IP + ":" + SLAM_PORT;
+    }
+
+    @Override
+    public String getName() {
+        return "SlamtecUtils";
+    }
+
+    @ReactMethod
+    public void checkConnection(Promise promise) {
+        executorService.execute(() -> {
+            try {
+                WritableMap response = Arguments.createMap();
+                String url = BASE_URL + "/api/core/system/v1/robot/health";
+                
+                try {
+                    HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                    connection.setConnectTimeout(TIMEOUT_MS);
+                    connection.setReadTimeout(TIMEOUT_MS);
+                    connection.setRequestMethod("GET");
+
+                    try {
+                        connection.connect();
+                        int responseCode = connection.getResponseCode();
+                        response.putInt("responseCode", responseCode);
+                        
+                        if (responseCode == HttpURLConnection.HTTP_OK) {
+                            StringBuilder result = new StringBuilder();
+                            try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                                    new java.io.InputStreamReader(connection.getInputStream()))) {
+                                String line;
+                                while ((line = reader.readLine()) != null) {
+                                    result.append(line);
+                                }
+                            }
+                            
+                            JSONObject health = new JSONObject(result.toString());
+                            response.putString("response", result.toString());
+                            response.putString("status", !health.optBoolean("hasError", false) ? 
+                                "Robot health check successful" : "Robot has errors");
+                            response.putBoolean("slamApiAvailable", !health.optBoolean("hasError", false));
+                        } else {
+                            response.putString("error", "Health check failed with code: " + responseCode);
+                            response.putString("status", "Robot health check failed");
+                            response.putBoolean("slamApiAvailable", false);
+                        }
+                    } finally {
+                        connection.disconnect();
+                    }
+                } catch (Exception e) {
+                    response.putString("error", "Connection error: " + e.getMessage());
+                    response.putString("status", "Cannot connect to robot");
+                    response.putBoolean("slamApiAvailable", false);
+                }
+
+                response.putBoolean("deviceFound", response.getBoolean("slamApiAvailable"));
+                mainHandler.post(() -> promise.resolve(response));
+                
+            } catch (Exception e) {
+                mainHandler.post(() -> promise.reject("SLAM_ERROR", "Fatal error: " + e.getMessage()));
+            }
+        });
+    }
+
+    @ReactMethod
+    public void getCurrentPose(Promise promise) {
+        executorService.execute(() -> {
+            try {
+                String url = BASE_URL + "/api/core/slam/v1/localization/pose";
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                connection.setConnectTimeout(TIMEOUT_MS);
+                connection.setReadTimeout(TIMEOUT_MS);
+                connection.setRequestMethod("GET");
+
+                try {
+                    WritableMap response = Arguments.createMap();
+                    connection.connect();
+                    
+                    if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                        StringBuilder result = new StringBuilder();
+                        try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                                new java.io.InputStreamReader(connection.getInputStream()))) {
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                result.append(line);
+                            }
+                        }
+                        
+                        JSONObject pose = new JSONObject(result.toString());
+                        response.putDouble("x", pose.optDouble("x", 0.0));
+                        response.putDouble("y", pose.optDouble("y", 0.0));
+                        response.putDouble("yaw", pose.optDouble("yaw", 0.0));
+                        mainHandler.post(() -> promise.resolve(response));
+                    } else {
+                        final int code = connection.getResponseCode();
+                        mainHandler.post(() -> promise.reject("POSE_ERROR", "Failed to get pose: " + code));
+                    }
+                } finally {
+                    connection.disconnect();
+                }
+            } catch (Exception e) {
+                mainHandler.post(() -> promise.reject("POSE_ERROR", "Error getting pose: " + e.getMessage()));
+            }
+        });
+    }
+
+    @ReactMethod
+    public void navigate(double x, double y, double yaw, Promise promise) {
+        executorService.execute(() -> {
+            try {
+                String url = BASE_URL + "/api/core/motion/v1/actions";
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                
+                JSONObject actionOptions = new JSONObject()
+                    .put("action_name", "slamtec.agent.actions.MoveToAction")
+                    .put("options", new JSONObject()
+                        .put("target", new JSONObject()
+                            .put("x", x)
+                            .put("y", y)
+                            .put("z", 0))
+                        .put("move_options", new JSONObject()
+                            .put("mode", 0)
+                            .put("flags", new JSONArray().put("with_yaw"))
+                            .put("yaw", yaw)
+                            .put("acceptable_precision", 0)
+                            .put("fail_retry_count", 0)));
+
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setDoOutput(true);
+                try (java.io.OutputStream os = connection.getOutputStream()) {
+                    byte[] input = actionOptions.toString().getBytes("utf-8");
+                    os.write(input, 0, input.length);
+                }
+
+                if (connection.getResponseCode() >= 200 && connection.getResponseCode() <= 204) {
+                    StringBuilder result = new StringBuilder();
+                    try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                            new java.io.InputStreamReader(connection.getInputStream()))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            result.append(line);
+                        }
+                    }
+                    JSONObject response = new JSONObject(result.toString());
+                    monitorAction(response.getString("action_id"), promise);
+                } else {
+                    final int responseCode = connection.getResponseCode();
+                    mainHandler.post(() -> promise.reject("NAVIGATION_ERROR", "Navigation failed: " + responseCode));
+                }
+            } catch (Exception e) {
+                mainHandler.post(() -> promise.reject("NAVIGATION_ERROR", "Error during navigation: " + e.getMessage()));
+            }
+        });
+    }
+
+    @ReactMethod
+    public void navigateProduct(double x, double y, double yaw, Promise promise) {
+        executorService.execute(() -> {
+            try {
+                String url = BASE_URL + "/api/core/motion/v1/actions";
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                
+                JSONObject actionOptions = new JSONObject()
+                    .put("action_name", "slamtec.agent.actions.MoveToAction")
+                    .put("options", new JSONObject()
+                        .put("target", new JSONObject()
+                            .put("x", x)
+                            .put("y", y)
+                            .put("z", 0))
+                        .put("move_options", new JSONObject()
+                            .put("mode", 0)
+                            .put("flags", new JSONArray()
+                                .put("with_yaw")
+                                .put("precise"))
+                            .put("yaw", yaw)
+                            .put("acceptable_precision", 0.5)
+                            .put("fail_retry_count", 3)));
+
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setDoOutput(true);
+                try (java.io.OutputStream os = connection.getOutputStream()) {
+                    byte[] input = actionOptions.toString().getBytes("utf-8");
+                    os.write(input, 0, input.length);
+                }
+
+                if (connection.getResponseCode() >= 200 && connection.getResponseCode() <= 204) {
+                    StringBuilder result = new StringBuilder();
+                    try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                            new java.io.InputStreamReader(connection.getInputStream()))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            result.append(line);
+                        }
+                    }
+                    JSONObject response = new JSONObject(result.toString());
+                    monitorAction(response.getString("action_id"), promise);
+                } else {
+                    final int responseCode = connection.getResponseCode();
+                    mainHandler.post(() -> promise.reject("NAVIGATION_ERROR", "Navigation failed: " + responseCode));
+                }
+            } catch (Exception e) {
+                mainHandler.post(() -> promise.reject("NAVIGATION_ERROR", "Error during navigation: " + e.getMessage()));
+            }
+        });
+    }
+
+    @ReactMethod
+    public void navigateToWaypoint(ReadableMap waypoint, Promise promise) {
+        ReadableMap pose = waypoint.getMap("pose");
+        if (pose != null) {
+            navigate(
+                pose.getDouble("x"),
+                pose.getDouble("y"),
+                pose.getDouble("yaw"),
+                promise
+            );
+        } else {
+            promise.reject("NAVIGATION_ERROR", "Invalid waypoint format");
+        }
+    }
+
+    @ReactMethod
+    public void navigateToProduct(ReadableMap waypoint, Promise promise) {
+        ReadableMap pose = waypoint.getMap("pose");
+        if (pose != null) {
+            navigateProduct(
+                pose.getDouble("x"),
+                pose.getDouble("y"),
+                pose.getDouble("yaw"),
+                promise
+            );
+        } else {
+            promise.reject("NAVIGATION_ERROR", "Invalid waypoint format");
+        }
+    }
+
+    @ReactMethod
+    public void getPOIs(Promise promise) {
+        executorService.execute(() -> {
+            try {
+                String url = BASE_URL + "/api/core/artifact/v1/pois";
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("Content-Type", "application/json");
+
+                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    StringBuilder result = new StringBuilder();
+                    try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                            new java.io.InputStreamReader(connection.getInputStream()))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            result.append(line);
+                        }
+                    }
+                    mainHandler.post(() -> {
+                        try {
+                            promise.resolve(convertJsonToWritableMap(new JSONObject(result.toString())));
+                        } catch (Exception e) {
+                            promise.reject("JSON_ERROR", "Error converting JSON: " + e.getMessage());
+                        }
+                    });
+                } else {
+                    final int code = connection.getResponseCode();
+                    mainHandler.post(() -> promise.reject("POI_ERROR", "Failed to get POIs: " + code));
+                }
+            } catch (Exception e) {
+                mainHandler.post(() -> promise.reject("POI_ERROR", "Error getting POIs: " + e.getMessage()));
+            }
+        });
+    }
+
+    @ReactMethod
+    public void goHome(Promise promise) {
+        executorService.execute(() -> {
+            try {
+                String url = BASE_URL + "/api/core/motion/v1/actions";
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                
+                JSONObject actionOptions = new JSONObject()
+                    .put("action_name", "slamtec.agent.actions.GoHomeAction")
+                    .put("gohome_options", new JSONObject()
+                        .put("flags", "dock")
+                        .put("back_to_landing", true)
+                        .put("charging_retry_count", 3));
+
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setDoOutput(true);
+                try (java.io.OutputStream os = connection.getOutputStream()) {
+                    byte[] input = actionOptions.toString().getBytes("utf-8");
+                    os.write(input, 0, input.length);
+                }
+
+                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    StringBuilder result = new StringBuilder();
+                    try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                            new java.io.InputStreamReader(connection.getInputStream()))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            result.append(line);
+                        }
+                    }
+                    JSONObject response = new JSONObject(result.toString());
+                    monitorAction(response.getString("action_id"), promise);
+                } else {
+                    final int responseCode = connection.getResponseCode();
+                    mainHandler.post(() -> promise.reject("HOME_ERROR", "Go home command failed: " + responseCode));
+                }
+            } catch (Exception e) {
+                mainHandler.post(() -> promise.reject("HOME_ERROR", "Error during go home: " + e.getMessage()));
+            }
+        });
+    }
+
+    @ReactMethod
+    public void uploadMap(String filePath, Promise promise) {
+        executorService.execute(() -> {
+            try {
+                File file = new File(filePath);
+                Log.d(TAG, "Attempting to upload map from: " + file.getAbsolutePath());
+                Log.d(TAG, "File exists: " + file.exists());
+                Log.d(TAG, "File size: " + file.length() + " bytes");
+                
+                if (!file.exists()) {
+                    mainHandler.post(() -> promise.reject("MAP_ERROR", "Map file does not exist at: " + file.getAbsolutePath()));
+                    return;
+                }
+
+                String url = BASE_URL + "/api/core/slam/v1/maps/stcm";
+                Log.d(TAG, "Uploading to URL: " + url);
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                
+                connection.setRequestMethod("PUT");
+                connection.setRequestProperty("Content-Type", "application/octet-stream");
+                connection.setDoOutput(true);
+
+                try (java.io.FileInputStream fileInputStream = new java.io.FileInputStream(file);
+                     java.io.OutputStream outputStream = connection.getOutputStream()) {
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+                    int totalBytes = 0;
+                    while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                        totalBytes += bytesRead;
+                    }
+                    Log.d(TAG, "Uploaded " + totalBytes + " bytes");
+                }
+
+                int responseCode = connection.getResponseCode();
+                Log.d(TAG, "Upload response code: " + responseCode);
+                
+                if (responseCode >= 200 && responseCode <= 204) {
+                    mainHandler.post(() -> promise.resolve(true));
+                } else {
+                    final int code = responseCode;
+                    mainHandler.post(() -> promise.reject("MAP_ERROR", "Failed to upload map: " + code));
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error uploading map: " + e.getMessage(), e);
+                mainHandler.post(() -> promise.reject("MAP_ERROR", "Error uploading map: " + e.getMessage()));
+            }
+        });
+    }
+
+    @ReactMethod
+    public void setHomeDock(double x, double y, double z, double yaw, double pitch, double roll, Promise promise) {
+        executorService.execute(() -> {
+            try {
+                String url = BASE_URL + "/api/core/slam/v1/homepose";
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                
+                JSONObject body = new JSONObject()
+                    .put("x", x)
+                    .put("y", y)
+                    .put("z", z)
+                    .put("yaw", yaw)
+                    .put("pitch", pitch)
+                    .put("roll", roll);
+
+                connection.setRequestMethod("PUT");
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setDoOutput(true);
+                try (java.io.OutputStream os = connection.getOutputStream()) {
+                    byte[] input = body.toString().getBytes("utf-8");
+                    os.write(input, 0, input.length);
+                }
+
+                if (connection.getResponseCode() >= 200 && connection.getResponseCode() <= 204) {
+                    mainHandler.post(() -> promise.resolve(true));
+                } else {
+                    final int responseCode = connection.getResponseCode();
+                    mainHandler.post(() -> promise.reject("HOMEDOCK_ERROR", "Failed to set home dock: " + responseCode));
+                }
+            } catch (Exception e) {
+                mainHandler.post(() -> promise.reject("HOMEDOCK_ERROR", "Error setting home dock: " + e.getMessage()));
+            }
+        });
+    }
+
+    @ReactMethod
+    public void clearMap(Promise promise) {
+        sendDeleteRequest("/api/core/slam/v1/maps", "MAP_CLEAR_ERROR", promise);
+    }
+
+    @ReactMethod
+    public void clearPOIs(Promise promise) {
+        sendDeleteRequest("/api/core/artifact/v1/pois", "POI_CLEAR_ERROR", promise);
+    }
+
+    @ReactMethod
+    public void clearHomeDocks(Promise promise) {
+        sendDeleteRequest("/api/core/slam/v1/homedocks", "HOMEDOCK_CLEAR_ERROR", promise);
+    }
+
+    @ReactMethod
+    public void setPose(double x, double y, double z, double yaw, double pitch, double roll, Promise promise) {
+        executorService.execute(() -> {
+            try {
+                String url = BASE_URL + "/api/core/slam/v1/localization/pose";
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                
+                JSONObject body = new JSONObject()
+                    .put("x", x)
+                    .put("y", y)
+                    .put("z", z)
+                    .put("yaw", yaw)
+                    .put("pitch", pitch)
+                    .put("roll", roll);
+
+                connection.setRequestMethod("PUT");
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setDoOutput(true);
+                try (java.io.OutputStream os = connection.getOutputStream()) {
+                    byte[] input = body.toString().getBytes("utf-8");
+                    os.write(input, 0, input.length);
+                }
+
+                if (connection.getResponseCode() >= 200 && connection.getResponseCode() <= 204) {
+                    mainHandler.post(() -> promise.resolve(true));
+                } else {
+                    final int responseCode = connection.getResponseCode();
+                    mainHandler.post(() -> promise.reject("POSE_ERROR", "Failed to set pose: " + responseCode));
+                }
+            } catch (Exception e) {
+                mainHandler.post(() -> promise.reject("POSE_ERROR", "Error setting pose: " + e.getMessage()));
+            }
+        });
+    }
+
+    @ReactMethod
+    public void setMaxLineSpeed(double speed, Promise promise) {
+        executorService.execute(() -> {
+            try {
+                String url = BASE_URL + "/api/core/system/v1/parameter";
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                
+                JSONObject body = new JSONObject()
+                    .put("param", "base.max_moving_speed")
+                    .put("value", speed);
+
+                connection.setRequestMethod("PUT");
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setDoOutput(true);
+                try (java.io.OutputStream os = connection.getOutputStream()) {
+                    byte[] input = body.toString().getBytes("utf-8");
+                    os.write(input, 0, input.length);
+                }
+
+                if (connection.getResponseCode() >= 200 && connection.getResponseCode() <= 204) {
+                    mainHandler.post(() -> promise.resolve(true));
+                } else {
+                    final int responseCode = connection.getResponseCode();
+                    mainHandler.post(() -> promise.reject("SPEED_ERROR", "Failed to set max speed: " + responseCode));
+                }
+            } catch (Exception e) {
+                mainHandler.post(() -> promise.reject("SPEED_ERROR", "Error setting max speed: " + e.getMessage()));
+            }
+        });
+    }
+
+    @ReactMethod
+    public void processAndUploadMap(ReadableMap settings, Promise promise) {
+        executorService.execute(() -> {
+            try {
+                // Extract settings
+                double homeDockX = settings.getDouble("homeDockX");
+                double homeDockY = settings.getDouble("homeDockY");
+                double homeDockYaw = settings.getDouble("homeDockYaw");
+                ReadableMap mapData = settings.getMap("mapData");
+                
+                if (mapData == null) {
+                    throw new Exception("Map data not provided");
+                }
+
+                String imagePath = mapData.getString("imagePath");
+                String yamlPath = mapData.getString("yamlPath");
+
+                if (imagePath == null || yamlPath == null) {
+                    throw new Exception("Invalid map data format");
+                }
+
+                // Execute operations sequentially
+                try {
+                    // 1. Clear existing map
+                    clearMap(promise);
+                    
+                    // 2. Clear POIs
+                    clearPOIs(promise);
+                    
+                    // 3. Upload new map
+                    File stcmFile = new File(imagePath);
+                    if (!stcmFile.exists()) {
+                        throw new Exception("Map file not found");
+                    }
+                    uploadMap(stcmFile.getAbsolutePath(), promise);
+                    
+                    // 4. Clear home docks
+                    clearHomeDocks(promise);
+                    
+                    // 5. Set new home dock
+                    setHomeDock(homeDockX, homeDockY, 0, homeDockYaw, 0, 0, promise);
+                    
+                    // 6. Set pose
+                    double[] pose = calculatePose(new double[]{
+                        homeDockX, homeDockY, 0,
+                        homeDockYaw, 0, 0
+                    });
+                    setPose(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5], promise);
+                    
+                    // 7. Save persistent map
+                    savePersistentMap(promise);
+                    
+                    // Success - all operations completed
+                    mainHandler.post(() -> {
+                        WritableMap response = Arguments.createMap();
+                        response.putString("status", "success");
+                        response.putString("message", "Map processed and uploaded successfully");
+                        promise.resolve(response);
+                    });
+                    
+                } catch (Exception e) {
+                    mainHandler.post(() -> {
+                        Log.e(TAG, "Error during map processing: " + e.getMessage());
+                        promise.reject("MAP_PROCESS_ERROR", e.getMessage());
+                    });
+                }
+            } catch (Exception e) {
+                mainHandler.post(() -> {
+                    Log.e(TAG, "Error processing map: " + e.getMessage());
+                    promise.reject("MAP_PROCESS_ERROR", e.getMessage());
+                });
+            }
+        });
+    }
+
+    @ReactMethod
+    public void savePersistentMap(Promise promise) {
+        executorService.execute(() -> {
+            try {
+                String url = BASE_URL + "/api/core/slam/v1/maps/persistent";
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                connection.setRequestMethod("PUT");
+
+                if (connection.getResponseCode() >= 200 && connection.getResponseCode() <= 204) {
+                    mainHandler.post(() -> promise.resolve(true));
+                } else {
+                    final int responseCode = connection.getResponseCode();
+                    mainHandler.post(() -> promise.reject("MAP_ERROR", "Failed to save persistent map: " + responseCode));
+                }
+            } catch (Exception e) {
+                mainHandler.post(() -> promise.reject("MAP_ERROR", "Error saving persistent map: " + e.getMessage()));
+            }
+        });
+    }
+
+    private double[] calculatePose(double[] homedock, double distanceInMeters) {
+        double x = homedock[0];
+        double y = homedock[1];
+        double z = homedock[2];
+        double yaw = homedock[3];
+        double pitch = homedock[4];
+        double roll = homedock[5];
+        
+        double dx = distanceInMeters * Math.cos(yaw);
+        double dz = distanceInMeters * Math.sin(yaw);
+        
+        return new double[] {
+            x + dx,  // new x
+            y,       // y remains unchanged
+            z + dz,  // new z
+            yaw,     // yaw remains unchanged
+            pitch,   // pitch remains unchanged
+            roll     // roll remains unchanged
+        };
+    }
+
+    private double[] calculatePose(double[] homedock) {
+        return calculatePose(homedock, 0.2);
+    }
+
+    private void sendDeleteRequest(String endpoint, String errorCode, Promise promise) {
+        executorService.execute(() -> {
+            try {
+                String url = BASE_URL + endpoint;
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                connection.setRequestMethod("DELETE");
+                connection.setRequestProperty("Content-Type", "application/json");
+
+                final int responseCode = connection.getResponseCode();
+                if (responseCode >= 200 && responseCode <= 204) {
+                    mainHandler.post(() -> promise.resolve(true));
+                } else {
+                    mainHandler.post(() -> promise.reject(errorCode, "Delete request failed: " + responseCode));
+                }
+            } catch (Exception e) {
+                mainHandler.post(() -> promise.reject(errorCode, "Error during delete: " + e.getMessage()));
+            }
+        });
+    }
+
+    private void monitorAction(String actionId, Promise promise) {
+        executorService.execute(() -> {
+            try {
+                String url = BASE_URL + "/api/core/motion/v1/actions/" + actionId;
+                
+                while (true) {
+                    HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.setRequestProperty("Content-Type", "application/json");
+
+                    if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                        StringBuilder result = new StringBuilder();
+                        try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                                new java.io.InputStreamReader(connection.getInputStream()))) {
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                result.append(line);
+                            }
+                        }
+                        
+                        JSONObject response = new JSONObject(result.toString());
+                        if (!response.has("action_name")) {
+                            mainHandler.post(() -> promise.resolve(true));
+                            break;
+                        }
+                    } else {
+                        final int responseCode = connection.getResponseCode();
+                        mainHandler.post(() -> promise.reject("ACTION_ERROR", "Action monitoring failed: " + responseCode));
+                        break;
+                    }
+
+                    Thread.sleep(500); // Wait 500ms before next check
+                }
+            } catch (Exception e) {
+                mainHandler.post(() -> promise.reject("ACTION_ERROR", "Error monitoring action: " + e.getMessage()));
+            }
+        });
+    }
+
+    private WritableMap convertJsonToWritableMap(JSONObject jsonObject) throws Exception {
+        WritableMap map = Arguments.createMap();
+        java.util.Iterator<String> iterator = jsonObject.keys();
+        while (iterator.hasNext()) {
+            String key = iterator.next();
+            Object value = jsonObject.get(key);
+            if (value instanceof JSONObject) {
+                map.putMap(key, convertJsonToWritableMap((JSONObject) value));
+            } else if (value instanceof JSONArray) {
+                map.putArray(key, convertJsonToWritableArray((JSONArray) value));
+            } else if (value instanceof Boolean) {
+                map.putBoolean(key, (Boolean) value);
+            } else if (value instanceof Integer) {
+                map.putInt(key, (Integer) value);
+            } else if (value instanceof Double) {
+                map.putDouble(key, (Double) value);
+            } else if (value instanceof String) {
+                map.putString(key, (String) value);
+            } else {
+                map.putString(key, value.toString());
+            }
+        }
+        return map;
+    }
+
+    private WritableArray convertJsonToWritableArray(JSONArray jsonArray) throws Exception {
+        WritableArray array = Arguments.createArray();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            Object value = jsonArray.get(i);
+            if (value instanceof JSONObject) {
+                array.pushMap(convertJsonToWritableMap((JSONObject) value));
+            } else if (value instanceof JSONArray) {
+                array.pushArray(convertJsonToWritableArray((JSONArray) value));
+            } else if (value instanceof Boolean) {
+                array.pushBoolean((Boolean) value);
+            } else if (value instanceof Integer) {
+                array.pushInt((Integer) value);
+            } else if (value instanceof Double) {
+                array.pushDouble((Double) value);
+            } else if (value instanceof String) {
+                array.pushString((String) value);
+            } else {
+                array.pushString(value.toString());
+            }
+        }
+        return array;
+    }
+
+    @ReactMethod
+    public void downloadYamlFile(Promise promise) {
+        executorService.execute(() -> {
+            try {
+                String url = BASE_URL + "/api/core/slam/v1/maps/yaml";
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                connection.setRequestMethod("GET");
+
+                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    // Create CactusAssistant directory in home
+                    File homeDir = new File(System.getProperty("user.home"));
+                    File cactusDir = new File(homeDir, "CactusAssistant");
+                    if (!cactusDir.exists()) {
+                        cactusDir.mkdirs();
+                    }
+                    
+                    File yamlFile = new File(cactusDir, "map.yaml");
+                    Log.d(TAG, "Saving YAML to: " + yamlFile.getAbsolutePath());
+                    
+                    try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                            new java.io.InputStreamReader(connection.getInputStream()));
+                         java.io.FileWriter writer = new java.io.FileWriter(yamlFile)) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            writer.write(line + "\n");
+                        }
+                    }
+
+                    WritableMap response = Arguments.createMap();
+                    response.putString("yamlPath", yamlFile.getAbsolutePath());
+                    mainHandler.post(() -> promise.resolve(response));
+                } else {
+                    final int responseCode = connection.getResponseCode();
+                    mainHandler.post(() -> promise.reject("YAML_ERROR", "Failed to download YAML: " + responseCode));
+                }
+            } catch (Exception e) {
+                mainHandler.post(() -> promise.reject("YAML_ERROR", "Error downloading YAML: " + e.getMessage()));
+            }
+        });
+    }
+
+    @ReactMethod
+    public void readYamlFile(String yamlPath, Promise promise) {
+        executorService.execute(() -> {
+            try {
+                File yamlFile = new File(yamlPath);
+                if (!yamlFile.exists()) {
+                    throw new Exception("YAML file does not exist");
+                }
+
+                StringBuilder content = new StringBuilder();
+                try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                        new java.io.FileReader(yamlFile))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        content.append(line).append("\n");
+                    }
+                }
+
+                WritableMap response = Arguments.createMap();
+                response.putString("content", content.toString());
+                mainHandler.post(() -> promise.resolve(response));
+            } catch (Exception e) {
+                mainHandler.post(() -> promise.reject("YAML_READ_ERROR", "Error reading YAML: " + e.getMessage()));
+            }
+        });
+    }
+
+    @ReactMethod
+    public void downloadMapImage(Promise promise) {
+        executorService.execute(() -> {
+            try {
+                // Create CactusAssistant directory in home
+                File homeDir = new File(System.getProperty("user.home"));
+                File cactusDir = new File(homeDir, "CactusAssistant");
+                if (!cactusDir.exists()) {
+                    cactusDir.mkdirs();
+                }
+
+                // Download BMP map
+                String bmpUrl = BASE_URL + "/api/core/slam/v1/maps?format=bmp";
+                Log.d(TAG, "Attempting to download map from: " + bmpUrl);
+                
+                HttpURLConnection bmpConnection = (HttpURLConnection) new URL(bmpUrl).openConnection();
+                bmpConnection.setRequestMethod("GET");
+                bmpConnection.setConnectTimeout(TIMEOUT_MS);
+                bmpConnection.setReadTimeout(TIMEOUT_MS);
+
+                int responseCode = bmpConnection.getResponseCode();
+                Log.d(TAG, "Map download response code: " + responseCode);
+
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    File bmpFile = new File(cactusDir, "map.bmp");
+                    Log.d(TAG, "Saving BMP map to: " + bmpFile.getAbsolutePath());
+                    
+                    try (java.io.InputStream inputStream = bmpConnection.getInputStream();
+                         java.io.FileOutputStream outputStream = new java.io.FileOutputStream(bmpFile)) {
+                        byte[] buffer = new byte[4096];
+                        int bytesRead;
+                        int totalBytes = 0;
+                        while ((bytesRead = inputStream.read(buffer)) != -1) {
+                            outputStream.write(buffer, 0, bytesRead);
+                            totalBytes += bytesRead;
+                        }
+                        Log.d(TAG, "Downloaded " + totalBytes + " bytes");
+                    }
+
+                    if (bmpFile.exists() && bmpFile.length() > 0) {
+                        WritableMap response = Arguments.createMap();
+                        response.putString("bmpPath", bmpFile.getAbsolutePath());
+                        mainHandler.post(() -> promise.resolve(response));
+                    } else {
+                        throw new Exception("Downloaded file is empty or does not exist");
+                    }
+                } else {
+                    // Try to read error message from response
+                    StringBuilder errorMessage = new StringBuilder();
+                    try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                            new java.io.InputStreamReader(bmpConnection.getErrorStream()))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            errorMessage.append(line);
+                        }
+                    } catch (Exception e) {
+                        errorMessage.append("No error message available");
+                    }
+                    
+                    String error = "Failed to download map. Response code: " + responseCode + 
+                                 ", Error: " + errorMessage.toString();
+                    Log.e(TAG, error);
+                    mainHandler.post(() -> promise.reject("IMAGE_ERROR", error));
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error downloading map image: " + e.getMessage(), e);
+                mainHandler.post(() -> promise.reject("IMAGE_ERROR", "Error downloading map image: " + e.getMessage()));
+            }
+        });
+    }
+
+    @ReactMethod
+    public void getMapImageInfo(String imagePath, Promise promise) {
+        executorService.execute(() -> {
+            try {
+                File mapFile = new File(imagePath);
+                if (!mapFile.exists()) {
+                    throw new Exception("Map image file does not exist");
+                }
+
+                WritableMap response = Arguments.createMap();
+                response.putString("path", mapFile.getAbsolutePath());
+                response.putDouble("size", mapFile.length());
+                response.putString("lastModified", new java.util.Date(mapFile.lastModified()).toString());
+                mainHandler.post(() -> promise.resolve(response));
+            } catch (Exception e) {
+                mainHandler.post(() -> promise.reject("IMAGE_INFO_ERROR", "Error getting map image info: " + e.getMessage()));
+            }
+        });
+    }
+} 

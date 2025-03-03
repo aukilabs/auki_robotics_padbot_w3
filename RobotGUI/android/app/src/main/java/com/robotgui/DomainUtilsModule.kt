@@ -16,11 +16,21 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.yaml.snakeyaml.Yaml
 import android.util.Base64
+import android.os.Environment
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import android.app.Activity
+import android.content.Intent
+import java.util.regex.Pattern
 
 class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
     private val TAG = "DomainUtilsModule"
     private val scope = CoroutineScope(Dispatchers.IO + Job())
     private val sharedPreferences = reactContext.getSharedPreferences("DomainAuth", Context.MODE_PRIVATE)
+    private val STORAGE_PERMISSION_CODE = 1001
+    private val baseUrl = "https://dds.posemesh.org/api/v1/domains"
 
     private var posemeshToken: String?
         get() = sharedPreferences.getString("posemesh_token", null)
@@ -34,7 +44,32 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
         get() = sharedPreferences.getString("domain_info", null)
         set(value) = sharedPreferences.edit().putString("domain_info", value).apply()
 
+    private var pendingMapPromise: Promise? = null
+    private var pendingMapParams: Pair<String, Int>? = null
+
     override fun getName(): String = "DomainUtils"
+
+    override fun initialize() {
+        super.initialize()
+        reactApplicationContext.addActivityEventListener(object : BaseActivityEventListener() {
+            override fun onActivityResult(activity: Activity?, requestCode: Int, resultCode: Int, data: Intent?) {
+                if (requestCode == STORAGE_PERMISSION_CODE) {
+                    if (resultCode == Activity.RESULT_OK) {
+                        // Permission granted, proceed with map download
+                        pendingMapParams?.let { (format, resolution) ->
+                            downloadMap(pendingMapPromise!!)
+                        }
+                    } else {
+                        // Permission denied
+                        pendingMapPromise?.reject("PERMISSION_ERROR", "Storage permission denied")
+                    }
+                    // Clear pending data
+                    pendingMapParams = null
+                    pendingMapPromise = null
+                }
+            }
+        })
+    }
 
     @ReactMethod
     fun getDomainData(promise: Promise) {
@@ -189,6 +224,111 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
     }
 
     @ReactMethod
+    fun requestStoragePermission(promise: Promise) {
+        val activity = currentActivity
+        if (activity == null) {
+            promise.reject("PERMISSION_ERROR", "Activity is null")
+            return
+        }
+
+        ActivityCompat.requestPermissions(
+            activity,
+            arrayOf(
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ),
+            STORAGE_PERMISSION_CODE
+        )
+        promise.resolve(true)
+    }
+
+    @ReactMethod
+    fun downloadMap(promise: Promise) {
+        try {
+            val domainId = sharedPreferences.getString("domain_id", null) ?: throw Exception("No domain ID found")
+            val domainInfoJson = domainInfo ?: throw Exception("No domain info found")
+            val domainInfo = JSONObject(domainInfoJson)
+            val domainServerUrl = domainInfo.getString("domain_server")
+            
+            val client = OkHttpClient()
+            
+            val requestBody = FormBody.Builder()
+                .add("domainId", domainId)
+                .add("domainServerUrl", domainServerUrl)
+                .add("height", "0.1")
+                .add("pixelsPerMeter", "20")
+                .add("format", "bmp")
+
+                .build()
+
+            val request = Request.Builder()
+                .url("$baseUrl/$domainId/map")
+                .addHeader("Authorization", "Bearer $ddsToken")
+                .post(requestBody)
+                .build()
+
+            val response = client.newCall(request).execute()
+            if (!response.isSuccessful) {
+                throw Exception("Failed to download map: ${response.code}")
+            }
+
+            val responseBody = response.body?.string() ?: throw Exception("Empty response body")
+            
+            // Split the data using the boundary marker
+            val lines = responseBody.split("\n")
+            val boundary = lines.firstOrNull()?.trim() ?: throw Exception("No boundary found in response")
+            val parts = responseBody.split(boundary)
+
+            var imageData: ByteArray? = null
+            var yamlContent: String? = null
+
+            // Process each part of the multipart response
+            for (part in parts) {
+                if (part.contains("name=\"png\"")) {
+                    // Extract and decode the base64 image data
+                    val imageDataMatch = Regex("name=\"png\"\\s*\\n([a-zA-Z0-9+/=\\n]+)").find(part)
+                    if (imageDataMatch != null) {
+                        val encodedImage = imageDataMatch.groupValues[1].replace("\n", "")
+                        imageData = Base64.decode(encodedImage, Base64.DEFAULT)
+                    }
+                } else if (part.contains("name=\"yaml\"")) {
+                    // Extract the YAML content
+                    val yamlMatch = Regex("name=\"yaml\"\\s*\\n(.+)", RegexOption.DOT_MATCHES_ALL).find(part)
+                    if (yamlMatch != null) {
+                        yamlContent = yamlMatch.groupValues[1].trim()
+                    }
+                }
+            }
+
+            if (imageData == null || yamlContent == null) {
+                throw Exception("Failed to extract image or YAML data from response")
+            }
+
+            // Save BMP file
+            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val cactusDir = File(downloadsDir, "CactusAssistant")
+            if (!cactusDir.exists()) {
+                cactusDir.mkdirs()
+            }
+            
+            val bmpFile = File(cactusDir, "map.bmp")
+            bmpFile.writeBytes(imageData)
+
+            // Save YAML file
+            val yamlFile = File(cactusDir, "map.yaml")
+            yamlFile.writeText(yamlContent)
+
+            val result = Arguments.createMap().apply {
+                putString("imagePath", bmpFile.absolutePath)
+                putString("yamlPath", yamlFile.absolutePath)
+            }
+            promise.resolve(result)
+        } catch (e: Exception) {
+            promise.reject("DOWNLOAD_ERROR", e.message ?: "Unknown error")
+        }
+    }
+
+    @ReactMethod
     fun getMap(imageFormat: String = "png", resolution: Int = 20, promise: Promise) {
         scope.launch {
             try {
@@ -218,100 +358,80 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
 
                 val response = client.newCall(request).execute()
                 if (!response.isSuccessful) {
-                    throw Exception("Failed to get map: ${response.code}")
+                    throw Exception("Failed to download map: ${response.code}")
                 }
 
-                val responseBody = response.body ?: throw Exception("Empty response")
-                val responseText = responseBody.string()
-                val boundary = responseText.split("\n")[0].trim()
-                val parts = responseText.split(boundary)
+                val responseBody = response.body?.string() ?: throw Exception("Empty response body")
+                
+                // Split the data using the boundary marker
+                val lines = responseBody.split("\n")
+                val boundary = lines.firstOrNull()?.trim() ?: throw Exception("No boundary found in response")
+                val parts = responseBody.split(boundary)
 
                 var imageData: ByteArray? = null
-                var yamlData: String? = null
+                var yamlContent: String? = null
 
+                // Process each part of the multipart response
                 for (part in parts) {
-                    when {
-                        part.contains("name=\"png\"") -> {
-                            val base64Match = Regex("name=\"png\"\\s*\\n([a-zA-Z0-9+/=\\n]+)").find(part)
-                            if (base64Match != null) {
-                                val encodedImage = base64Match.groupValues[1].replace("\\s+".toRegex(), "")
-                                imageData = Base64.decode(encodedImage, Base64.DEFAULT)
-                            }
+                    if (part.contains("name=\"png\"")) {
+                        // Extract and decode the base64 image data
+                        val imageDataMatch = Regex("name=\"png\"\\s*\\n([a-zA-Z0-9+/=\\n]+)").find(part)
+                        if (imageDataMatch != null) {
+                            val encodedImage = imageDataMatch.groupValues[1].replace("\n", "")
+                            imageData = Base64.decode(encodedImage, Base64.DEFAULT)
                         }
-                        part.contains("name=\"yaml\"") -> {
-                            val yamlMatch = Regex("name=\"yaml\"\\s*\\n(.+)", RegexOption.DOT_MATCHES_ALL).find(part)
-                            if (yamlMatch != null) {
-                                yamlData = yamlMatch.groupValues[1].trim()
-                            }
-                        }
-                    }
-                }
-
-                if (imageData == null) throw Exception("No image data found")
-
-                val bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
-                val filesDir = reactApplicationContext.filesDir
-                val imageFile = File(filesDir, "map.$imageFormat")
-
-                when (imageFormat.lowercase()) {
-                    "png" -> {
-                        FileOutputStream(imageFile).use { out ->
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-                        }
-                    }
-                    "bmp" -> {
-                        FileOutputStream(imageFile).use { out ->
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-                        }
-                    }
-                    "pgm" -> {
-                        // Convert to grayscale and create PGM
-                        val width = bitmap.width
-                        val height = bitmap.height
-                        val pixels = IntArray(width * height)
-                        bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
-                        
-                        FileWriter(imageFile).use { writer ->
-                            writer.write("P2\n$width $height\n255\n")
-                            for (y in 0 until height) {
-                                for (x in 0 until width) {
-                                    val pixel = pixels[y * width + x]
-                                    val gray = (Color.red(pixel) + Color.green(pixel) + Color.blue(pixel)) / 3
-                                    val value = when {
-                                        gray > 165 -> "255" // Occupied
-                                        gray < 50 -> "0"   // Free
-                                        else -> "128"      // Unknown
-                                    }
-                                    writer.write("$value ")
-                                }
-                                writer.write("\n")
-                            }
+                    } else if (part.contains("name=\"yaml\"")) {
+                        // Extract the YAML content
+                        val yamlMatch = Regex("name=\"yaml\"\\s*\\n(.+)", RegexOption.DOT_MATCHES_ALL).find(part)
+                        if (yamlMatch != null) {
+                            yamlContent = yamlMatch.groupValues[1].trim()
                         }
                     }
                 }
 
-                // Update and save YAML
-                if (yamlData != null) {
-                    val yaml = Yaml()
-                    @Suppress("UNCHECKED_CAST")
-                    val yamlMap = yaml.load<Map<String, Any>>(yamlData) as MutableMap<String, Any>
-                    yamlMap["image"] = "map.$imageFormat"
-                    
-                    File(filesDir, "map.yaml").writer().use { writer ->
-                        yaml.dump(yamlMap, writer)
-                    }
+                if (imageData == null || yamlContent == null) {
+                    throw Exception("Failed to extract image or YAML data from response")
                 }
+
+                // Save BMP file
+                val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                val cactusDir = File(downloadsDir, "CactusAssistant")
+                if (!cactusDir.exists()) {
+                    cactusDir.mkdirs()
+                }
+                
+                val bmpFile = File(cactusDir, "map.bmp")
+                bmpFile.writeBytes(imageData)
+
+                // Save YAML file
+                val yamlFile = File(cactusDir, "map.yaml")
+                yamlFile.writeText(yamlContent)
 
                 val result = Arguments.createMap().apply {
-                    putString("imagePath", imageFile.absolutePath)
-                    putString("yamlPath", File(filesDir, "map.yaml").absolutePath)
+                    putString("imagePath", bmpFile.absolutePath)
+                    putString("yamlPath", yamlFile.absolutePath)
                 }
                 promise.resolve(result)
-
             } catch (e: Exception) {
-                promise.reject("MAP_ERROR", "Failed to get map: ${e.message}")
+                promise.reject("DOWNLOAD_ERROR", e.message ?: "Unknown error")
             }
         }
+    }
+
+    private fun writeInt(out: FileOutputStream, value: Int) {
+        out.write(byteArrayOf(
+            (value and 0xFF).toByte(),
+            ((value shr 8) and 0xFF).toByte(),
+            ((value shr 16) and 0xFF).toByte(),
+            ((value shr 24) and 0xFF).toByte()
+        ))
+    }
+
+    private fun writeShort(out: FileOutputStream, value: Int) {
+        out.write(byteArrayOf(
+            (value and 0xFF).toByte(),
+            ((value shr 8) and 0xFF).toByte()
+        ))
     }
 
     // Add more domain-specific methods here
