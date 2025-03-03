@@ -57,7 +57,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     if (resultCode == Activity.RESULT_OK) {
                         // Permission granted, proceed with map download
                         pendingMapParams?.let { (format, resolution) ->
-                            downloadMap(pendingMapPromise!!)
+                            getMap(format, resolution, pendingMapPromise!!)
                         }
                     } else {
                         // Permission denied
@@ -243,92 +243,6 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
     }
 
     @ReactMethod
-    fun downloadMap(promise: Promise) {
-        try {
-            val domainId = sharedPreferences.getString("domain_id", null) ?: throw Exception("No domain ID found")
-            val domainInfoJson = domainInfo ?: throw Exception("No domain info found")
-            val domainInfo = JSONObject(domainInfoJson)
-            val domainServerUrl = domainInfo.getString("domain_server")
-            
-            val client = OkHttpClient()
-            
-            val requestBody = FormBody.Builder()
-                .add("domainId", domainId)
-                .add("domainServerUrl", domainServerUrl)
-                .add("height", "0.1")
-                .add("pixelsPerMeter", "20")
-                .add("format", "bmp")
-
-                .build()
-
-            val request = Request.Builder()
-                .url("$baseUrl/$domainId/map")
-                .addHeader("Authorization", "Bearer $ddsToken")
-                .post(requestBody)
-                .build()
-
-            val response = client.newCall(request).execute()
-            if (!response.isSuccessful) {
-                throw Exception("Failed to download map: ${response.code}")
-            }
-
-            val responseBody = response.body?.string() ?: throw Exception("Empty response body")
-            
-            // Split the data using the boundary marker
-            val lines = responseBody.split("\n")
-            val boundary = lines.firstOrNull()?.trim() ?: throw Exception("No boundary found in response")
-            val parts = responseBody.split(boundary)
-
-            var imageData: ByteArray? = null
-            var yamlContent: String? = null
-
-            // Process each part of the multipart response
-            for (part in parts) {
-                if (part.contains("name=\"png\"")) {
-                    // Extract and decode the base64 image data
-                    val imageDataMatch = Regex("name=\"png\"\\s*\\n([a-zA-Z0-9+/=\\n]+)").find(part)
-                    if (imageDataMatch != null) {
-                        val encodedImage = imageDataMatch.groupValues[1].replace("\n", "")
-                        imageData = Base64.decode(encodedImage, Base64.DEFAULT)
-                    }
-                } else if (part.contains("name=\"yaml\"")) {
-                    // Extract the YAML content
-                    val yamlMatch = Regex("name=\"yaml\"\\s*\\n(.+)", RegexOption.DOT_MATCHES_ALL).find(part)
-                    if (yamlMatch != null) {
-                        yamlContent = yamlMatch.groupValues[1].trim()
-                    }
-                }
-            }
-
-            if (imageData == null || yamlContent == null) {
-                throw Exception("Failed to extract image or YAML data from response")
-            }
-
-            // Save BMP file
-            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            val cactusDir = File(downloadsDir, "CactusAssistant")
-            if (!cactusDir.exists()) {
-                cactusDir.mkdirs()
-            }
-            
-            val bmpFile = File(cactusDir, "map.bmp")
-            bmpFile.writeBytes(imageData)
-
-            // Save YAML file
-            val yamlFile = File(cactusDir, "map.yaml")
-            yamlFile.writeText(yamlContent)
-
-            val result = Arguments.createMap().apply {
-                putString("imagePath", bmpFile.absolutePath)
-                putString("yamlPath", yamlFile.absolutePath)
-            }
-            promise.resolve(result)
-        } catch (e: Exception) {
-            promise.reject("DOWNLOAD_ERROR", e.message ?: "Unknown error")
-        }
-    }
-
-    @ReactMethod
     fun getMap(imageFormat: String = "png", resolution: Int = 20, promise: Promise) {
         scope.launch {
             try {
@@ -364,8 +278,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 val responseBody = response.body?.string() ?: throw Exception("Empty response body")
                 
                 // Split the data using the boundary marker
-                val lines = responseBody.split("\n")
-                val boundary = lines.firstOrNull()?.trim() ?: throw Exception("No boundary found in response")
+                val boundary = responseBody.split("\n", limit = 2)[0].trim()
                 val parts = responseBody.split(boundary)
 
                 var imageData: ByteArray? = null
@@ -374,14 +287,12 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 // Process each part of the multipart response
                 for (part in parts) {
                     if (part.contains("name=\"png\"")) {
-                        // Extract and decode the base64 image data
                         val imageDataMatch = Regex("name=\"png\"\\s*\\n([a-zA-Z0-9+/=\\n]+)").find(part)
                         if (imageDataMatch != null) {
-                            val encodedImage = imageDataMatch.groupValues[1].replace("\n", "")
+                            val encodedImage = imageDataMatch.groupValues[1].replace("\\s+".toRegex(), "")
                             imageData = Base64.decode(encodedImage, Base64.DEFAULT)
                         }
                     } else if (part.contains("name=\"yaml\"")) {
-                        // Extract the YAML content
                         val yamlMatch = Regex("name=\"yaml\"\\s*\\n(.+)", RegexOption.DOT_MATCHES_ALL).find(part)
                         if (yamlMatch != null) {
                             yamlContent = yamlMatch.groupValues[1].trim()
@@ -393,22 +304,98 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     throw Exception("Failed to extract image or YAML data from response")
                 }
 
-                // Save BMP file
+                // Convert PNG to requested format
+                val bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
+                if (bitmap == null) {
+                    throw Exception("Failed to decode PNG image data")
+                }
+
                 val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 val cactusDir = File(downloadsDir, "CactusAssistant")
                 if (!cactusDir.exists()) {
                     cactusDir.mkdirs()
                 }
-                
-                val bmpFile = File(cactusDir, "map.bmp")
-                bmpFile.writeBytes(imageData)
 
-                // Save YAML file
+                val imageFile = File(cactusDir, "map.${imageFormat.lowercase()}")
+                
+                when (imageFormat.lowercase()) {
+                    "bmp" -> {
+                        // Convert PNG to BMP
+                        val bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
+                        if (bitmap != null) {
+                            val outputStream = FileOutputStream(imageFile)
+                            
+                            // BMP Header
+                            val width = bitmap.width
+                            val height = bitmap.height
+                            val bitsPerPixel = 24
+                            val rowPadding = (4 - (width * 3) % 4) % 4
+                            val imageSize = (width * 3 + rowPadding) * height
+                            val fileSize = 54 + imageSize  // 54 = header size
+                            
+                            // BMP File Header (14 bytes)
+                            outputStream.write('B'.code)
+                            outputStream.write('M'.code)
+                            writeInt(outputStream, fileSize)
+                            writeInt(outputStream, 0) // Reserved
+                            writeInt(outputStream, 54) // Offset to pixel data
+                            
+                            // BMP Info Header (40 bytes)
+                            writeInt(outputStream, 40) // Info header size
+                            writeInt(outputStream, width)
+                            writeInt(outputStream, height)
+                            writeShort(outputStream, 1) // Planes
+                            writeShort(outputStream, bitsPerPixel)
+                            writeInt(outputStream, 0) // No compression
+                            writeInt(outputStream, imageSize)
+                            writeInt(outputStream, 2835) // X pixels per meter
+                            writeInt(outputStream, 2835) // Y pixels per meter
+                            writeInt(outputStream, 0) // Colors in color table
+                            writeInt(outputStream, 0) // Important color count
+                            
+                            // Pixel data (bottom-up, BGR)
+                            val pixels = IntArray(width * height)
+                            bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+                            
+                            for (y in height - 1 downTo 0) {
+                                for (x in 0 until width) {
+                                    val pixel = pixels[y * width + x]
+                                    outputStream.write(pixel and 0xFF) // Blue
+                                    outputStream.write((pixel shr 8) and 0xFF) // Green
+                                    outputStream.write((pixel shr 16) and 0xFF) // Red
+                                }
+                                // Add row padding
+                                for (i in 0 until rowPadding) {
+                                    outputStream.write(0)
+                                }
+                            }
+                            
+                            outputStream.close()
+                            bitmap.recycle()
+                        }
+                    }
+                    "png" -> {
+                        // Save PNG as-is
+                        imageFile.writeBytes(imageData)
+                    }
+                    "pgm" -> {
+                        // Convert to grayscale PGM
+                        // TODO: Implement PGM conversion if needed
+                        throw Exception("PGM format not yet implemented")
+                    }
+                }
+                bitmap.recycle()
+
+                // Save YAML file and update image reference
                 val yamlFile = File(cactusDir, "map.yaml")
-                yamlFile.writeText(yamlContent)
+                val yaml = Yaml()
+                val yamlMap = yaml.load<Map<String, Any>>(yamlContent)
+                val updatedYamlMap = yamlMap.toMutableMap()
+                updatedYamlMap["image"] = "map.${imageFormat.lowercase()}"
+                yamlFile.writeText(yaml.dump(updatedYamlMap))
 
                 val result = Arguments.createMap().apply {
-                    putString("imagePath", bmpFile.absolutePath)
+                    putString("imagePath", imageFile.absolutePath)
                     putString("yamlPath", yamlFile.absolutePath)
                 }
                 promise.resolve(result)
