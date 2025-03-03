@@ -192,10 +192,15 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 val response3 = connection3.inputStream.bufferedReader().readText()
                 domainInfo = response3
 
-                // Return success response
+                // Parse domain info to get server URL
+                val domainInfoObj = JSONObject(response3)
+                val accessToken = domainInfoObj.getString("access_token")
+                val domainServer = domainInfoObj.getString("domain_server")
+
+                // Return response with domain server URL
                 val result = Arguments.createMap().apply {
                     putBoolean("success", true)
-                    putString("message", "Authentication successful")
+                    putString("message", "Domain Server: $domainServer")
                 }
                 promise.resolve(result)
 
@@ -250,15 +255,16 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 val domainInfoStr = domainInfo ?: throw Exception("No domain info available")
                 val domainInfoObj = JSONObject(domainInfoStr)
                 val accessToken = domainInfoObj.getString("access_token")
+                val domainServerObj = domainInfoObj.getJSONObject("domain_server")
+                val domainServerUrl = domainServerObj.getString("url")
 
                 val url = ConfigManager.getNestedString("domain.map_endpoint")
-                val domainServer = ConfigManager.getNestedString("domain.domain_server")
 
                 val client = OkHttpClient()
                 
                 val requestBody = JSONObject().apply {
                     put("domainId", domainId)
-                    put("domainServerUrl", domainServer)
+                    put("domainServerUrl", domainServerUrl)
                     put("height", 0.1)
                     put("pixelsPerMeter", resolution)
                 }
@@ -272,7 +278,10 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
 
                 val response = client.newCall(request).execute()
                 if (!response.isSuccessful) {
-                    throw Exception("Failed to download map: ${response.code}")
+                    val errorBody = response.body?.string() ?: "No error body"
+                    val error = Exception("Failed to download map: ${response.code}\nRequest Body: ${requestBody.toString()}\nError Body: $errorBody")
+                    error.printStackTrace()
+                    throw error
                 }
 
                 val responseBody = response.body?.string() ?: throw Exception("Empty response body")

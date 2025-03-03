@@ -47,8 +47,11 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
   const [mapFiles, setMapFiles] = useState(null);
   const [yamlContent, setYamlContent] = useState('');
   const [mapInfo, setMapInfo] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
+  const [isReviewing, setIsReviewing] = useState(false);
   const [error, setError] = useState('');
+  const [domainServerUrl, setDomainServerUrl] = useState('');
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -71,6 +74,7 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
   const checkConnection = async () => {
     try {
       const details = await NativeModules.SlamtecUtils.checkConnection();
+      // Use the status message directly without modifying it
       setConnectionStatus({
         isConnected: details.slamApiAvailable,
         message: details.status,
@@ -117,15 +121,25 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
         password;
 
       const result = await NativeModules.DomainUtils.authenticate(email, actualPassword, domainId);
+      console.log('Auth Response:', result);  // Debug log
+      
+      // Extract the JSON string from the response message
+      const jsonStr = result.message.replace('Domain Server: ', '');
+      const response = JSON.parse(jsonStr);
+      
+      // Store the domain server URL
+      setDomainServerUrl(response.url);
       
       Alert.alert(
         'Test Results', 
         'Connection test successful!\n\n' +
         'Email: ' + email + '\n' +
         'Domain ID: ' + domainId + '\n' +
-        'Status: ' + result.message
+        'Domain Server URL: ' + response.url + '\n\n' +
+        'Full Response:\n' + JSON.stringify(response, null, 2)
       );
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Auth Error:', error);  // Debug log
       Alert.alert(
         'Test Failed',
         'Error: ' + (error.message || 'Unknown error') + '\n\n' +
@@ -141,31 +155,46 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
     }
 
     try {
-      setLoading(true);
+      setIsClearing(true);
       await NativeModules.SlamtecUtils.clearMap();
       Alert.alert('Success', 'Map has been cleared');
     } catch (error) {
       Alert.alert('Error', `Failed to clear map: ${error.message}`);
     } finally {
-      setLoading(false);
+      setIsClearing(false);
     }
   };
 
   const handleDownloadMap = async () => {
+    if (!domainServerUrl) {
+      Alert.alert('Error', 'Please test the connection first to get the domain server URL');
+      return;
+    }
+
     try {
-      setLoading(true);
-      setError('');
-      // Download map files from external source
+      setIsDownloading(true);
       const result = await NativeModules.DomainUtils.getMap('bmp', 20);
-      setMapFiles(result);
-      // Immediately show file info after download
-      await handleViewMapInfo();
-      await handleViewYaml();
-      setError('');
-    } catch (err) {
-      setError(`Failed to download map: ${err.message}`);
+      Alert.alert('Success', `Map downloaded to:\n${result.imagePath}\n\nYAML saved to:\n${result.yamlPath}`);
+    } catch (error: any) {
+      const errorDetails = {
+        message: error.message,
+        domainServerUrl,
+        domainId,
+        timestamp: new Date().toISOString(),
+        requestBody: error.requestBody || 'Not available'
+      };
+      console.error('Map download error details:', errorDetails);
+      Alert.alert(
+        'Error', 
+        `Failed to download map: ${error.message}\n\n` +
+        `Debug Information:\n` +
+        `Domain Server URL: "${domainServerUrl}"\n` +
+        `Domain ID: ${domainId}\n` +
+        `Time: ${errorDetails.timestamp}\n\n` +
+        `Request Body:\n${errorDetails.requestBody}`
+      );
     } finally {
-      setLoading(false);
+      setIsDownloading(false);
     }
   };
 
@@ -209,14 +238,22 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
       return;
     }
     try {
-      setLoading(true);
+      setIsReviewing(true);
       const result = await NativeModules.SlamtecUtils.readYamlFile(mapFiles.yamlPath);
-      setYamlContent(result.content);
+      // Format the YAML content to ensure origin array is properly displayed
+      const formattedContent = result.content.replace(
+        /origin:\s*\[(.*?)\]/,
+        (match, values) => {
+          const numbers = values.split(',').map(v => v.trim());
+          return `origin:\n- ${numbers[0]}\n- ${numbers[1]}\n- ${numbers[2]}`;
+        }
+      );
+      setYamlContent(formattedContent);
       setError('');
     } catch (err) {
       setError(`Failed to read YAML: ${err.message}`);
     } finally {
-      setLoading(false);
+      setIsReviewing(false);
     }
   };
 
@@ -226,13 +263,13 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
       return;
     }
     try {
-      setLoading(true);
+      setIsReviewing(true);
       const result = await NativeModules.SlamtecUtils.getMapImageInfo(mapFiles.imagePath);
       setMapInfo(result);
     } catch (error) {
       setError('Failed to get map info: ' + error);
     } finally {
-      setLoading(false);
+      setIsReviewing(false);
     }
   };
 
@@ -349,12 +386,12 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
               <Text style={styles.sectionTitle}>Map Operations</Text>
               
               <TouchableOpacity 
-                style={[styles.button, loading && styles.buttonDisabled]}
+                style={[styles.button, isClearing && styles.buttonDisabled]}
                 onPress={handleClearMap}
-                disabled={loading}
+                disabled={isClearing}
               >
                 <Text style={styles.buttonText}>
-                  {loading ? 'Clearing...' : 'Clear Map'}
+                  {isClearing ? 'Clearing...' : 'Clear Map'}
                 </Text>
               </TouchableOpacity>
 
@@ -365,12 +402,12 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
               <Text style={styles.sectionTitle}>Map Download</Text>
               
               <TouchableOpacity 
-                style={[styles.button, loading && styles.buttonDisabled]}
+                style={[styles.button, isDownloading && styles.buttonDisabled]}
                 onPress={handleDownloadMap}
-                disabled={loading}
+                disabled={isDownloading}
               >
                 <Text style={styles.buttonText}>
-                  {loading ? 'Downloading...' : 'Download Map'}
+                  {isDownloading ? 'Downloading...' : 'Download Map'}
                 </Text>
               </TouchableOpacity>
 
@@ -383,27 +420,32 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
                     <Text style={styles.buttonText}>Review Map File</Text>
                   </TouchableOpacity>
 
+                  {mapInfo && (
+                    <View style={styles.infoContainer}>
+                      <Text style={styles.infoTitle}>Map File Information</Text>
+                      <Text style={styles.infoText}>File Path: {mapInfo.path}</Text>
+                      <Text style={styles.infoText}>Size: {mapInfo.size} bytes</Text>
+                      <Text style={styles.infoText}>Last Modified: {mapInfo.lastModified}</Text>
+                    </View>
+                  )}
+
                   <TouchableOpacity 
                     style={[styles.button, styles.secondaryButton]}
                     onPress={handleReviewYamlFile}
                   >
                     <Text style={styles.buttonText}>Review YAML File</Text>
                   </TouchableOpacity>
+
+                  {yamlContent && (
+                    <View style={styles.infoContainer}>
+                      <Text style={styles.infoTitle}>YAML File Information</Text>
+                      <Text style={styles.infoText}>File Path: {mapFiles.yamlPath}</Text>
+                      <ScrollView style={styles.yamlContainer}>
+                        <Text style={styles.yamlText}>{yamlContent}</Text>
+                      </ScrollView>
+                    </View>
+                  )}
                 </>
-              )}
-
-              {yamlContent && (
-                <ScrollView style={styles.contentContainer}>
-                  <Text style={styles.contentText}>{yamlContent}</Text>
-                </ScrollView>
-              )}
-
-              {mapInfo && (
-                <View style={styles.infoContainer}>
-                  <Text style={styles.infoText}>File Path: {mapInfo.path}</Text>
-                  <Text style={styles.infoText}>Size: {mapInfo.size} bytes</Text>
-                  <Text style={styles.infoText}>Last Modified: {mapInfo.lastModified}</Text>
-                </View>
               )}
 
               {error ? <Text style={styles.errorText}>{error}</Text> : null}
@@ -567,24 +609,33 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     marginTop: 15,
-    padding: 10,
+    padding: 15,
     backgroundColor: '#f5f5f5',
     borderRadius: 8,
+    width: '100%',
   },
   infoTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 10,
+    color: '#333',
   },
   infoText: {
     fontSize: 14,
-    marginBottom: 3,
+    marginBottom: 8,
+    color: '#444',
   },
-  contentContainer: {
+  yamlContainer: {
     maxHeight: 200,
+    marginTop: 10,
+    backgroundColor: '#fff',
+    borderRadius: 4,
+    padding: 10,
   },
-  contentText: {
+  yamlText: {
     fontSize: 14,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    color: '#333',
   },
   secondaryButton: {
     backgroundColor: '#757575',

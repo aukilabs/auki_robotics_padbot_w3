@@ -14,7 +14,7 @@ domain:
   raycast_endpoint: "https://dsc.dev.aukiverse.com/spatial/raycast"
   map_endpoint: "https://dsc.dev.aukiverse.com/spatial/crosssection"
   navmesh_endpoint: "https://dsc.dev.aukiverse.com/spatial/restricttonavmesh"
-  domain_server: "https://ap-east-1.domains.prod.aukiverse.com"
+  #domain_server: "https://ap-east-1.domains.prod.aukiverse.com"
 
 # Home Dock Position [x, y, z, yaw, pitch, roll]
 homedock: [0.1036, 1.869, 0, 3.111, 0, 0] 
