@@ -11,6 +11,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import android.os.Handler;
 import android.os.Looper;
+import java.util.List;
+import java.util.Map;
 
 public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
     private static final String TAG = "SlamtecUtilsModule";
@@ -894,5 +896,114 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
                 mainHandler.post(() -> promise.reject("IMAGE_INFO_ERROR", "Error getting map image info: " + e.getMessage()));
             }
         });
+    }
+
+    @ReactMethod
+    public void createStcmFile(ReadableMap mapData, Promise promise) {
+        try {
+            String imagePath = mapData.getString("imagePath");
+            String yamlPath = mapData.getString("yamlPath");
+            String usage = mapData.getString("usage");
+            String layerName = mapData.getString("layerName");
+
+            if (imagePath == null || yamlPath == null) {
+                promise.reject("STCM_ERROR", "Missing required map data");
+                return;
+            }
+
+            // Create STCM file in the same directory as the map files
+            File mapFile = new File(imagePath);
+            File stcmFile = new File(mapFile.getParent(), "map.stcm");
+
+            // Read YAML file manually
+            StringBuilder yamlContent = new StringBuilder();
+            try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader(yamlPath))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    yamlContent.append(line).append("\n");
+                }
+            }
+            
+            float resolution = 0.0f;
+            float originX = 0.0f;
+            float originY = 0.0f;
+
+            // Parse YAML content
+            String[] lines = yamlContent.toString().split("\n");
+            for (String line : lines) {
+                line = line.trim();
+                if (line.startsWith("resolution:")) {
+                    resolution = Float.parseFloat(line.substring("resolution:".length()).trim());
+                } else if (line.startsWith("origin:")) {
+                    String originStr = line.substring("origin:".length()).trim();
+                    // Remove brackets and split by comma
+                    originStr = originStr.replaceAll("[\\[\\]]", "");
+                    String[] coords = originStr.split(",");
+                    originX = Float.parseFloat(coords[0].trim());
+                    originY = Float.parseFloat(coords[1].trim());
+                }
+            }
+
+            // Read BMP file
+            java.io.FileInputStream fis = new java.io.FileInputStream(imagePath);
+            java.io.BufferedInputStream bis = new java.io.BufferedInputStream(fis);
+            
+            // Read BMP header
+            byte[] header = new byte[54];
+            bis.read(header);
+            
+            // Extract dimensions from BMP header
+            // Width is at offset 18 (4 bytes)
+            // Height is at offset 22 (4 bytes)
+            int width = (header[21] << 24) | ((header[20] & 0xFF) << 16) | 
+                       ((header[19] & 0xFF) << 8) | (header[18] & 0xFF);
+            int height = (header[25] << 24) | ((header[24] & 0xFF) << 16) | 
+                        ((header[23] & 0xFF) << 8) | (header[22] & 0xFF);
+            
+            // Read pixel data
+            byte[] pixelData = new byte[width * height * 3];
+            bis.read(pixelData);
+            
+            // Create STCM file
+            java.io.FileOutputStream fos = new java.io.FileOutputStream(stcmFile);
+            java.io.DataOutputStream dos = new java.io.DataOutputStream(fos);
+
+            // Write STCM header
+            dos.writeBytes("STCM");  // Magic number
+            dos.writeInt(1);         // Version
+            dos.writeInt(1);         // Number of layers
+
+            // Write GridMapLayer header
+            dos.writeBytes("GRID");  // Layer type
+            dos.writeUTF(layerName); // Layer name
+            dos.writeUTF(usage);     // Layer usage
+            dos.writeFloat(resolution); // Resolution
+            dos.writeFloat(originX);    // Origin X
+            dos.writeFloat(originY);    // Origin Y
+            dos.writeInt(width);        // Width
+            dos.writeInt(height);       // Height
+
+            // Write pixel data
+            for (int y = height - 1; y >= 0; y--) {
+                for (int x = 0; x < width; x++) {
+                    int pixelIndex = (y * width + x) * 3;
+                    byte red = pixelData[pixelIndex];
+                    byte cellValue = (byte) (red - 128); // Convert to cell value
+                    dos.writeByte(cellValue);
+                }
+            }
+
+            // Close streams
+            bis.close();
+            fis.close();
+            dos.close();
+            fos.close();
+
+            WritableMap result = Arguments.createMap();
+            result.putString("stcmPath", stcmFile.getAbsolutePath());
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject("STCM_ERROR", "Failed to create STCM file: " + e.getMessage());
+        }
     }
 } 

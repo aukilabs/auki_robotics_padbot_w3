@@ -52,6 +52,8 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
   const [isReviewing, setIsReviewing] = useState(false);
   const [error, setError] = useState('');
   const [domainServerUrl, setDomainServerUrl] = useState('');
+  const [downloadedMap, setDownloadedMap] = useState<{imagePath: string, yamlPath: string} | null>(null);
+  const [isCreatingStcm, setIsCreatingStcm] = useState(false);
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -174,6 +176,7 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
     try {
       setIsDownloading(true);
       const result = await NativeModules.DomainUtils.getMap('bmp', 20);
+      setDownloadedMap(result);
       Alert.alert('Success', `Map downloaded to:\n${result.imagePath}\n\nYAML saved to:\n${result.yamlPath}`);
     } catch (error: any) {
       const errorDetails = {
@@ -198,48 +201,37 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
     }
   };
 
-  const handleProcessMap = async () => {
-    if (!connectionStatus.isConnected) {
-      Alert.alert('Error', 'Robot is not connected');
+  const handleCreateAndUploadStcm = async () => {
+    if (!downloadedMap) {
+      Alert.alert('Error', 'Please download the map first');
       return;
     }
 
-    if (!mapFiles) {
-      Alert.alert('Error', 'Please download map files first');
-      return;
-    }
-
-    setIsProcessing(true);
     try {
-      // Process and create STCM map
-      await NativeModules.SlamtecUtils.processAndUploadMap({
-        mapData: mapFiles,
+      setIsCreatingStcm(true);
+      const result = await NativeModules.SlamtecUtils.createStcmFile({
+        imagePath: downloadedMap.imagePath,
+        yamlPath: downloadedMap.yamlPath,
         usage: 'explore',
         layerName: 'auki_domain_map'
       });
       
-      Alert.alert(
-        'Success',
-        'Map has been processed and uploaded to the robot'
-      );
-    } catch (error) {
-      Alert.alert(
-        'Error',
-        `Failed to process map: ${error.message}`
-      );
+      Alert.alert('Success', `STCM file created at:\n${result.stcmPath}`);
+    } catch (error: any) {
+      Alert.alert('Error', `Failed to create STCM file: ${error.message}`);
     } finally {
-      setIsProcessing(false);
+      setIsCreatingStcm(false);
     }
   };
 
   const handleViewYaml = async () => {
-    if (!mapFiles?.yamlPath) {
+    if (!downloadedMap?.yamlPath) {
       setError('No YAML file available');
       return;
     }
     try {
       setIsReviewing(true);
-      const result = await NativeModules.SlamtecUtils.readYamlFile(mapFiles.yamlPath);
+      const result = await NativeModules.SlamtecUtils.readYamlFile(downloadedMap.yamlPath);
       // Format the YAML content to ensure origin array is properly displayed
       const formattedContent = result.content.replace(
         /origin:\s*\[(.*?)\]/,
@@ -258,13 +250,13 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
   };
 
   const handleViewMapInfo = async () => {
-    if (!mapFiles?.imagePath) {
+    if (!downloadedMap?.imagePath) {
       setError('No map file available');
       return;
     }
     try {
       setIsReviewing(true);
-      const result = await NativeModules.SlamtecUtils.getMapImageInfo(mapFiles.imagePath);
+      const result = await NativeModules.SlamtecUtils.getMapImageInfo(downloadedMap.imagePath);
       setMapInfo(result);
     } catch (error) {
       setError('Failed to get map info: ' + error);
@@ -296,7 +288,7 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
   };
 
   const handleReviewMapFile = async () => {
-    if (!mapFiles) {
+    if (!downloadedMap) {
       Alert.alert('Error', 'No map files available');
       return;
     }
@@ -308,7 +300,7 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
   };
 
   const handleReviewYamlFile = async () => {
-    if (!mapFiles) {
+    if (!downloadedMap) {
       Alert.alert('Error', 'No map files available');
       return;
     }
@@ -411,7 +403,19 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
                 </Text>
               </TouchableOpacity>
 
-              {mapFiles && (
+              {downloadedMap && (
+                <TouchableOpacity 
+                  style={[styles.button, styles.secondaryButton, isCreatingStcm && styles.buttonDisabled]}
+                  onPress={handleCreateAndUploadStcm}
+                  disabled={isCreatingStcm}
+                >
+                  <Text style={styles.buttonText}>
+                    {isCreatingStcm ? 'Creating STCM...' : 'Create & Upload STCM'}
+                  </Text>
+                </TouchableOpacity>
+              )}
+
+              {downloadedMap && (
                 <>
                   <TouchableOpacity 
                     style={[styles.button, styles.secondaryButton]}
@@ -439,7 +443,7 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
                   {yamlContent && (
                     <View style={styles.infoContainer}>
                       <Text style={styles.infoTitle}>YAML File Information</Text>
-                      <Text style={styles.infoText}>File Path: {mapFiles.yamlPath}</Text>
+                      <Text style={styles.infoText}>File Path: {downloadedMap.yamlPath}</Text>
                       <ScrollView style={styles.yamlContainer}>
                         <Text style={styles.yamlText}>{yamlContent}</Text>
                       </ScrollView>
