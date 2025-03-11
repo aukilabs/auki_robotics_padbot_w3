@@ -6,31 +6,80 @@ import {
   Image,
   Animated,
   Easing,
+  NativeModules,
 } from 'react-native';
 
 interface SplashScreenProps {
-  onFinish: () => void;
+  onFinish: (products: any[]) => void;
 }
 
 const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
   const [opacity] = useState(new Animated.Value(1));
+  const [loadingText, setLoadingText] = useState('Initializing...');
 
   useEffect(() => {
-    // Start with a delay to show the splash screen for a moment
-    const timer = setTimeout(() => {
-      // Create fade-out animation
-      Animated.timing(opacity, {
-        toValue: 0,
-        duration: 500,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
-      }).start(() => {
-        // Call onFinish when animation completes
-        onFinish();
-      });
-    }, 2000);
+    let timeoutId: NodeJS.Timeout;
+    let isMounted = true;
 
-    return () => clearTimeout(timer);
+    const loadProducts = async () => {
+      try {
+        if (isMounted) setLoadingText('Loading products...');
+        const products = await NativeModules.CactusUtils.getProducts();
+        if (isMounted) {
+          setLoadingText('Products loaded successfully');
+          // Create fade-out animation
+          Animated.timing(opacity, {
+            toValue: 0,
+            duration: 500,
+            easing: Easing.out(Easing.cubic),
+            useNativeDriver: true,
+          }).start(() => {
+            onFinish(products);
+          });
+        }
+      } catch (error) {
+        if (isMounted) {
+          console.error('Error loading products:', error);
+          setLoadingText('Error loading products');
+          // Still finish after error, but with empty products
+          setTimeout(() => {
+            if (isMounted) {
+              Animated.timing(opacity, {
+                toValue: 0,
+                duration: 500,
+                easing: Easing.out(Easing.cubic),
+                useNativeDriver: true,
+              }).start(() => {
+                onFinish([]);
+              });
+            }
+          }, 2000);
+        }
+      }
+    };
+
+    // Start loading products
+    loadProducts();
+
+    // Set 30 second timeout
+    timeoutId = setTimeout(() => {
+      if (isMounted) {
+        setLoadingText('Loading timeout reached');
+        Animated.timing(opacity, {
+          toValue: 0,
+          duration: 500,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }).start(() => {
+          onFinish([]);
+        });
+      }
+    }, 30000);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
+    };
   }, [opacity, onFinish]);
 
   return (
@@ -46,7 +95,7 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
         <Text style={styles.welcomeText}>
           Welcome to{'\n'}Cactus Assistant
         </Text>
-        <Text style={styles.loadingText}>Loading...</Text>
+        <Text style={styles.loadingText}>{loadingText}</Text>
       </View>
     </Animated.View>
   );

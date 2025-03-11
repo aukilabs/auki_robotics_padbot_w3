@@ -17,10 +17,22 @@ enum AppScreen {
   CONFIG
 }
 
+interface Product {
+  name: string;
+  eslCode: string;
+  pose: {
+    x: number;
+    y: number;
+    z: number;
+  };
+}
+
 const App = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>(AppScreen.SPLASH);
+  const [products, setProducts] = useState<Product[]>([]);
 
-  const handleSplashFinish = () => {
+  const handleSplashFinish = (loadedProducts: Product[]) => {
+    setProducts(loadedProducts);
     setCurrentScreen(AppScreen.MAIN);
   };
 
@@ -37,7 +49,7 @@ const App = () => {
       case AppScreen.SPLASH:
         return <SplashScreen onFinish={handleSplashFinish} />;
       case AppScreen.MAIN:
-        return <MainScreen onClose={handleClose} onConfigPress={handleConfigPress} />;
+        return <MainScreen onClose={handleClose} onConfigPress={handleConfigPress} initialProducts={products} />;
       case AppScreen.CONFIG:
         return <ConfigScreen onClose={handleClose} />;
     }

@@ -16,14 +16,16 @@ import {
 interface MainScreenProps {
   onClose: () => void;
   onConfigPress: () => void;
+  initialProducts: any[];
 }
 
 interface Product {
   name: string;
   eslCode: string;
   pose: {
-    px: number;
-    pz: number;
+    x: number;
+    y: number;
+    z: number;
   };
 }
 
@@ -35,20 +37,17 @@ enum NavigationStatus {
   ERROR
 }
 
-const MainScreen = ({ onClose, onConfigPress }: MainScreenProps): React.JSX.Element => {
+const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps): React.JSX.Element => {
   const [searchText, setSearchText] = useState('');
-  const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>(initialProducts);
+  const [isLoading, setIsLoading] = useState(false);
   const [navigationStatus, setNavigationStatus] = useState<NavigationStatus>(NavigationStatus.IDLE);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [navigationError, setNavigationError] = useState<string>('');
 
-  // Load products on component mount
+  // Handle hardware back button (Android)
   useEffect(() => {
-    loadProducts();
-
-    // Handle hardware back button (Android)
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       handleClose();
       return true;
@@ -65,70 +64,43 @@ const MainScreen = ({ onClose, onConfigPress }: MainScreenProps): React.JSX.Elem
       const filtered = products.filter(product => 
         product.name.toLowerCase().includes(searchText.toLowerCase()) ||
         product.eslCode.toLowerCase().includes(searchText.toLowerCase())
-      );
+      ).sort((a, b) => a.name.localeCompare(b.name));
       setFilteredProducts(filtered);
     } else {
-      setFilteredProducts(products);
+      setFilteredProducts([...products].sort((a, b) => a.name.localeCompare(b.name)));
     }
   }, [searchText, products]);
 
-  const loadProducts = async () => {
-    setIsLoading(true);
-    try {
-      // This would be replaced with actual API calls to your backend
-      // For now, we'll use mock data
-      const mockProducts: Product[] = [
-        { name: 'Product 1', eslCode: 'ESL001', pose: { px: 1.2, pz: 3.4 } },
-        { name: 'Product 2', eslCode: 'ESL002', pose: { px: 2.3, pz: 4.5 } },
-        { name: 'Product 3', eslCode: 'ESL003', pose: { px: 3.4, pz: 5.6 } },
-        { name: 'Cactus Plant', eslCode: 'ESL004', pose: { px: 4.5, pz: 6.7 } },
-        { name: 'Succulent', eslCode: 'ESL005', pose: { px: 5.6, pz: 7.8 } },
-      ];
-      
-      // Sort products by name
-      mockProducts.sort((a, b) => a.name.localeCompare(b.name));
-      
-      setProducts(mockProducts);
-      setFilteredProducts(mockProducts);
-    } catch (error) {
-      console.error('Error loading products:', error);
-      Alert.alert('Error', 'Failed to load products');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleProductSelect = (product: Product) => {
+  const handleProductSelect = async (product: Product) => {
     setSelectedProduct(product);
     setNavigationStatus(NavigationStatus.NAVIGATING);
     
-    // Simulate navigation to product
-    // In a real app, this would call your robot navigation API
-    setTimeout(() => {
-      // 90% chance of success for demo purposes
-      if (Math.random() > 0.1) {
-        setNavigationStatus(NavigationStatus.ARRIVED);
-      } else {
-        setNavigationStatus(NavigationStatus.ERROR);
-        setNavigationError('Navigation failed. Please try again.');
-      }
-    }, 3000);
+    try {
+      await NativeModules.SlamtecUtils.navigateProduct(
+        product.pose.x,
+        product.pose.y,
+        product.pose.z
+      );
+      setNavigationStatus(NavigationStatus.ARRIVED);
+    } catch (error) {
+      console.error('Navigation error:', error);
+      setNavigationStatus(NavigationStatus.ERROR);
+      setNavigationError(error.message || 'Navigation failed. Please try again.');
+    }
   };
 
-  const handleGoHome = () => {
+  const handleGoHome = async () => {
     setNavigationStatus(NavigationStatus.NAVIGATING);
     setSelectedProduct(null);
     
-    // Simulate navigation to home
-    setTimeout(() => {
-      // 90% chance of success for demo purposes
-      if (Math.random() > 0.1) {
-        setNavigationStatus(NavigationStatus.IDLE);
-      } else {
-        setNavigationStatus(NavigationStatus.ERROR);
-        setNavigationError('Navigation to home failed. Please try again.');
-      }
-    }, 3000);
+    try {
+      await NativeModules.SlamtecUtils.goHome();
+      setNavigationStatus(NavigationStatus.IDLE);
+    } catch (error) {
+      console.error('Navigation error:', error);
+      setNavigationStatus(NavigationStatus.ERROR);
+      setNavigationError(error.message || 'Navigation to home failed. Please try again.');
+    }
   };
 
   const handleClose = () => {

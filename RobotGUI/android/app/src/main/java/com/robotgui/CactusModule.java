@@ -3,6 +3,7 @@ package com.robotgui;
 import android.util.Log;
 import com.facebook.react.bridge.*;
 import org.json.JSONObject;
+import org.json.JSONArray;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.BufferedReader;
@@ -109,6 +110,86 @@ public class CactusModule extends ReactContextBaseJavaModule {
         }
     }
 
+    private String getDomainCollectionId(String token) throws Exception {
+        String url = backendUrl + "/api/collections/Domains/records?filter=(DomainID='" + domainId + "')";
+        Log.d(TAG, "Getting domain collection ID from URL: " + url);
+
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Authorization", "Bearer " + token);
+
+        if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            StringBuilder response = new StringBuilder();
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+            }
+            JSONObject jsonResponse = new JSONObject(response.toString());
+            JSONArray items = jsonResponse.getJSONArray("items");
+            if (items.length() > 0) {
+                String collectionId = items.getJSONObject(0).getString("id");
+                Log.d(TAG, "Found domain collection ID: " + collectionId);
+                return collectionId;
+            }
+            throw new Exception("No domain found for ID: " + domainId);
+        }
+        throw new Exception("Failed to get domain collection ID. Response code: " + connection.getResponseCode());
+    }
+
+    private JSONArray getESLData(String domainCollectionId, String token) throws Exception {
+        String url = backendUrl + "/api/collections/ESLDomainData/records?filter=(domain='" + 
+                    domainCollectionId + "')&perPage=100000";
+        Log.d(TAG, "Getting ESL data from URL: " + url);
+
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Authorization", "Bearer " + token);
+
+        if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            StringBuilder response = new StringBuilder();
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+            }
+            JSONObject jsonResponse = new JSONObject(response.toString());
+            JSONArray items = jsonResponse.getJSONArray("items");
+            Log.d(TAG, "Retrieved " + items.length() + " ESL items");
+            return items;
+        }
+        throw new Exception("Failed to get ESL data. Response code: " + connection.getResponseCode());
+    }
+
+    private JSONArray getProductNames(String token) throws Exception {
+        String url = backendUrl + "/api/collections/BarcodeNames/records?perPage=100000";
+        Log.d(TAG, "Getting product names from URL: " + url);
+
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Authorization", "Bearer " + token);
+
+        if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            StringBuilder response = new StringBuilder();
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+            }
+            JSONObject jsonResponse = new JSONObject(response.toString());
+            JSONArray items = jsonResponse.getJSONArray("items");
+            Log.d(TAG, "Retrieved " + items.length() + " product names");
+            return items;
+        }
+        throw new Exception("Failed to get product names. Response code: " + connection.getResponseCode());
+    }
+
     @ReactMethod
     public void getProducts(Promise promise) {
         Log.d(TAG, "getProducts called");
@@ -129,9 +210,49 @@ public class CactusModule extends ReactContextBaseJavaModule {
                     mainHandler.post(() -> promise.reject("AUTH_ERROR", "Authentication failed"));
                     return;
                 }
-                
-                // For now, just return an empty array if auth was successful
+                String token = auth.getString("token");
+                Log.d(TAG, "Authentication successful, got token");
+
+                // Get domain collection ID
+                String domainCollectionId = getDomainCollectionId(token);
+                Log.d(TAG, "Got domain collection ID: " + domainCollectionId);
+
+                // Get ESL data
+                JSONArray eslData = getESLData(domainCollectionId, token);
+                Log.d(TAG, "Got ESL data, count: " + eslData.length());
+
+                // Get product names
+                JSONArray productNames = getProductNames(token);
+                Log.d(TAG, "Got product names, count: " + productNames.length());
+
+                // Create lookup map for product names
+                JSONObject barcodeToName = new JSONObject();
+                for (int i = 0; i < productNames.length(); i++) {
+                    JSONObject product = productNames.getJSONObject(i);
+                    barcodeToName.put(product.getString("barcode"), product.getString("Name"));
+                }
+
+                // Create final products array
                 WritableArray products = Arguments.createArray();
+                for (int i = 0; i < eslData.length(); i++) {
+                    JSONObject esl = eslData.getJSONObject(i);
+                    String eslCode = esl.getString("eslCode");
+                    JSONObject pose = esl.getJSONObject("pose");
+                    
+                    WritableMap product = Arguments.createMap();
+                    product.putString("name", barcodeToName.optString(eslCode, "Unknown Product"));
+                    product.putString("eslCode", eslCode);
+                    
+                    WritableMap poseMap = Arguments.createMap();
+                    poseMap.putDouble("x", pose.getDouble("px"));
+                    poseMap.putDouble("y", pose.getDouble("py"));
+                    poseMap.putDouble("z", pose.getDouble("pz"));
+                    product.putMap("pose", poseMap);
+                    
+                    products.pushMap(product);
+                }
+
+                Log.d(TAG, "Successfully matched " + products.size() + " products");
                 mainHandler.post(() -> promise.resolve(products));
             } catch (Exception e) {
                 Log.e(TAG, "Error in getProducts: " + e.getMessage());
