@@ -26,6 +26,10 @@ interface Product {
     x: number;
     y: number;
     z: number;
+    yaw?: number;  // Optional yaw value
+    px?: number;   // Alternative position format
+    py?: number;
+    pz?: number;
   };
 }
 
@@ -45,6 +49,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   const [navigationStatus, setNavigationStatus] = useState<NavigationStatus>(NavigationStatus.IDLE);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [navigationError, setNavigationError] = useState<string>('');
+  const [navmeshCoords, setNavmeshCoords] = useState<any>(null);
 
   // Handle hardware back button (Android)
   useEffect(() => {
@@ -74,16 +79,39 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   const handleProductSelect = async (product: Product) => {
     setSelectedProduct(product);
     setNavigationStatus(NavigationStatus.NAVIGATING);
+    setNavmeshCoords(null); // Reset navmesh coordinates
     
     try {
+      console.log('Starting navigation for product:', product);
+      
+      // Get product coordinates
+      const poseZ = product.pose.pz || product.pose.z;  // Try pz first, then fall back to z
+      
+      // Get navmesh coordinates
+      const coords = {
+        x: product.pose.px || product.pose.x,  // Try px first, then fall back to x
+        y: 0,  // Keep robot at ground level
+        z: poseZ
+      };
+      console.log('Requesting navmesh coordinates for:', coords);
+
+      const navTarget = await NativeModules.DomainUtils.getNavmeshCoord(coords);
+      console.log('Received navmesh target:', navTarget);
+      
+      setNavmeshCoords(navTarget); // Store all debug information
+
+      // Navigate to the calculated position using the navmesh result
       await NativeModules.SlamtecUtils.navigateProduct(
-        product.pose.x,
-        product.pose.y,
-        product.pose.z
+        navTarget.debug.navmeshResult.x,
+        navTarget.debug.navmeshResult.z,
+        navTarget.debug.navmeshResult.yaw
       );
+      console.log('Navigation command sent successfully');
+      
       setNavigationStatus(NavigationStatus.ARRIVED);
     } catch (error) {
       console.error('Navigation error:', error);
+      console.error('Error details:', error.message);
       setNavigationStatus(NavigationStatus.ERROR);
       setNavigationError(error.message || 'Navigation failed. Please try again.');
     }
@@ -171,7 +199,43 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
             <Text style={styles.navigationText}>
               Navigating to:
               {'\n\n'}
-              {selectedProduct ? selectedProduct.name : 'Home Position'}
+              {selectedProduct?.name}
+              {'\n\n'}
+              Original Product Coordinates:
+              {'\n'}
+              X: {selectedProduct ? (selectedProduct.pose.px || selectedProduct.pose.x).toFixed(2) : ''}
+              {'\n'}
+              Z: {selectedProduct ? (selectedProduct.pose.pz || selectedProduct.pose.z).toFixed(2) : ''}
+              {'\n\n'}
+              {navmeshCoords ? (
+                <>
+                  Product Coordinates:
+                  {'\n'}
+                  X: {navmeshCoords.debug?.productCoords?.x.toFixed(2)}
+                  {'\n'}
+                  Z: {navmeshCoords.debug?.productCoords?.z.toFixed(2)}
+                  {'\n\n'}
+                  Transformed Coordinates:
+                  {'\n'}
+                  X: {navmeshCoords.debug?.transformedCoords?.x.toFixed(2)}
+                  {'\n'}
+                  Z: {navmeshCoords.debug?.transformedCoords?.z.toFixed(2)}
+                  {'\n\n'}
+                  Navmesh Result:
+                  {'\n'}
+                  X: {navmeshCoords.debug?.navmeshResult?.x.toFixed(2)}
+                  {'\n'}
+                  Z: {navmeshCoords.debug?.navmeshResult?.z.toFixed(2)}
+                  {'\n'}
+                  Yaw: {navmeshCoords.debug?.navmeshResult?.yaw.toFixed(2)}
+                  {'\n'}
+                  Delta X: {navmeshCoords.debug?.navmeshResult?.deltaX.toFixed(2)}
+                  {'\n'}
+                  Delta Z: {navmeshCoords.debug?.navmeshResult?.deltaZ.toFixed(2)}
+                </>
+              ) : (
+                'Calculating navmesh coordinates...'
+              )}
             </Text>
           </View>
         );
@@ -326,16 +390,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#404040',
-    margin: 20,
-    borderRadius: 10,
     padding: 20,
   },
   navigationText: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: 'rgb(0, 215, 68)',
+    fontSize: 18,
     textAlign: 'center',
+    color: '#333',
+    fontFamily: 'System',
+    lineHeight: 24,
   },
   navigationErrorText: {
     fontSize: 36,

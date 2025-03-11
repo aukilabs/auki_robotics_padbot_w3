@@ -21,8 +21,13 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
     let timeoutId: NodeJS.Timeout;
     let isMounted = true;
 
-    const loadProducts = async () => {
+    const initialize = async () => {
       try {
+        // First authenticate with stored credentials
+        if (isMounted) setLoadingText('Authenticating...');
+        await NativeModules.DomainUtils.authenticate(null, null, null);
+        
+        // Then load products
         if (isMounted) setLoadingText('Loading products...');
         const products = await NativeModules.CactusUtils.getProducts();
         if (isMounted) {
@@ -44,10 +49,10 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
             onFinish(sortedProducts);
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         if (isMounted) {
-          console.error('Error loading products:', error);
-          setLoadingText('Error loading products');
+          console.error('Error during initialization:', error);
+          setLoadingText(error.message || 'Error during initialization');
           // Still finish after error, but with empty products
           setTimeout(() => {
             if (isMounted) {
@@ -65,8 +70,8 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
       }
     };
 
-    // Start loading products
-    loadProducts();
+    // Start initialization
+    initialize();
 
     // Set 30 second timeout
     timeoutId = setTimeout(() => {

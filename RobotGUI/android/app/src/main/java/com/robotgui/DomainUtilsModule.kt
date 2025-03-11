@@ -414,6 +414,107 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
         }
     }
 
+    @ReactMethod
+    fun getNavmeshCoord(coords: ReadableMap, promise: Promise) {
+        scope.launch {
+            try {
+                val domainInfoStr = domainInfo ?: throw Exception("Domain info not found")
+                val domainInfoObj = JSONObject(domainInfoStr)
+                val accessToken = domainInfoObj.getString("access_token")
+                val domainServerObj = domainInfoObj.getJSONObject("domain_server")
+                val domainServer = domainServerObj.getString("url")
+                val domainId = sharedPreferences.getString("domain_id", "") ?: throw Exception("Domain ID not found")
+
+                // Get input coordinates and transform Z
+                val inputX = coords.getDouble("x")
+                var inputZ = coords.getDouble("z")
+                inputZ = if (inputZ > 0) -Math.abs(inputZ) else Math.abs(inputZ)
+
+                val url = URL(ConfigManager.getNestedString("domain.navmesh_endpoint"))
+                val connection = url.openConnection() as HttpURLConnection
+
+                val body = JSONObject().apply {
+                    put("domainId", domainId)
+                    put("domainServerUrl", domainServer)
+                    put("target", JSONObject().apply {
+                        put("x", inputX)
+                        put("y", 0)
+                        put("z", inputZ)
+                    })
+                    put("radius", 0.5)
+                }
+
+                connection.apply {
+                    requestMethod = "POST"
+                    setRequestProperty("Content-Type", "application/json")
+                    setRequestProperty("Authorization", "Bearer $accessToken")
+                    setRequestProperty("Accept", "application/json")
+                    doOutput = true
+                    outputStream.write(body.toString().toByteArray())
+                }
+
+                val responseCode = connection.responseCode
+                if (responseCode !in 200..299) {
+                    val errorStream = connection.errorStream
+                    val errorResponse = errorStream?.bufferedReader()?.readText() ?: "No error details available"
+                    throw Exception("Failed to get navmesh coord: $responseCode\nError: $errorResponse")
+                }
+
+                val response = connection.inputStream.bufferedReader().readText()
+                val responseJson = JSONObject(response)
+                val restrictedCoords = responseJson.getJSONObject("restricted")
+
+                // Get coordinates exactly as in Python
+                val x1 = inputX
+                val z1 = inputZ
+                val x2 = restrictedCoords.getDouble("x")
+                var z2 = restrictedCoords.getDouble("z")
+
+                // Calculate deltas exactly as in Python
+                val deltaX = x1 - x2
+                val deltaZ = z1 - z2
+
+                // Transform z2 exactly as in Python
+                z2 = if (z2 > 0) -Math.abs(z2) else Math.abs(z2)
+
+                // Calculate yaw exactly as in Python
+                var yaw = Math.atan2(deltaZ, deltaX)
+                yaw = Math.round(yaw * 100.0) / 100.0  // Round to 2 decimal places first
+                yaw = if (yaw > 0) -Math.abs(yaw) else Math.abs(yaw)  // Then negate if positive
+
+                val result = Arguments.createMap().apply {
+                    putDouble("x", x2)
+                    putDouble("z", z2)
+                    putDouble("yaw", yaw)
+                    // Add debug information
+                    putMap("debug", Arguments.createMap().apply {
+                        putMap("productCoords", Arguments.createMap().apply {
+                            putDouble("x", coords.getDouble("x"))
+                            putDouble("z", coords.getDouble("z"))
+                        })
+                        putMap("transformedCoords", Arguments.createMap().apply {
+                            putDouble("x", inputX)
+                            putDouble("z", inputZ)
+                        })
+                        putMap("navmeshResult", Arguments.createMap().apply {
+                            putDouble("x", x2)
+                            putDouble("z", z2)
+                            putDouble("yaw", yaw)
+                            putDouble("deltaX", deltaX)
+                            putDouble("deltaZ", deltaZ)
+                        })
+                    })
+                }
+                
+                promise.resolve(result)
+
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in getNavmeshCoord: ${e.message}", e)
+                promise.reject("NAVMESH_ERROR", "Error getting navmesh coord: ${e.message}")
+            }
+        }
+    }
+
     private fun writeInt(out: FileOutputStream, value: Int) {
         out.write(byteArrayOf(
             (value and 0xFF).toByte(),
