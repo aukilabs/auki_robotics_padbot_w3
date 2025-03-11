@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import {
-  SafeAreaView,
+  View,
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
-  NativeModules,
   TextInput,
   Alert,
-  ActivityIndicator,
-  KeyboardAvoidingView,
   ScrollView,
-  Platform,
-  Button,
+  NativeModules,
 } from 'react-native';
 
 interface ConfigScreenProps {
@@ -24,15 +19,6 @@ interface ConnectionStatus {
   message: string;
 }
 
-interface MapSettings {
-  resolution: number;
-  originX: number;
-  originY: number;
-  homeDockX: number;
-  homeDockY: number;
-  homeDockYaw: number;
-}
-
 function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({
     isConnected: false,
@@ -42,18 +28,8 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [domainId, setDomainId] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
   const [hasStoredPassword, setHasStoredPassword] = useState(false);
-  const [mapFiles, setMapFiles] = useState(null);
-  const [yamlContent, setYamlContent] = useState('');
-  const [mapInfo, setMapInfo] = useState(null);
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [isClearing, setIsClearing] = useState(false);
-  const [isReviewing, setIsReviewing] = useState(false);
-  const [error, setError] = useState('');
   const [domainServerUrl, setDomainServerUrl] = useState('');
-  const [downloadedMap, setDownloadedMap] = useState<{imagePath: string, yamlPath: string} | null>(null);
-  const [isCreatingStcm, setIsCreatingStcm] = useState(false);
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -76,7 +52,6 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
   const checkConnection = async () => {
     try {
       const details = await NativeModules.SlamtecUtils.checkConnection();
-      // Use the status message directly without modifying it
       setConnectionStatus({
         isConnected: details.slamApiAvailable,
         message: details.status,
@@ -123,7 +98,7 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
         password;
 
       const result = await NativeModules.DomainUtils.authenticate(email, actualPassword, domainId);
-      console.log('Auth Response:', result);  // Debug log
+      console.log('Auth Response:', result);
       
       // Extract the JSON string from the response message
       const jsonStr = result.message.replace('Domain Server: ', '');
@@ -141,127 +116,12 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
         'Full Response:\n' + JSON.stringify(response, null, 2)
       );
     } catch (error: any) {
-      console.error('Auth Error:', error);  // Debug log
+      console.error('Auth Error:', error);
       Alert.alert(
         'Test Failed',
         'Error: ' + (error.message || 'Unknown error') + '\n\n' +
         'Please check your credentials and try again.'
       );
-    }
-  };
-
-  const handleClearMap = async () => {
-    if (!connectionStatus.isConnected) {
-      Alert.alert('Error', 'Robot is not connected');
-      return;
-    }
-
-    try {
-      setIsClearing(true);
-      await NativeModules.SlamtecUtils.clearMap();
-      Alert.alert('Success', 'Map has been cleared');
-    } catch (error) {
-      Alert.alert('Error', `Failed to clear map: ${error.message}`);
-    } finally {
-      setIsClearing(false);
-    }
-  };
-
-  const handleDownloadMap = async () => {
-    if (!domainServerUrl) {
-      Alert.alert('Error', 'Please test the connection first to get the domain server URL');
-      return;
-    }
-
-    try {
-      setIsDownloading(true);
-      const result = await NativeModules.DomainUtils.getMap('bmp', 20);
-      setDownloadedMap(result);
-      Alert.alert('Success', `Map downloaded to:\n${result.imagePath}\n\nYAML saved to:\n${result.yamlPath}`);
-    } catch (error: any) {
-      const errorDetails = {
-        message: error.message,
-        domainServerUrl,
-        domainId,
-        timestamp: new Date().toISOString(),
-        requestBody: error.requestBody || 'Not available'
-      };
-      console.error('Map download error details:', errorDetails);
-      Alert.alert(
-        'Error', 
-        `Failed to download map: ${error.message}\n\n` +
-        `Debug Information:\n` +
-        `Domain Server URL: "${domainServerUrl}"\n` +
-        `Domain ID: ${domainId}\n` +
-        `Time: ${errorDetails.timestamp}\n\n` +
-        `Request Body:\n${errorDetails.requestBody}`
-      );
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-
-  const handleCreateAndUploadStcm = async () => {
-    if (!downloadedMap) {
-      Alert.alert('Error', 'Please download the map first');
-      return;
-    }
-
-    try {
-      setIsCreatingStcm(true);
-      const result = await NativeModules.SlamtecUtils.createStcmFile({
-        imagePath: downloadedMap.imagePath,
-        yamlPath: downloadedMap.yamlPath,
-        usage: 'explore',
-        layerName: 'auki_domain_map'
-      });
-      
-      Alert.alert('Success', `STCM file created at:\n${result.stcmPath}`);
-    } catch (error: any) {
-      Alert.alert('Error', `Failed to create STCM file: ${error.message}`);
-    } finally {
-      setIsCreatingStcm(false);
-    }
-  };
-
-  const handleViewYaml = async () => {
-    if (!downloadedMap?.yamlPath) {
-      setError('No YAML file available');
-      return;
-    }
-    try {
-      setIsReviewing(true);
-      const result = await NativeModules.SlamtecUtils.readYamlFile(downloadedMap.yamlPath);
-      // Format the YAML content to ensure origin array is properly displayed
-      const formattedContent = result.content.replace(
-        /origin:\s*\[(.*?)\]/,
-        (match, values) => {
-          const numbers = values.split(',').map(v => v.trim());
-          return `origin:\n- ${numbers[0]}\n- ${numbers[1]}\n- ${numbers[2]}`;
-        }
-      );
-      setYamlContent(formattedContent);
-      setError('');
-    } catch (err) {
-      setError(`Failed to read YAML: ${err.message}`);
-    } finally {
-      setIsReviewing(false);
-    }
-  };
-
-  const handleViewMapInfo = async () => {
-    if (!downloadedMap?.imagePath) {
-      setError('No map file available');
-      return;
-    }
-    try {
-      setIsReviewing(true);
-      const result = await NativeModules.SlamtecUtils.getMapImageInfo(downloadedMap.imagePath);
-      setMapInfo(result);
-    } catch (error) {
-      setError('Failed to get map info: ' + error);
-    } finally {
-      setIsReviewing(false);
     }
   };
 
@@ -272,192 +132,84 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
     }
   };
 
-  const handleEmailChange = (email: string) => {
-    setEmail(email);
-    NativeModules.DomainUtils.saveEmail(email);
+  const handleEmailChange = (text: string) => {
+    setEmail(text);
+    NativeModules.DomainUtils.saveEmail(text);
   };
 
-  const handleDomainIdChange = (domainId: string) => {
-    setDomainId(domainId);
-    NativeModules.DomainUtils.saveDomainId(domainId);
-  };
-
-  const handlePasswordChange = (password: string) => {
-    setPassword(password);
-    NativeModules.DomainUtils.savePassword(password);
-  };
-
-  const handleReviewMapFile = async () => {
-    if (!downloadedMap) {
-      Alert.alert('Error', 'No map files available');
-      return;
-    }
-    try {
-      await handleViewMapInfo();
-    } catch (error) {
-      Alert.alert('Error', `Failed to review map file: ${error.message}`);
+  const handlePasswordChange = (text: string) => {
+    setPassword(text);
+    if (!hasStoredPassword) {
+      NativeModules.DomainUtils.savePassword(text);
     }
   };
 
-  const handleReviewYamlFile = async () => {
-    if (!downloadedMap) {
-      Alert.alert('Error', 'No map files available');
-      return;
-    }
-    try {
-      await handleViewYaml();
-    } catch (error) {
-      Alert.alert('Error', `Failed to review YAML file: ${error.message}`);
-    }
+  const handleDomainIdChange = (text: string) => {
+    setDomainId(text);
+    NativeModules.DomainUtils.saveDomainId(text);
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.keyboardAvoid}
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+          <Text style={styles.closeButtonText}>✕</Text>
+        </TouchableOpacity>
+      </View>
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>✕</Text>
-          </TouchableOpacity>
-        </View>
-        <ScrollView 
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View style={styles.content}>
-            <View style={styles.statusContainer}>
-              <Text style={styles.statusText}>Connection Status</Text>
-              <View style={[
-                styles.statusIndicator,
-                { backgroundColor: connectionStatus.isConnected ? '#4CAF50' : '#F44336' }
-              ]} />
-              <Text style={styles.statusMessage}>{connectionStatus.message}</Text>
-            </View>
-
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Authentication</Text>
-              
-              <TextInput
-                style={styles.input}
-                placeholder="Email"
-                value={email}
-                onChangeText={handleEmailChange}
-                autoCapitalize="none"
-                keyboardType="email-address"
-              />
-
-              <TextInput
-                style={styles.input}
-                placeholder="Password"
-                value={password}
-                onChangeText={handlePasswordChange}
-                onFocus={handlePasswordFocus}
-                secureTextEntry={!hasStoredPassword}
-              />
-
-              <TextInput
-                style={styles.input}
-                placeholder="Domain ID"
-                value={domainId}
-                onChangeText={handleDomainIdChange}
-                autoCapitalize="none"
-              />
-
-              <TouchableOpacity 
-                style={[styles.button, styles.testButton]}
-                onPress={handleTestAuth}
-              >
-                <Text style={styles.buttonText}>Test Connection</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Map Operations</Text>
-              
-              <TouchableOpacity 
-                style={[styles.button, isClearing && styles.buttonDisabled]}
-                onPress={handleClearMap}
-                disabled={isClearing}
-              >
-                <Text style={styles.buttonText}>
-                  {isClearing ? 'Clearing...' : 'Clear Map'}
-                </Text>
-              </TouchableOpacity>
-
-              {error ? <Text style={styles.errorText}>{error}</Text> : null}
-            </View>
-
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Map Download</Text>
-              
-              <TouchableOpacity 
-                style={[styles.button, isDownloading && styles.buttonDisabled]}
-                onPress={handleDownloadMap}
-                disabled={isDownloading}
-              >
-                <Text style={styles.buttonText}>
-                  {isDownloading ? 'Downloading...' : 'Download Map'}
-                </Text>
-              </TouchableOpacity>
-
-              {downloadedMap && (
-                <TouchableOpacity 
-                  style={[styles.button, styles.secondaryButton, isCreatingStcm && styles.buttonDisabled]}
-                  onPress={handleCreateAndUploadStcm}
-                  disabled={isCreatingStcm}
-                >
-                  <Text style={styles.buttonText}>
-                    {isCreatingStcm ? 'Creating STCM...' : 'Create & Upload STCM'}
-                  </Text>
-                </TouchableOpacity>
-              )}
-
-              {downloadedMap && (
-                <>
-                  <TouchableOpacity 
-                    style={[styles.button, styles.secondaryButton]}
-                    onPress={handleReviewMapFile}
-                  >
-                    <Text style={styles.buttonText}>Review Map File</Text>
-                  </TouchableOpacity>
-
-                  {mapInfo && (
-                    <View style={styles.infoContainer}>
-                      <Text style={styles.infoTitle}>Map File Information</Text>
-                      <Text style={styles.infoText}>File Path: {mapInfo.path}</Text>
-                      <Text style={styles.infoText}>Size: {mapInfo.size} bytes</Text>
-                      <Text style={styles.infoText}>Last Modified: {mapInfo.lastModified}</Text>
-                    </View>
-                  )}
-
-                  <TouchableOpacity 
-                    style={[styles.button, styles.secondaryButton]}
-                    onPress={handleReviewYamlFile}
-                  >
-                    <Text style={styles.buttonText}>Review YAML File</Text>
-                  </TouchableOpacity>
-
-                  {yamlContent && (
-                    <View style={styles.infoContainer}>
-                      <Text style={styles.infoTitle}>YAML File Information</Text>
-                      <Text style={styles.infoText}>File Path: {downloadedMap.yamlPath}</Text>
-                      <ScrollView style={styles.yamlContainer}>
-                        <Text style={styles.yamlText}>{yamlContent}</Text>
-                      </ScrollView>
-                    </View>
-                  )}
-                </>
-              )}
-
-              {error ? <Text style={styles.errorText}>{error}</Text> : null}
-            </View>
+        <View style={styles.content}>
+          <View style={styles.statusContainer}>
+            <Text style={styles.statusText}>Connection Status</Text>
+            <View style={[
+              styles.statusIndicator,
+              { backgroundColor: connectionStatus.isConnected ? '#4CAF50' : '#F44336' }
+            ]} />
+            <Text style={styles.statusMessage}>{connectionStatus.message}</Text>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Authentication</Text>
+            
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              value={email}
+              onChangeText={handleEmailChange}
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
+
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              value={password}
+              onChangeText={handlePasswordChange}
+              onFocus={handlePasswordFocus}
+              secureTextEntry={!hasStoredPassword}
+            />
+
+            <TextInput
+              style={styles.input}
+              placeholder="Domain ID"
+              value={domainId}
+              onChangeText={handleDomainIdChange}
+              autoCapitalize="none"
+            />
+
+            <TouchableOpacity 
+              style={[styles.button, styles.testButton]}
+              onPress={handleTestAuth}
+            >
+              <Text style={styles.buttonText}>Test Connection</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -478,9 +230,6 @@ const styles = StyleSheet.create({
   closeButtonText: {
     fontSize: 24,
     color: '#000',
-  },
-  keyboardAvoid: {
-    flex: 1,
   },
   scrollView: {
     flex: 1,
@@ -508,145 +257,39 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   statusMessage: {
+    flex: 1,
     fontSize: 14,
-    color: '#666',
   },
-  formContainer: {
-    marginTop: 20,
-    padding: 20,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 8,
-    width: '100%',
+  section: {
+    marginBottom: 30,
   },
-  formTitle: {
-    fontSize: 18,
+  sectionTitle: {
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 15,
   },
   input: {
-    backgroundColor: '#fff',
-    padding: 12,
-    borderRadius: 4,
-    marginBottom: 10,
     borderWidth: 1,
     borderColor: '#ddd',
-  },
-  testButton: {
-    backgroundColor: '#2196F3',
-    padding: 12,
-    borderRadius: 4,
-    alignItems: 'center',
-    marginTop: 10,
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+    fontSize: 16,
   },
   button: {
     backgroundColor: '#2196F3',
-    padding: 12,
-    borderRadius: 4,
+    padding: 15,
+    borderRadius: 5,
     alignItems: 'center',
     marginTop: 10,
   },
-  buttonDisabled: {
-    opacity: 0.6,
+  testButton: {
+    backgroundColor: '#4CAF50',
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  settingsButton: {
-    backgroundColor: '#757575',
-    padding: 8,
-    borderRadius: 4,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  settingsButtonText: {
-    color: '#fff',
-    fontSize: 14,
-  },
-  mapSettings: {
-    marginTop: 15,
-    padding: 10,
-    backgroundColor: '#fff',
-    borderRadius: 4,
-  },
-  settingsLabel: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 5,
-  },
-  settingsInput: {
-    backgroundColor: '#f8f8f8',
-    padding: 8,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    marginBottom: 10,
-  },
-  coordinateInputs: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  halfInput: {
-    width: '48%',
-  },
-  thirdInput: {
-    width: '32%',
-  },
-  section: {
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  errorText: {
-    color: 'red',
-    marginTop: 10,
-  },
-  infoContainer: {
-    marginTop: 15,
-    padding: 15,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 8,
-    width: '100%',
-  },
-  infoTitle: {
+    color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
-  },
-  infoText: {
-    fontSize: 14,
-    marginBottom: 8,
-    color: '#444',
-  },
-  yamlContainer: {
-    maxHeight: 200,
-    marginTop: 10,
-    backgroundColor: '#fff',
-    borderRadius: 4,
-    padding: 10,
-  },
-  yamlText: {
-    fontSize: 14,
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-    color: '#333',
-  },
-  secondaryButton: {
-    backgroundColor: '#757575',
-    padding: 12,
-    borderRadius: 4,
-    alignItems: 'center',
-    marginTop: 10,
   },
 });
 
