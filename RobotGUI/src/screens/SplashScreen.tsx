@@ -27,6 +27,13 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
         const products = await NativeModules.CactusUtils.getProducts();
         if (isMounted) {
           setLoadingText('Products loaded successfully');
+          
+          // Sort products alphabetically
+          const sortedProducts = [...products].sort((a, b) => a.name.localeCompare(b.name));
+          
+          // Add 1 second delay before transition
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
           // Create fade-out animation
           Animated.timing(opacity, {
             toValue: 0,
@@ -34,7 +41,7 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
             easing: Easing.out(Easing.cubic),
             useNativeDriver: true,
           }).start(() => {
-            onFinish(products);
+            onFinish(sortedProducts);
           });
         }
       } catch (error) {
@@ -83,34 +90,37 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
   }, [opacity, onFinish]);
 
   return (
-    <Animated.View style={[styles.container, { opacity }]}>
-      <View style={styles.contentContainer}>
-        <View style={styles.logoContainer}>
-          <Image 
-            source={require('../assets/app_icon.png')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
+    <View style={styles.background}>
+      <Animated.View style={[styles.container, { opacity }]}>
+        <View style={styles.contentContainer}>
+          <View style={styles.logoContainer}>
+            <Image 
+              source={require('../assets/app_icon.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </View>
+          <Text style={styles.welcomeText}>
+            Welcome to{'\n'}Cactus Assistant
+          </Text>
+          <Text style={styles.loadingText}>{loadingText}</Text>
         </View>
-        <Text style={styles.welcomeText}>
-          Welcome to{'\n'}Cactus Assistant
-        </Text>
-        <Text style={styles.loadingText}>{loadingText}</Text>
-      </View>
-    </Animated.View>
+      </Animated.View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    backgroundColor: '#404040',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'transparent',
   },
   contentContainer: {
-    backgroundColor: '#404040',
-    borderRadius: 10,
     padding: 30,
     alignItems: 'center',
     width: '80%',
