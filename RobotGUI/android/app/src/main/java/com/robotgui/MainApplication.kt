@@ -22,6 +22,7 @@ class MainApplication : Application(), ReactApplication {
             val packages = PackageList(this).packages.toMutableList()
             packages.add(SlamtecUtilsPackage())
             packages.add(DomainUtilsPackage())
+            packages.add(CactusPackage())
             return packages
         }
 

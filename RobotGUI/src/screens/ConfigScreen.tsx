@@ -207,6 +207,30 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
               <Text style={styles.buttonText}>Test Connection</Text>
             </TouchableOpacity>
           </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Cactus Authentication</Text>
+            <TouchableOpacity 
+              style={[styles.button, styles.testButton]}
+              onPress={async () => {
+                try {
+                  const result = await NativeModules.CactusUtils.getProducts();
+                  Alert.alert(
+                    'Cactus Auth Test',
+                    'Authentication successful!\n\n' +
+                    'Products retrieved: ' + result.length
+                  );
+                } catch (error: any) {
+                  Alert.alert(
+                    'Cactus Auth Test Failed',
+                    'Error: ' + (error.message || 'Unknown error')
+                  );
+                }
+              }}
+            >
+              <Text style={styles.buttonText}>Test Cactus Auth</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </View>
