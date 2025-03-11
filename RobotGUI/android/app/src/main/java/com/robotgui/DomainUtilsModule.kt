@@ -481,6 +481,15 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 var yaw = Math.atan2(deltaZ, deltaX)
                 yaw = Math.round(yaw * 100.0) / 100.0  // Round to 2 decimal places first
                 yaw = if (yaw > 0) -Math.abs(yaw) else Math.abs(yaw)  // Then negate if positive
+                
+                // Reverse yaw by 180 degrees (π radians)
+                yaw += Math.PI
+                // Normalize yaw to [-π, π]
+                if (yaw > Math.PI) {
+                    yaw -= 2 * Math.PI
+                } else if (yaw < -Math.PI) {
+                    yaw += 2 * Math.PI
+                }
 
                 val result = Arguments.createMap().apply {
                     putDouble("x", x2)

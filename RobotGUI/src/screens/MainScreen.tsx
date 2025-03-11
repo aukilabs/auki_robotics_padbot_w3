@@ -11,6 +11,8 @@ import {
   Alert,
   NativeModules,
   BackHandler,
+  ScrollView,
+  NativeEventEmitter,
 } from 'react-native';
 
 interface MainScreenProps {
@@ -49,7 +51,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   const [navigationStatus, setNavigationStatus] = useState<NavigationStatus>(NavigationStatus.IDLE);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [navigationError, setNavigationError] = useState<string>('');
-  const [navmeshCoords, setNavmeshCoords] = useState<any>(null);
+  const [debugInfo, setDebugInfo] = useState<string[]>([]);  // Add state for debug info
 
   // Handle hardware back button (Android)
   useEffect(() => {
@@ -58,8 +60,17 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       return true;
     });
 
+    // Add event listener for SlamtecDebug events
+    const eventEmitter = new NativeEventEmitter(NativeModules.SlamtecUtils);
+    const subscription = eventEmitter.addListener('SlamtecDebug', (event) => {
+      if (event.type === 'debug') {
+        setDebugInfo(prev => [...prev, event.message]);
+      }
+    });
+
     return () => {
       backHandler.remove();
+      subscription.remove();
     };
   }, []);
 
@@ -77,43 +88,74 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   }, [searchText, products]);
 
   const handleProductSelect = async (product: Product) => {
+    setDebugInfo([`Starting navigation to: ${product.name}`]);
     setSelectedProduct(product);
     setNavigationStatus(NavigationStatus.NAVIGATING);
-    setNavmeshCoords(null); // Reset navmesh coordinates
     
     try {
-      console.log('Starting navigation for product:', product);
-      
       // Get product coordinates
       const poseZ = product.pose.pz || product.pose.z;  // Try pz first, then fall back to z
-      
-      // Get navmesh coordinates
       const coords = {
         x: product.pose.px || product.pose.x,  // Try px first, then fall back to x
         y: 0,  // Keep robot at ground level
         z: poseZ
       };
-      console.log('Requesting navmesh coordinates for:', coords);
 
+      setDebugInfo(prev => [...prev, `Requesting navmesh coordinates for: ${JSON.stringify(coords)}`]);
       const navTarget = await NativeModules.DomainUtils.getNavmeshCoord(coords);
-      console.log('Received navmesh target:', navTarget);
       
-      setNavmeshCoords(navTarget); // Store all debug information
+      // Log the full structure of navTarget
+      setDebugInfo(prev => [...prev, `Received navTarget: ${JSON.stringify(navTarget)}`]);
 
-      // Navigate to the calculated position using the navmesh result
-      await NativeModules.SlamtecUtils.navigateProduct(
-        navTarget.debug.navmeshResult.x,
-        navTarget.debug.navmeshResult.z,
-        navTarget.debug.navmeshResult.yaw
-      );
-      console.log('Navigation command sent successfully');
+      // Detailed validation
+      if (!navTarget) {
+        throw new Error('No navTarget received');
+      }
       
-      setNavigationStatus(NavigationStatus.ARRIVED);
-    } catch (error) {
-      console.error('Navigation error:', error);
-      console.error('Error details:', error.message);
+      // Check if we're getting the expected structure or direct coordinates
+      const targetCoords = navTarget.transformedCoords || navTarget;
+      
+      if (typeof targetCoords.x === 'undefined' || typeof targetCoords.z === 'undefined') {
+        throw new Error(`Invalid coordinates: ${JSON.stringify(targetCoords)}`);
+      }
+
+      setDebugInfo(prev => [...prev, `Raw targetCoords: ${JSON.stringify(targetCoords, null, 2)}`]);
+      const navigationParams = {
+        x: targetCoords.x,
+        y: targetCoords.z,  // z is passed as y
+        yaw: targetCoords.yaw || -Math.PI
+      };
+      setDebugInfo(prev => [...prev, `Calling navigateProduct with exact params:`]);
+      setDebugInfo(prev => [...prev, JSON.stringify(navigationParams, null, 2)]);
+      try {
+        setDebugInfo(prev => [...prev, 'Starting navigation command...']);
+        await NativeModules.SlamtecUtils.navigateProduct(
+          targetCoords.x,
+          targetCoords.z,  // Pass z as y since the API expects (x,y) plane movement
+          targetCoords.yaw || -Math.PI
+        );
+        
+        setDebugInfo(prev => [...prev, 'Navigation command completed']);
+        setDebugInfo(prev => [...prev, 'Setting navigation status to ARRIVED']);
+        setNavigationStatus(NavigationStatus.ARRIVED);
+      } catch (error: any) {
+        setDebugInfo(prev => [...prev, 'Navigation command failed']);
+        const errorMsg = error.message || 'Navigation failed. Please try again.';
+        setDebugInfo(prev => [
+          ...prev, 
+          `Navigation API Error:`,
+          `Code: ${error.code || 'unknown'}`,
+          `Message: ${errorMsg}`,
+          `Raw error: ${JSON.stringify(error)}`
+        ]);
+        setNavigationStatus(NavigationStatus.ERROR);
+        setNavigationError(errorMsg);
+      }
+    } catch (error: any) {
+      const errorMsg = error.message || 'Navigation failed. Please try again.';
+      setDebugInfo(prev => [...prev, `Error: ${errorMsg}`]);
       setNavigationStatus(NavigationStatus.ERROR);
-      setNavigationError(error.message || 'Navigation failed. Please try again.');
+      setNavigationError(errorMsg);
     }
   };
 
@@ -124,7 +166,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     try {
       await NativeModules.SlamtecUtils.goHome();
       setNavigationStatus(NavigationStatus.IDLE);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Navigation error:', error);
       setNavigationStatus(NavigationStatus.ERROR);
       setNavigationError(error.message || 'Navigation to home failed. Please try again.');
@@ -196,69 +238,36 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       case NavigationStatus.NAVIGATING:
         return (
           <View style={styles.navigationContainer}>
-            <Text style={styles.navigationText}>
-              Navigating to:
-              {'\n\n'}
-              {selectedProduct?.name}
-              {'\n\n'}
-              Original Product Coordinates:
-              {'\n'}
-              X: {selectedProduct ? (selectedProduct.pose.px || selectedProduct.pose.x).toFixed(2) : ''}
-              {'\n'}
-              Z: {selectedProduct ? (selectedProduct.pose.pz || selectedProduct.pose.z).toFixed(2) : ''}
-              {'\n\n'}
-              {navmeshCoords ? (
-                <>
-                  Product Coordinates:
-                  {'\n'}
-                  X: {navmeshCoords.debug?.productCoords?.x.toFixed(2)}
-                  {'\n'}
-                  Z: {navmeshCoords.debug?.productCoords?.z.toFixed(2)}
-                  {'\n\n'}
-                  Transformed Coordinates:
-                  {'\n'}
-                  X: {navmeshCoords.debug?.transformedCoords?.x.toFixed(2)}
-                  {'\n'}
-                  Z: {navmeshCoords.debug?.transformedCoords?.z.toFixed(2)}
-                  {'\n\n'}
-                  Navmesh Result:
-                  {'\n'}
-                  X: {navmeshCoords.debug?.navmeshResult?.x.toFixed(2)}
-                  {'\n'}
-                  Z: {navmeshCoords.debug?.navmeshResult?.z.toFixed(2)}
-                  {'\n'}
-                  Yaw: {navmeshCoords.debug?.navmeshResult?.yaw.toFixed(2)}
-                  {'\n'}
-                  Delta X: {navmeshCoords.debug?.navmeshResult?.deltaX.toFixed(2)}
-                  {'\n'}
-                  Delta Z: {navmeshCoords.debug?.navmeshResult?.deltaZ.toFixed(2)}
-                </>
-              ) : (
-                'Calculating navmesh coordinates...'
-              )}
-            </Text>
+            <View style={styles.navigationDialog}>
+              <Text style={styles.navigationTitle}>Navigating to:</Text>
+              <Text style={styles.navigationProductName}>{selectedProduct?.name}</Text>
+              <ActivityIndicator size="large" color="rgb(0, 215, 68)" style={styles.navigationSpinner} />
+            </View>
           </View>
         );
         
       case NavigationStatus.ARRIVED:
         return (
-          <View style={styles.arrivalContainer}>
-            <Text style={styles.arrivalTitle}>We have arrived!</Text>
-            
-            <View style={styles.arrivalButtonContainer}>
-              <TouchableOpacity 
-                style={styles.arrivalBackButton}
-                onPress={() => setNavigationStatus(NavigationStatus.IDLE)}
-              >
-                <Text style={styles.arrivalBackButtonText}>Back to List</Text>
-              </TouchableOpacity>
+          <View style={styles.navigationContainer}>
+            <View style={styles.navigationDialog}>
+              <Text style={styles.navigationTitle}>We have arrived!</Text>
+              <Text style={styles.navigationProductName}>{selectedProduct?.name}</Text>
               
-              <TouchableOpacity 
-                style={styles.arrivalHomeButton}
-                onPress={handleGoHome}
-              >
-                <Text style={styles.arrivalHomeButtonText}>Go Home</Text>
-              </TouchableOpacity>
+              <View style={styles.navigationButtonContainer}>
+                <TouchableOpacity 
+                  style={styles.navigationButton}
+                  onPress={() => setNavigationStatus(NavigationStatus.IDLE)}
+                >
+                  <Text style={styles.navigationButtonText}>Back to List</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  style={[styles.navigationButton, styles.navigationHomeButton]}
+                  onPress={handleGoHome}
+                >
+                  <Text style={[styles.navigationButtonText, styles.navigationHomeButtonText]}>Go Home</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         );
@@ -266,18 +275,17 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       case NavigationStatus.ERROR:
         return (
           <View style={styles.navigationContainer}>
-            <Text style={styles.navigationErrorText}>
-              Navigation error:
-              {'\n\n'}
-              {navigationError}
-            </Text>
-            
-            <TouchableOpacity 
-              style={styles.errorBackButton}
-              onPress={() => setNavigationStatus(NavigationStatus.IDLE)}
-            >
-              <Text style={styles.errorBackButtonText}>Back to List</Text>
-            </TouchableOpacity>
+            <View style={styles.navigationDialog}>
+              <Text style={styles.navigationTitle}>Navigation Error</Text>
+              <Text style={styles.navigationErrorText}>{navigationError}</Text>
+              
+              <TouchableOpacity 
+                style={styles.navigationButton}
+                onPress={() => setNavigationStatus(NavigationStatus.IDLE)}
+              >
+                <Text style={styles.navigationButtonText}>Back to List</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         );
     }
@@ -387,76 +395,88 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   navigationContainer: {
-    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
-  navigationText: {
-    fontSize: 18,
-    textAlign: 'center',
-    color: '#333',
-    fontFamily: 'System',
-    lineHeight: 24,
-  },
-  navigationErrorText: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#F44336',
-    textAlign: 'center',
-    marginBottom: 30,
-  },
-  errorBackButton: {
+  navigationDialog: {
     backgroundColor: '#404040',
-    padding: 20,
-    borderRadius: 5,
+    borderRadius: 10,
+    padding: 30,
+    width: '80%',
+    maxWidth: 500,
     alignItems: 'center',
-    width: '50%',
   },
-  errorBackButtonText: {
-    color: 'white',
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  arrivalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  arrivalTitle: {
+  navigationTitle: {
     fontSize: 32,
     fontWeight: 'bold',
     color: 'rgb(0, 215, 68)',
-    marginBottom: 40,
+    marginBottom: 20,
+    textAlign: 'center',
   },
-  arrivalButtonContainer: {
-    width: '25%',
-  },
-  arrivalBackButton: {
-    backgroundColor: '#404040',
-    padding: 20,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginBottom: 120,
-    minHeight: 80,
-  },
-  arrivalBackButtonText: {
+  navigationProductName: {
+    fontSize: 28,
     color: 'white',
-    fontSize: 24,
-    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 30,
   },
-  arrivalHomeButton: {
-    backgroundColor: 'rgb(0, 215, 68)',
-    padding: 20,
+  navigationSpinner: {
+    marginTop: 20,
+  },
+  navigationErrorText: {
+    fontSize: 24,
+    color: '#F44336',
+    textAlign: 'center',
+    marginVertical: 20,
+  },
+  navigationButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 20,
+  },
+  navigationButton: {
+    backgroundColor: '#666',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
     borderRadius: 5,
-    alignItems: 'center',
-    minHeight: 80,
+    minWidth: 150,
+    marginHorizontal: 10,
   },
-  arrivalHomeButtonText: {
-    color: '#404040',
-    fontSize: 24,
+  navigationButtonText: {
+    color: 'white',
+    fontSize: 20,
     fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  navigationHomeButton: {
+    backgroundColor: 'rgb(0, 215, 68)',
+  },
+  navigationHomeButtonText: {
+    color: '#404040',
+  },
+  debugContainer: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#303030',
+    borderRadius: 5,
+    width: '100%',
+    height: 200,
+  },
+  debugScrollView: {
+    height: '100%',
+  },
+  debugText: {
+    color: '#00ff00',
+    fontFamily: 'monospace',
+    fontSize: 12,
+    marginVertical: 2,
   },
 });
 

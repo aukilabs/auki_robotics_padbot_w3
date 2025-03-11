@@ -14,6 +14,7 @@ import android.os.Looper;
 import java.util.List;
 import java.util.Map;
 import android.graphics.BitmapFactory;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
     private static final String TAG = "SlamtecUtilsModule";
