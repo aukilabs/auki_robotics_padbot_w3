@@ -298,7 +298,9 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           <View style={styles.navigationContainer}>
             <View style={styles.navigationDialog}>
               <Text style={styles.navigationTitle}>Navigating to:</Text>
-              <Text style={styles.navigationProductName}>{selectedProduct?.name}</Text>
+              <Text style={styles.navigationProductName}>
+                {selectedProduct ? selectedProduct.name : "Home"}
+              </Text>
               <ActivityIndicator size="large" color="rgb(0, 215, 68)" style={styles.navigationSpinner} />
             </View>
           </View>
