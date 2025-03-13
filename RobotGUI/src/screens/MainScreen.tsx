@@ -73,36 +73,57 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     };
   }, []);
 
-  // Add timer to navigate to point 1
+  // Add timer to navigate through all patrol points
   useEffect(() => {
-    const timer = setTimeout(async () => {
-      await LogUtils.writeDebugToFile('Starting automated navigation to Point 1');
-      try {
-        setNavigationStatus(NavigationStatus.NAVIGATING);
-        setSelectedProduct({
-          name: "Patrol Point 1",
-          eslCode: "PP1",
-          pose: {
-            x: -1.14,
-            y: 2.21,
-            z: 0,
-            yaw: 3.14
-          }
-        });
-        
-        await NativeModules.SlamtecUtils.navigate(
-          -1.14,  // x
-          2.21,   // y
-          3.14    // yaw
-        );
-        await LogUtils.writeDebugToFile('Automated navigation to Point 1 completed');
-        setNavigationStatus(NavigationStatus.ARRIVED);
-      } catch (error: any) {
-        await LogUtils.writeDebugToFile(`Error during automated navigation: ${error.message}`);
-        setNavigationStatus(NavigationStatus.ERROR);
-        setNavigationError(error.message || 'Navigation failed');
+    const patrolPoints = [
+      { name: "Patrol Point 1", x: -1.14, y: 2.21, yaw: 3.14 },
+      { name: "Patrol Point 2", x: -6.11, y: 2.35, yaw: -1.57 },
+      { name: "Patrol Point 3", x: -6.08, y: 0.05, yaw: 0 },
+      { name: "Patrol Point 4", x: -1.03, y: 0.01, yaw: 1.57 }
+    ];
+
+    let currentPointIndex = 0;
+
+    const navigateToNextPoint = async () => {
+      if (currentPointIndex < patrolPoints.length) {
+        const point = patrolPoints[currentPointIndex];
+        await LogUtils.writeDebugToFile(`Starting navigation to ${point.name}`);
+        try {
+          setNavigationStatus(NavigationStatus.NAVIGATING);
+          setSelectedProduct({
+            name: point.name,
+            eslCode: `PP${currentPointIndex + 1}`,
+            pose: {
+              x: point.x,
+              y: point.y,
+              z: 0,
+              yaw: point.yaw
+            }
+          });
+          
+          await NativeModules.SlamtecUtils.navigate(
+            point.x,
+            point.y,
+            point.yaw
+          );
+          await LogUtils.writeDebugToFile(`Navigation to ${point.name} completed`);
+          setNavigationStatus(NavigationStatus.ARRIVED);
+          currentPointIndex++;
+          
+          // Schedule next point navigation after 1 second
+          setTimeout(navigateToNextPoint, 1000);
+        } catch (error: any) {
+          await LogUtils.writeDebugToFile(`Error during navigation to ${point.name}: ${error.message}`);
+          setNavigationStatus(NavigationStatus.ERROR);
+          setNavigationError(error.message || 'Navigation failed');
+        }
+      } else {
+        // All points visited, return home
+        await handleGoHome();
       }
-    }, 5000);
+    };
+
+    const timer = setTimeout(navigateToNextPoint, 5000);
 
     return () => clearTimeout(timer);
   }, []);

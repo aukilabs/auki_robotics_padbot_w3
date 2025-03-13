@@ -17,6 +17,7 @@ interface SplashScreenProps {
 const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
   const [opacity] = useState(new Animated.Value(1));
   const [loadingText, setLoadingText] = useState('Initializing...');
+  const [productsLoaded, setProductsLoaded] = useState(false);
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -44,6 +45,7 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
         const products = await NativeModules.CactusUtils.getProducts();
         const sortedProducts = [...products].sort((a, b) => a.name.localeCompare(b.name));
         await LogUtils.writeDebugToFile(`Loaded ${products.length} products`);
+        setProductsLoaded(true);
         
         // Then check POIs against config
         if (isMounted) {
@@ -163,7 +165,7 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
 
     // Set 30 second timeout
     timeoutId = setTimeout(() => {
-      if (isMounted) {
+      if (isMounted && !productsLoaded) {
         LogUtils.writeDebugToFile('Loading timeout reached');
         setLoadingText('Loading timeout reached');
         Animated.timing(opacity, {
@@ -181,7 +183,7 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
       isMounted = false;
       clearTimeout(timeoutId);
     };
-  }, [opacity, onFinish]);
+  }, [opacity, onFinish, productsLoaded]);
 
   return (
     <View style={styles.background}>
