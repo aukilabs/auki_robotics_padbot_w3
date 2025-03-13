@@ -58,6 +58,9 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   // Store patrol state in a ref to access in useEffect cleanup
   const isPatrollingRef = useRef(true);
   
+  // Add ref to track if navigation has been cancelled
+  const navigationCancelledRef = useRef(false);
+  
   // Update ref when state changes
   useEffect(() => {
     isPatrollingRef.current = isPatrolling;
@@ -94,6 +97,9 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     setIsPatrolling(true);
     isPatrollingRef.current = true;
     
+    // Reset navigation cancelled flag
+    navigationCancelledRef.current = false;
+    
     const patrolPoints = [
       { name: "Patrol Point 1", x: -1.14, y: 2.21, yaw: 3.14 },
       { name: "Patrol Point 2", x: -6.11, y: 2.35, yaw: -1.57 },
@@ -106,7 +112,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
 
     const navigateToNextPoint = async () => {
       // Don't continue if patrol has been cancelled or component unmounted
-      if (!isPatrollingRef.current || !isMounted) {
+      if (!isPatrollingRef.current || !isMounted || navigationCancelledRef.current) {
         await LogUtils.writeDebugToFile('Patrol cancelled or component unmounted, stopping sequence');
         return;
       }
@@ -116,7 +122,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         await LogUtils.writeDebugToFile(`Starting navigation to ${point.name}`);
         try {
           // Don't update state if component unmounted or patrol cancelled
-          if (!isPatrollingRef.current || !isMounted) return;
+          if (!isPatrollingRef.current || !isMounted || navigationCancelledRef.current) return;
           
           setNavigationStatus(NavigationStatus.NAVIGATING);
           setSelectedProduct({
@@ -137,7 +143,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           );
           
           // Don't update state if component unmounted or patrol cancelled
-          if (!isPatrollingRef.current || !isMounted) return;
+          if (!isPatrollingRef.current || !isMounted || navigationCancelledRef.current) return;
           
           await LogUtils.writeDebugToFile(`Navigation to ${point.name} completed`);
           setNavigationStatus(NavigationStatus.ARRIVED);
@@ -148,7 +154,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           navigateToNextPoint();
         } catch (error: any) {
           // Don't update state if component unmounted or patrol cancelled
-          if (!isPatrollingRef.current || !isMounted) return;
+          if (!isPatrollingRef.current || !isMounted || navigationCancelledRef.current) return;
           
           await LogUtils.writeDebugToFile(`Error during navigation to ${point.name}: ${error.message}`);
           setNavigationStatus(NavigationStatus.ERROR);
@@ -156,7 +162,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         }
       } else {
         // All points visited, return home
-        if (isPatrollingRef.current && isMounted) {
+        if (isPatrollingRef.current && isMounted && !navigationCancelledRef.current) {
           await LogUtils.writeDebugToFile('All patrol points visited, returning home');
           await handleGoHome();
         }
@@ -166,11 +172,11 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     // Start patrolling after 5 seconds
     const startupTimer = setTimeout(() => {
       LogUtils.writeDebugToFile(`Starting patrol sequence, isPatrolling: ${isPatrollingRef.current}, isMounted: ${isMounted}`);
-      if (isPatrollingRef.current && isMounted) {
+      if (isPatrollingRef.current && isMounted && !navigationCancelledRef.current) {
         LogUtils.writeDebugToFile('Patrol conditions met, initiating navigation sequence');
         navigateToNextPoint();
       } else {
-        LogUtils.writeDebugToFile(`Patrol sequence not started: isPatrolling=${isPatrollingRef.current}, isMounted=${isMounted}`);
+        LogUtils.writeDebugToFile(`Patrol sequence not started: isPatrolling=${isPatrollingRef.current}, isMounted=${isMounted}, navigationCancelled=${navigationCancelledRef.current}`);
       }
     }, 5000);
 
@@ -198,6 +204,9 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     // Cancel any ongoing patrol
     setIsPatrolling(false);
     await LogUtils.writeDebugToFile('Patrol sequence cancelled due to product selection');
+    
+    // Reset navigation cancelled flag
+    navigationCancelledRef.current = false;
     
     await LogUtils.writeDebugToFile(`Starting navigation to: ${product.name}`);
     setSelectedProduct(product);
@@ -246,25 +255,37 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           targetCoords.yaw || -Math.PI
         );
         
+        // Check if navigation was cancelled during the process
+        if (navigationCancelledRef.current) {
+          await LogUtils.writeDebugToFile('Navigation was cancelled during product navigation, not updating status');
+          return;
+        }
+        
         await LogUtils.writeDebugToFile('Navigation command completed');
         await LogUtils.writeDebugToFile('Setting navigation status to ARRIVED');
         setNavigationStatus(NavigationStatus.ARRIVED);
       } catch (error: any) {
-        await LogUtils.writeDebugToFile('Navigation command failed');
+        // Only update error state if navigation wasn't cancelled
+        if (!navigationCancelledRef.current) {
+          await LogUtils.writeDebugToFile('Navigation command failed');
+          const errorMsg = error.message || 'Navigation failed. Please try again.';
+          await LogUtils.writeDebugToFile(`Navigation API Error: ${JSON.stringify({
+            code: error.code || 'unknown',
+            message: errorMsg,
+            raw: error
+          }, null, 2)}`);
+          setNavigationStatus(NavigationStatus.ERROR);
+          setNavigationError(errorMsg);
+        }
+      }
+    } catch (error: any) {
+      // Only update error state if navigation wasn't cancelled
+      if (!navigationCancelledRef.current) {
         const errorMsg = error.message || 'Navigation failed. Please try again.';
-        await LogUtils.writeDebugToFile(`Navigation API Error: ${JSON.stringify({
-          code: error.code || 'unknown',
-          message: errorMsg,
-          raw: error
-        }, null, 2)}`);
+        await LogUtils.writeDebugToFile(`Error: ${errorMsg}`);
         setNavigationStatus(NavigationStatus.ERROR);
         setNavigationError(errorMsg);
       }
-    } catch (error: any) {
-      const errorMsg = error.message || 'Navigation failed. Please try again.';
-      await LogUtils.writeDebugToFile(`Error: ${errorMsg}`);
-      setNavigationStatus(NavigationStatus.ERROR);
-      setNavigationError(errorMsg);
     }
   };
 
@@ -273,18 +294,27 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     setIsPatrolling(false);
     await LogUtils.writeDebugToFile('Patrol sequence cancelled due to manual Go Home');
     
+    // Reset navigation cancelled flag
+    navigationCancelledRef.current = false;
+    
     setNavigationStatus(NavigationStatus.NAVIGATING);
     setSelectedProduct(null);
     
     try {
       await NativeModules.SlamtecUtils.goHome();
       
-      setNavigationStatus(NavigationStatus.IDLE);
+      // Only update state if navigation wasn't cancelled
+      if (!navigationCancelledRef.current) {
+        setNavigationStatus(NavigationStatus.IDLE);
+      }
     } catch (error: any) {
-      const errorMsg = error.message || 'Navigation to home failed. Please try again.';
-      await LogUtils.writeDebugToFile(`Go Home error: ${errorMsg}`);
-      setNavigationStatus(NavigationStatus.ERROR);
-      setNavigationError(errorMsg);
+      // Only update error state if navigation wasn't cancelled
+      if (!navigationCancelledRef.current) {
+        const errorMsg = error.message || 'Navigation to home failed. Please try again.';
+        await LogUtils.writeDebugToFile(`Go Home error: ${errorMsg}`);
+        setNavigationStatus(NavigationStatus.ERROR);
+        setNavigationError(errorMsg);
+      }
     }
   };
 
@@ -311,6 +341,9 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
 
   const handleReturnToList = async () => {
     try {
+      // Mark navigation as cancelled
+      navigationCancelledRef.current = true;
+      
       // Cancel patrol sequence
       setIsPatrolling(false);
       await LogUtils.writeDebugToFile('Patrol sequence cancelled');
@@ -324,6 +357,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       setNavigationStatus(NavigationStatus.IDLE);
     } catch (error) {
       // Even if stopping fails, still cancel patrol and return to list
+      navigationCancelledRef.current = true;
       setIsPatrolling(false);
       setSelectedProduct(null);
       setNavigationStatus(NavigationStatus.IDLE);
