@@ -31,7 +31,8 @@ object ConfigManager {
     }
 
     fun getDoubleArray(key: String): DoubleArray? {
-        return (config[key] as? List<*>)?.mapNotNull { 
+        val value = getNestedValue(key)
+        return (value as? List<*>)?.mapNotNull { 
             (it as? Number)?.toDouble() 
         }?.toDoubleArray()
     }

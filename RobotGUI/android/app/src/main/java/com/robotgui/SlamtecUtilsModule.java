@@ -270,6 +270,68 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
         }
     }
 
+    private void createPOI(double x, double y, double yaw, String displayName, Promise promise) {
+        try {
+            String url = BASE_URL + "/api/core/artifact/v1/pois";
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            
+            JSONObject body = new JSONObject()
+                .put("id", java.util.UUID.randomUUID().toString())
+                .put("pose", new JSONObject()
+                    .put("x", x)
+                    .put("y", y)
+                    .put("yaw", yaw))
+                .put("metadata", new JSONObject()
+                    .put("display_name", displayName)
+                    .put("type", "")
+                    .put("group", ""));
+
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+            
+            try (java.io.OutputStream os = connection.getOutputStream()) {
+                byte[] input = body.toString().getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            if (connection.getResponseCode() >= 200 && connection.getResponseCode() <= 204) {
+                Log.d(TAG, "Successfully created POI: " + displayName);
+            } else {
+                Log.e(TAG, "Failed to create POI: " + displayName + ", code: " + connection.getResponseCode());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating POI: " + e.getMessage());
+        }
+    }
+
+    private void initializeDefaultPOIs(Promise promise) {
+        try {
+            Log.d(TAG, "Starting POI initialization...");
+            // Initialize all patrol points from config
+            for (int i = 1; i <= 4; i++) {
+                String pointKey = "patrol.point" + i;
+                double[] poiData = configManager.getDoubleArray(pointKey);
+                if (poiData != null && poiData.length >= 3) {
+                    Log.d(TAG, String.format("Creating POI %d at [%.2f, %.2f, %.2f]", i, poiData[0], poiData[1], poiData[2]));
+                    createPOI(
+                        poiData[0],  // x
+                        poiData[1],  // y
+                        poiData[2],  // yaw
+                        "Patrol Point " + i,
+                        promise
+                    );
+                } else {
+                    Log.d(TAG, "No valid POI data for point " + i);
+                }
+            }
+            Log.d(TAG, "POI initialization complete");
+        } catch (Exception e) {
+            Log.e(TAG, "Error initializing POIs: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     @ReactMethod
     public void getPOIs(Promise promise) {
         executorService.execute(() -> {
@@ -288,19 +350,48 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
                             result.append(line);
                         }
                     }
+                    
+                    String response = result.toString();
+                    Log.d(TAG, "Raw POIs response: " + response);
+                    
                     mainHandler.post(() -> {
                         try {
-                            promise.resolve(convertJsonToWritableMap(new JSONObject(result.toString())));
+                            JSONArray jsonArray = new JSONArray(response);
+                            Log.d(TAG, "Successfully parsed as JSONArray with " + jsonArray.length() + " items");
+                            
+                            WritableArray poisArray = Arguments.createArray();
+                            if (jsonArray.length() == 0) {
+                                Log.d(TAG, "No POIs found, initializing default POIs");
+                                
+                                // Initialize default POIs
+                                initializeDefaultPOIs(promise);
+                                
+                                // Return empty array for now, next getPOIs call will return the new POIs
+                                promise.resolve(poisArray);
+                            } else {
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    JSONObject poi = jsonArray.getJSONObject(i);
+                                    poisArray.pushMap(convertJsonToWritableMap(poi));
+                                    Log.d(TAG, "Added POI: " + poi.toString());
+                                }
+                                promise.resolve(poisArray);
+                            }
                         } catch (Exception e) {
-                            promise.reject("JSON_ERROR", "Error converting JSON: " + e.getMessage());
+                            String errorMsg = "Failed to parse response.\nRaw response: " + response + 
+                                            "\nParse error: " + e.getMessage();
+                            Log.e(TAG, errorMsg);
+                            promise.reject("JSON_ERROR", errorMsg);
                         }
                     });
                 } else {
-                    final int code = connection.getResponseCode();
-                    mainHandler.post(() -> promise.reject("POI_ERROR", "Failed to get POIs: " + code));
+                    String errorMsg = "Failed to get POIs: " + connection.getResponseCode();
+                    Log.e(TAG, errorMsg);
+                    mainHandler.post(() -> promise.reject("POI_ERROR", errorMsg));
                 }
             } catch (Exception e) {
-                mainHandler.post(() -> promise.reject("POI_ERROR", "Error getting POIs: " + e.getMessage()));
+                String errorMsg = "Error getting POIs: " + e.getMessage();
+                Log.e(TAG, errorMsg);
+                mainHandler.post(() -> promise.reject("POI_ERROR", errorMsg));
             }
         });
     }
@@ -900,5 +991,33 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             promise.reject("IMAGE_ERROR", "Failed to get image info: " + e.getMessage());
         }
+    }
+
+    @ReactMethod
+    public void clearAndInitializePOIs(Promise promise) {
+        executorService.execute(() -> {
+            try {
+                Log.d(TAG, "Starting POI reset process...");
+                // First clear existing POIs
+                String url = BASE_URL + "/api/core/artifact/v1/pois";
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                connection.setRequestMethod("DELETE");
+                
+                if (connection.getResponseCode() >= 200 && connection.getResponseCode() <= 204) {
+                    Log.d(TAG, "Successfully cleared existing POIs");
+                    // Initialize new POIs
+                    initializeDefaultPOIs(promise);
+                    mainHandler.post(() -> promise.resolve(true));
+                } else {
+                    String errorMsg = "Failed to clear POIs: " + connection.getResponseCode();
+                    Log.e(TAG, errorMsg);
+                    mainHandler.post(() -> promise.reject("POI_ERROR", errorMsg));
+                }
+            } catch (Exception e) {
+                String errorMsg = "Error resetting POIs: " + e.getMessage();
+                Log.e(TAG, errorMsg);
+                mainHandler.post(() -> promise.reject("POI_ERROR", errorMsg));
+            }
+        });
     }
 } 

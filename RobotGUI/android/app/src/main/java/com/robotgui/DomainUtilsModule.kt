@@ -224,6 +224,24 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             putString("slam_ip", ConfigManager.getString("slam_ip"))
             putInt("slam_port", ConfigManager.getInt("slam_port"))
             putInt("timeout_ms", ConfigManager.getInt("timeout_ms"))
+            
+            // Add patrol points
+            val patrolPoints = Arguments.createArray()
+            for (i in 1..4) {
+                val pointKey = "patrol.point$i"
+                ConfigManager.getDoubleArray(pointKey)?.let { coords ->
+                    if (coords.size >= 3) {
+                        val point = Arguments.createMap().apply {
+                            putString("name", "Patrol Point $i")
+                            putDouble("x", coords[0])
+                            putDouble("y", coords[1])
+                            putDouble("yaw", coords[2])
+                        }
+                        patrolPoints.pushMap(point)
+                    }
+                }
+            }
+            putArray("patrol_points", patrolPoints)
         }
         promise.resolve(config)
     }

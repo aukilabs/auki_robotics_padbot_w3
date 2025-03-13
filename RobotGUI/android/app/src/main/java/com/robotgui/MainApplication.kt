@@ -23,6 +23,7 @@ class MainApplication : Application(), ReactApplication {
             packages.add(SlamtecUtilsPackage())
             packages.add(DomainUtilsPackage())
             packages.add(CactusPackage())
+            packages.add(FileUtilsPackage())
             return packages
         }
 

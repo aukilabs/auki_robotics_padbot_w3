@@ -11,9 +11,9 @@ import {
   Alert,
   NativeModules,
   BackHandler,
-  ScrollView,
   NativeEventEmitter,
 } from 'react-native';
+import { LogUtils } from '../utils/logging';
 
 interface MainScreenProps {
   onClose: () => void;
@@ -51,7 +51,6 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   const [navigationStatus, setNavigationStatus] = useState<NavigationStatus>(NavigationStatus.IDLE);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [navigationError, setNavigationError] = useState<string>('');
-  const [debugInfo, setDebugInfo] = useState<string[]>([]);  // Add state for debug info
 
   // Handle hardware back button (Android)
   useEffect(() => {
@@ -64,7 +63,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     const eventEmitter = new NativeEventEmitter(NativeModules.SlamtecUtils);
     const subscription = eventEmitter.addListener('SlamtecDebug', (event) => {
       if (event.type === 'debug') {
-        setDebugInfo(prev => [...prev, event.message]);
+        LogUtils.writeDebugToFile(event.message);
       }
     });
 
@@ -72,6 +71,40 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       backHandler.remove();
       subscription.remove();
     };
+  }, []);
+
+  // Add timer to navigate to point 1
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      await LogUtils.writeDebugToFile('Starting automated navigation to Point 1');
+      try {
+        setNavigationStatus(NavigationStatus.NAVIGATING);
+        setSelectedProduct({
+          name: "Patrol Point 1",
+          eslCode: "PP1",
+          pose: {
+            x: -1.14,
+            y: 2.21,
+            z: 0,
+            yaw: 3.14
+          }
+        });
+        
+        await NativeModules.SlamtecUtils.navigate(
+          -1.14,  // x
+          2.21,   // y
+          3.14    // yaw
+        );
+        await LogUtils.writeDebugToFile('Automated navigation to Point 1 completed');
+        setNavigationStatus(NavigationStatus.ARRIVED);
+      } catch (error: any) {
+        await LogUtils.writeDebugToFile(`Error during automated navigation: ${error.message}`);
+        setNavigationStatus(NavigationStatus.ERROR);
+        setNavigationError(error.message || 'Navigation failed');
+      }
+    }, 5000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   // Filter products when search text changes
@@ -88,7 +121,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   }, [searchText, products]);
 
   const handleProductSelect = async (product: Product) => {
-    setDebugInfo([`Starting navigation to: ${product.name}`]);
+    await LogUtils.writeDebugToFile(`Starting navigation to: ${product.name}`);
     setSelectedProduct(product);
     setNavigationStatus(NavigationStatus.NAVIGATING);
     
@@ -101,11 +134,11 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         z: poseZ
       };
 
-      setDebugInfo(prev => [...prev, `Requesting navmesh coordinates for: ${JSON.stringify(coords)}`]);
+      await LogUtils.writeDebugToFile(`Requesting navmesh coordinates for: ${JSON.stringify(coords)}`);
       const navTarget = await NativeModules.DomainUtils.getNavmeshCoord(coords);
       
       // Log the full structure of navTarget
-      setDebugInfo(prev => [...prev, `Received navTarget: ${JSON.stringify(navTarget)}`]);
+      await LogUtils.writeDebugToFile(`Received navTarget: ${JSON.stringify(navTarget)}`);
 
       // Detailed validation
       if (!navTarget) {
@@ -119,41 +152,39 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         throw new Error(`Invalid coordinates: ${JSON.stringify(targetCoords)}`);
       }
 
-      setDebugInfo(prev => [...prev, `Raw targetCoords: ${JSON.stringify(targetCoords, null, 2)}`]);
+      await LogUtils.writeDebugToFile(`Raw targetCoords: ${JSON.stringify(targetCoords, null, 2)}`);
       const navigationParams = {
         x: targetCoords.x,
         y: targetCoords.z,  // z is passed as y
         yaw: targetCoords.yaw || -Math.PI
       };
-      setDebugInfo(prev => [...prev, `Calling navigateProduct with exact params:`]);
-      setDebugInfo(prev => [...prev, JSON.stringify(navigationParams, null, 2)]);
+      await LogUtils.writeDebugToFile(`Calling navigateProduct with exact params: ${JSON.stringify(navigationParams, null, 2)}`);
+      
       try {
-        setDebugInfo(prev => [...prev, 'Starting navigation command...']);
+        await LogUtils.writeDebugToFile('Starting navigation command...');
         await NativeModules.SlamtecUtils.navigateProduct(
           targetCoords.x,
           targetCoords.z,  // Pass z as y since the API expects (x,y) plane movement
           targetCoords.yaw || -Math.PI
         );
         
-        setDebugInfo(prev => [...prev, 'Navigation command completed']);
-        setDebugInfo(prev => [...prev, 'Setting navigation status to ARRIVED']);
+        await LogUtils.writeDebugToFile('Navigation command completed');
+        await LogUtils.writeDebugToFile('Setting navigation status to ARRIVED');
         setNavigationStatus(NavigationStatus.ARRIVED);
       } catch (error: any) {
-        setDebugInfo(prev => [...prev, 'Navigation command failed']);
+        await LogUtils.writeDebugToFile('Navigation command failed');
         const errorMsg = error.message || 'Navigation failed. Please try again.';
-        setDebugInfo(prev => [
-          ...prev, 
-          `Navigation API Error:`,
-          `Code: ${error.code || 'unknown'}`,
-          `Message: ${errorMsg}`,
-          `Raw error: ${JSON.stringify(error)}`
-        ]);
+        await LogUtils.writeDebugToFile(`Navigation API Error: ${JSON.stringify({
+          code: error.code || 'unknown',
+          message: errorMsg,
+          raw: error
+        }, null, 2)}`);
         setNavigationStatus(NavigationStatus.ERROR);
         setNavigationError(errorMsg);
       }
     } catch (error: any) {
       const errorMsg = error.message || 'Navigation failed. Please try again.';
-      setDebugInfo(prev => [...prev, `Error: ${errorMsg}`]);
+      await LogUtils.writeDebugToFile(`Error: ${errorMsg}`);
       setNavigationStatus(NavigationStatus.ERROR);
       setNavigationError(errorMsg);
     }
@@ -164,12 +195,15 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     setSelectedProduct(null);
     
     try {
+      await LogUtils.writeDebugToFile('Starting navigation to home...');
       await NativeModules.SlamtecUtils.goHome();
+      await LogUtils.writeDebugToFile('Navigation to home completed');
       setNavigationStatus(NavigationStatus.IDLE);
     } catch (error: any) {
-      console.error('Navigation error:', error);
+      const errorMsg = error.message || 'Navigation to home failed. Please try again.';
+      await LogUtils.writeDebugToFile(`Navigation to home error: ${errorMsg}`);
       setNavigationStatus(NavigationStatus.ERROR);
-      setNavigationError(error.message || 'Navigation to home failed. Please try again.');
+      setNavigationError(errorMsg);
     }
   };
 
@@ -184,7 +218,10 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         },
         {
           text: 'Exit',
-          onPress: () => BackHandler.exitApp()
+          onPress: async () => {
+            await LogUtils.writeDebugToFile('User confirmed app exit');
+            BackHandler.exitApp();
+          }
         }
       ],
       { cancelable: true }
@@ -316,7 +353,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#9C9C9C',
+    backgroundColor: '#404040',
   },
   header: {
     flexDirection: 'row',
@@ -327,7 +364,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#404040',
+    color: 'rgb(0, 215, 68)',
     flex: 1,
     textAlign: 'center',
   },
@@ -337,7 +374,7 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     fontSize: 24,
-    color: '#000',
+    color: 'rgb(0, 215, 68)',
   },
   configButton: {
     padding: 5,
@@ -345,7 +382,7 @@ const styles = StyleSheet.create({
   },
   configButtonText: {
     fontSize: 32,
-    color: '#404040',
+    color: 'rgb(0, 215, 68)',
     textAlign: 'right',
   },
   searchContainer: {
@@ -353,7 +390,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   searchInput: {
-    backgroundColor: '#404040',
+    backgroundColor: '#303030',
     color: 'white',
     borderWidth: 2,
     borderColor: 'rgb(0, 215, 68)',
@@ -365,7 +402,7 @@ const styles = StyleSheet.create({
   },
   productList: {
     flex: 1,
-    backgroundColor: '#404040',
+    backgroundColor: '#303030',
     borderRadius: 5,
   },
   productListContent: {
@@ -460,24 +497,7 @@ const styles = StyleSheet.create({
   },
   navigationHomeButtonText: {
     color: '#404040',
-  },
-  debugContainer: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: '#303030',
-    borderRadius: 5,
-    width: '100%',
-    height: 200,
-  },
-  debugScrollView: {
-    height: '100%',
-  },
-  debugText: {
-    color: '#00ff00',
-    fontFamily: 'monospace',
-    fontSize: 12,
-    marginVertical: 2,
-  },
+  }
 });
 
 export default MainScreen; 

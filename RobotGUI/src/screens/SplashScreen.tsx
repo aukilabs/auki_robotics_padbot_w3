@@ -8,6 +8,7 @@ import {
   Easing,
   NativeModules,
 } from 'react-native';
+import { LogUtils } from '../utils/logging';
 
 interface SplashScreenProps {
   onFinish: (products: any[]) => void;
@@ -23,21 +24,106 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
 
     const initialize = async () => {
       try {
+        // Initialize logging first
+        await LogUtils.initializeLogging();
+        await LogUtils.writeDebugToFile('Starting app initialization...');
+
         // First authenticate with stored credentials
-        if (isMounted) setLoadingText('Authenticating...');
-        await NativeModules.DomainUtils.authenticate(null, null, null);
-        
-        // Then load products
-        if (isMounted) setLoadingText('Loading products...');
-        const products = await NativeModules.CactusUtils.getProducts();
         if (isMounted) {
-          setLoadingText('Products loaded successfully');
+          setLoadingText('Authenticating...');
+          await LogUtils.writeDebugToFile('Attempting authentication...');
+        }
+        await NativeModules.DomainUtils.authenticate(null, null, null);
+        await LogUtils.writeDebugToFile('Authentication successful');
+        
+        // Load products first
+        if (isMounted) {
+          setLoadingText('Loading products...');
+          await LogUtils.writeDebugToFile('Loading products...');
+        }
+        const products = await NativeModules.CactusUtils.getProducts();
+        const sortedProducts = [...products].sort((a, b) => a.name.localeCompare(b.name));
+        await LogUtils.writeDebugToFile(`Loaded ${products.length} products`);
+        
+        // Then check POIs against config
+        if (isMounted) {
+          setLoadingText('Validating patrol points...');
+          await LogUtils.writeDebugToFile('Validating patrol points...');
+        }
+        try {
+          // Get config first to know what POIs we expect
+          const config = await NativeModules.DomainUtils.getConfig();
+          await LogUtils.writeDebugToFile(`Config patrol points: ${JSON.stringify(config.patrol_points)}`);
           
-          // Sort products alphabetically
-          const sortedProducts = [...products].sort((a, b) => a.name.localeCompare(b.name));
+          // Get current POIs
+          let pois = await NativeModules.SlamtecUtils.getPOIs();
+          await LogUtils.writeDebugToFile(`Initial POIs fetch: ${JSON.stringify(pois)}`);
           
+          // If POIs is empty, wait a moment and try again as they might be initializing
+          if (Array.isArray(pois) && pois.length === 0) {
+            await LogUtils.writeDebugToFile('No POIs found, waiting for initialization...');
+            await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for POIs to initialize
+            pois = await NativeModules.SlamtecUtils.getPOIs();
+            await LogUtils.writeDebugToFile(`POIs after initialization: ${JSON.stringify(pois)}`);
+          }
+          
+          // Get patrol points from config
+          const configPatrolPoints = Array.isArray(config.patrol_points) ? config.patrol_points : [];
+          // POIs response is an array of POI objects with metadata.display_name
+          const poiNames = Array.isArray(pois) ? pois.map((poi: any) => poi.metadata?.display_name?.trim()) : [];
+          await LogUtils.writeDebugToFile(`Found POI names: ${JSON.stringify(poiNames)}`);
+          
+          // Filter out any undefined or empty names
+          const validPoiNames = poiNames.filter((name): name is string => 
+            typeof name === 'string' && name.length > 0
+          );
+          await LogUtils.writeDebugToFile(`Valid POI names: ${JSON.stringify(validPoiNames)}`);
+          
+          // Check for mismatches
+          const extraPOIs = validPoiNames.filter((name: string) => 
+            !configPatrolPoints.find((cp: { name: string }) => cp.name === name)
+          );
+          const missingPoints = configPatrolPoints.filter((cp: { name: string }) => 
+            !validPoiNames.includes(cp.name)
+          );
+          
+          if (extraPOIs.length > 0 || missingPoints.length > 0) {
+            let errorMsg = '';
+            if (extraPOIs.length > 0) {
+              errorMsg += `Unexpected POIs found: ${extraPOIs.join(', ')}\n`;
+            }
+            if (missingPoints.length > 0) {
+              errorMsg += `Missing patrol points: ${missingPoints.map((p: { name: string }) => p.name).join(', ')}`;
+            }
+            await LogUtils.writeDebugToFile(`POI validation error: ${errorMsg}`);
+            
+            // Clear and reinitialize POIs
+            await LogUtils.writeDebugToFile('Clearing and reinitializing POIs...');
+            if (isMounted) setLoadingText('Resetting patrol points...');
+            
+            await NativeModules.SlamtecUtils.clearAndInitializePOIs();
+            await LogUtils.writeDebugToFile('POIs have been reset and reinitialized');
+            
+            // Verify the POIs again
+            pois = await NativeModules.SlamtecUtils.getPOIs();
+            await LogUtils.writeDebugToFile(`POIs after reset: ${JSON.stringify(pois)}`);
+          } else {
+            await LogUtils.writeDebugToFile('POI validation successful - all points match config');
+          }
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          await LogUtils.writeDebugToFile(`POI validation error: ${errorMessage}`);
+          if (isMounted) {
+            setLoadingText(`Error validating patrol points: ${errorMessage}`);
+            // Keep error visible for 5 seconds
+            await new Promise(resolve => setTimeout(resolve, 5000));
+          }
+        }
+
+        if (isMounted) {
           // Add 1 second delay before transition
           await new Promise(resolve => setTimeout(resolve, 1000));
+          await LogUtils.writeDebugToFile('Initialization complete, transitioning to main screen...');
           
           // Create fade-out animation
           Animated.timing(opacity, {
@@ -51,8 +137,10 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
         }
       } catch (error: any) {
         if (isMounted) {
+          const errorMessage = error.message || 'Error during initialization';
+          await LogUtils.writeDebugToFile(`Error during initialization: ${errorMessage}`);
           console.error('Error during initialization:', error);
-          setLoadingText(error.message || 'Error during initialization');
+          setLoadingText(errorMessage);
           // Still finish after error, but with empty products
           setTimeout(() => {
             if (isMounted) {
@@ -76,6 +164,7 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
     // Set 30 second timeout
     timeoutId = setTimeout(() => {
       if (isMounted) {
+        LogUtils.writeDebugToFile('Loading timeout reached');
         setLoadingText('Loading timeout reached');
         Animated.timing(opacity, {
           toValue: 0,
