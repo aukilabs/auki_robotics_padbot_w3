@@ -1020,4 +1020,29 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
             }
         });
     }
+
+    @ReactMethod
+    public void stopNavigation(Promise promise) {
+        executorService.execute(() -> {
+            try {
+                Log.d(TAG, "Stopping current navigation...");
+                String url = BASE_URL + "/api/core/motion/v1/actions/:current";
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                connection.setRequestMethod("DELETE");
+                
+                if (connection.getResponseCode() >= 200 && connection.getResponseCode() <= 204) {
+                    Log.d(TAG, "Successfully stopped navigation");
+                    mainHandler.post(() -> promise.resolve(true));
+                } else {
+                    String errorMsg = "Failed to stop navigation: " + connection.getResponseCode();
+                    Log.e(TAG, errorMsg);
+                    mainHandler.post(() -> promise.reject("NAVIGATION_ERROR", errorMsg));
+                }
+            } catch (Exception e) {
+                String errorMsg = "Error stopping navigation: " + e.getMessage();
+                Log.e(TAG, errorMsg);
+                mainHandler.post(() -> promise.reject("NAVIGATION_ERROR", errorMsg));
+            }
+        });
+    }
 } 

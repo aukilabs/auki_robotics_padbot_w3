@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -51,6 +51,18 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   const [navigationStatus, setNavigationStatus] = useState<NavigationStatus>(NavigationStatus.IDLE);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [navigationError, setNavigationError] = useState<string>('');
+  
+  // Add state to track if patrol is active - start with true to ensure patrol begins
+  const [isPatrolling, setIsPatrolling] = useState(true);
+  
+  // Store patrol state in a ref to access in useEffect cleanup
+  const isPatrollingRef = useRef(true);
+  
+  // Update ref when state changes
+  useEffect(() => {
+    isPatrollingRef.current = isPatrolling;
+    LogUtils.writeDebugToFile(`Patrol state changed to: ${isPatrolling ? 'active' : 'inactive'}`);
+  }, [isPatrolling]);
 
   // Handle hardware back button (Android)
   useEffect(() => {
@@ -75,6 +87,13 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
 
   // Add timer to navigate through all patrol points
   useEffect(() => {
+    // Log that we're initializing the patrol sequence
+    LogUtils.writeDebugToFile('Initializing patrol sequence');
+    
+    // Ensure patrol is active at the start
+    setIsPatrolling(true);
+    isPatrollingRef.current = true;
+    
     const patrolPoints = [
       { name: "Patrol Point 1", x: -1.14, y: 2.21, yaw: 3.14 },
       { name: "Patrol Point 2", x: -6.11, y: 2.35, yaw: -1.57 },
@@ -83,12 +102,22 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     ];
 
     let currentPointIndex = 0;
+    let isMounted = true;
 
     const navigateToNextPoint = async () => {
+      // Don't continue if patrol has been cancelled or component unmounted
+      if (!isPatrollingRef.current || !isMounted) {
+        await LogUtils.writeDebugToFile('Patrol cancelled or component unmounted, stopping sequence');
+        return;
+      }
+      
       if (currentPointIndex < patrolPoints.length) {
         const point = patrolPoints[currentPointIndex];
         await LogUtils.writeDebugToFile(`Starting navigation to ${point.name}`);
         try {
+          // Don't update state if component unmounted or patrol cancelled
+          if (!isPatrollingRef.current || !isMounted) return;
+          
           setNavigationStatus(NavigationStatus.NAVIGATING);
           setSelectedProduct({
             name: point.name,
@@ -106,26 +135,50 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
             point.y,
             point.yaw
           );
+          
+          // Don't update state if component unmounted or patrol cancelled
+          if (!isPatrollingRef.current || !isMounted) return;
+          
           await LogUtils.writeDebugToFile(`Navigation to ${point.name} completed`);
           setNavigationStatus(NavigationStatus.ARRIVED);
           currentPointIndex++;
           
-          // Schedule next point navigation after 1 second
-          setTimeout(navigateToNextPoint, 1000);
+          // Move to next point immediately - no timer needed
+          // This will only happen after the previous navigation completes
+          navigateToNextPoint();
         } catch (error: any) {
+          // Don't update state if component unmounted or patrol cancelled
+          if (!isPatrollingRef.current || !isMounted) return;
+          
           await LogUtils.writeDebugToFile(`Error during navigation to ${point.name}: ${error.message}`);
           setNavigationStatus(NavigationStatus.ERROR);
           setNavigationError(error.message || 'Navigation failed');
         }
       } else {
         // All points visited, return home
-        await handleGoHome();
+        if (isPatrollingRef.current && isMounted) {
+          await LogUtils.writeDebugToFile('All patrol points visited, returning home');
+          await handleGoHome();
+        }
       }
     };
 
-    const timer = setTimeout(navigateToNextPoint, 5000);
+    // Start patrolling after 5 seconds
+    const startupTimer = setTimeout(() => {
+      LogUtils.writeDebugToFile(`Starting patrol sequence, isPatrolling: ${isPatrollingRef.current}, isMounted: ${isMounted}`);
+      if (isPatrollingRef.current && isMounted) {
+        LogUtils.writeDebugToFile('Patrol conditions met, initiating navigation sequence');
+        navigateToNextPoint();
+      } else {
+        LogUtils.writeDebugToFile(`Patrol sequence not started: isPatrolling=${isPatrollingRef.current}, isMounted=${isMounted}`);
+      }
+    }, 5000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      isMounted = false;
+      clearTimeout(startupTimer);
+      LogUtils.writeDebugToFile('Component unmounted, patrol cancelled');
+    };
   }, []);
 
   // Filter products when search text changes
@@ -142,6 +195,10 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   }, [searchText, products]);
 
   const handleProductSelect = async (product: Product) => {
+    // Cancel any ongoing patrol
+    setIsPatrolling(false);
+    await LogUtils.writeDebugToFile('Patrol sequence cancelled due to product selection');
+    
     await LogUtils.writeDebugToFile(`Starting navigation to: ${product.name}`);
     setSelectedProduct(product);
     setNavigationStatus(NavigationStatus.NAVIGATING);
@@ -212,17 +269,20 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   };
 
   const handleGoHome = async () => {
+    // Cancel any ongoing patrol unless it's the final step of patrol
+    setIsPatrolling(false);
+    await LogUtils.writeDebugToFile('Patrol sequence cancelled due to manual Go Home');
+    
     setNavigationStatus(NavigationStatus.NAVIGATING);
     setSelectedProduct(null);
     
     try {
-      await LogUtils.writeDebugToFile('Starting navigation to home...');
       await NativeModules.SlamtecUtils.goHome();
-      await LogUtils.writeDebugToFile('Navigation to home completed');
+      
       setNavigationStatus(NavigationStatus.IDLE);
     } catch (error: any) {
       const errorMsg = error.message || 'Navigation to home failed. Please try again.';
-      await LogUtils.writeDebugToFile(`Navigation to home error: ${errorMsg}`);
+      await LogUtils.writeDebugToFile(`Go Home error: ${errorMsg}`);
       setNavigationStatus(NavigationStatus.ERROR);
       setNavigationError(errorMsg);
     }
@@ -247,6 +307,28 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       ],
       { cancelable: true }
     );
+  };
+
+  const handleReturnToList = async () => {
+    try {
+      // Cancel patrol sequence
+      setIsPatrolling(false);
+      await LogUtils.writeDebugToFile('Patrol sequence cancelled');
+      
+      // Stop the robot's movement
+      await NativeModules.SlamtecUtils.stopNavigation();
+      await LogUtils.writeDebugToFile('Robot movement stopped');
+      
+      // Reset UI state
+      setSelectedProduct(null);
+      setNavigationStatus(NavigationStatus.IDLE);
+    } catch (error) {
+      // Even if stopping fails, still cancel patrol and return to list
+      setIsPatrolling(false);
+      setSelectedProduct(null);
+      setNavigationStatus(NavigationStatus.IDLE);
+      await LogUtils.writeDebugToFile('Error stopping navigation, but returned to list anyway');
+    }
   };
 
   const renderProductItem = ({ item }: { item: Product }) => (
@@ -302,6 +384,13 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
                 {selectedProduct ? selectedProduct.name : "Home"}
               </Text>
               <ActivityIndicator size="large" color="rgb(0, 215, 68)" style={styles.navigationSpinner} />
+              
+              <TouchableOpacity 
+                style={[styles.navigationButton, styles.cancelButton, { marginTop: 30 }]}
+                onPress={handleReturnToList}
+              >
+                <Text style={styles.navigationButtonText}>Cancel Navigation</Text>
+              </TouchableOpacity>
             </View>
           </View>
         );
@@ -316,7 +405,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
               <View style={styles.navigationButtonContainer}>
                 <TouchableOpacity 
                   style={styles.navigationButton}
-                  onPress={() => setNavigationStatus(NavigationStatus.IDLE)}
+                  onPress={handleReturnToList}
                 >
                   <Text style={styles.navigationButtonText}>Back to List</Text>
                 </TouchableOpacity>
@@ -341,7 +430,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
               
               <TouchableOpacity 
                 style={styles.navigationButton}
-                onPress={() => setNavigationStatus(NavigationStatus.IDLE)}
+                onPress={handleReturnToList}
               >
                 <Text style={styles.navigationButtonText}>Back to List</Text>
               </TouchableOpacity>
@@ -520,7 +609,10 @@ const styles = StyleSheet.create({
   },
   navigationHomeButtonText: {
     color: '#404040',
-  }
+  },
+  cancelButton: {
+    backgroundColor: '#F44336',
+  },
 });
 
 export default MainScreen; 
