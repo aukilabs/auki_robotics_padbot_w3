@@ -10,6 +10,9 @@ import {
   NativeModules,
 } from 'react-native';
 
+// Access the global object in a way that works in React Native
+const globalAny: any = global;
+
 interface ConfigScreenProps {
   onClose: () => void;
 }
@@ -231,6 +234,38 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
               <Text style={styles.buttonText}>Test Cactus Auth</Text>
             </TouchableOpacity>
           </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Promotion Mode</Text>
+            <TouchableOpacity 
+              style={[styles.button, styles.promotionButton]}
+              onPress={async () => {
+                try {
+                  // @ts-ignore - startPromotion is added to window in MainScreen
+                  if (typeof globalAny.startPromotion === 'function') {
+                    // First activate the promotion globally
+                    await globalAny.startPromotion();
+                    
+                    // Then close the config screen
+                    onClose();
+                  } else {
+                    Alert.alert(
+                      'Feature Not Available',
+                      'The promotion feature is not available. Please make sure the robot is connected and try again.'
+                    );
+                  }
+                } catch (error: any) {
+                  console.error('Error starting promotion:', error);
+                  Alert.alert(
+                    'Promotion Start Failed',
+                    'Error: ' + (error.message || 'Unknown error')
+                  );
+                }
+              }}
+            >
+              <Text style={styles.buttonText}>Start Promotion</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -309,6 +344,9 @@ const styles = StyleSheet.create({
   },
   testButton: {
     backgroundColor: '#4CAF50',
+  },
+  promotionButton: {
+    backgroundColor: '#9C27B0', // Purple color for promotion button
   },
   buttonText: {
     color: 'white',

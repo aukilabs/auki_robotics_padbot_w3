@@ -47,13 +47,16 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
         
         // Then check POIs against config
         if (isMounted) {
-          setLoadingText('Validating patrol points...');
-          await LogUtils.writeDebugToFile('Validating patrol points...');
+          setLoadingText('Validating waypoints...');
+          await LogUtils.writeDebugToFile('Validating waypoints...');
         }
         try {
           // Get config first to know what POIs we expect
           const config = await NativeModules.DomainUtils.getConfig();
-          await LogUtils.writeDebugToFile(`Config patrol points: ${JSON.stringify(config.patrol_points)}`);
+          await LogUtils.writeDebugToFile(`Config waypoints: ${JSON.stringify(config.patrol_points)}`);
+          
+          // Get waypoints from config
+          const configPatrolPoints = Array.isArray(config.patrol_points) ? config.patrol_points : [];
           
           // Get current POIs
           let pois = await NativeModules.SlamtecUtils.getPOIs();
@@ -67,8 +70,6 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
             await LogUtils.writeDebugToFile(`POIs after initialization: ${JSON.stringify(pois)}`);
           }
           
-          // Get patrol points from config
-          const configPatrolPoints = Array.isArray(config.patrol_points) ? config.patrol_points : [];
           // POIs response is an array of POI objects with metadata.display_name
           const poiNames = Array.isArray(pois) ? pois.map((poi: any) => poi.metadata?.display_name?.trim()) : [];
           await LogUtils.writeDebugToFile(`Found POI names: ${JSON.stringify(poiNames)}`);
@@ -93,13 +94,13 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
               errorMsg += `Unexpected POIs found: ${extraPOIs.join(', ')}\n`;
             }
             if (missingPoints.length > 0) {
-              errorMsg += `Missing patrol points: ${missingPoints.map((p: { name: string }) => p.name).join(', ')}`;
+              errorMsg += `Missing waypoints: ${missingPoints.map((p: { name: string }) => p.name).join(', ')}`;
             }
             await LogUtils.writeDebugToFile(`POI validation error: ${errorMsg}`);
             
             // Clear and reinitialize POIs
             await LogUtils.writeDebugToFile('Clearing and reinitializing POIs...');
-            if (isMounted) setLoadingText('Resetting patrol points...');
+            if (isMounted) setLoadingText('Resetting waypoints...');
             
             await NativeModules.SlamtecUtils.clearAndInitializePOIs();
             await LogUtils.writeDebugToFile('POIs have been reset and reinitialized');
@@ -112,9 +113,9 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
           }
         } catch (error: unknown) {
           const errorMessage = error instanceof Error ? error.message : String(error);
-          await LogUtils.writeDebugToFile(`POI validation error: ${errorMessage}`);
+          await LogUtils.writeDebugToFile(`Waypoint validation error: ${errorMessage}`);
           if (isMounted) {
-            setLoadingText(`Error validating patrol points: ${errorMessage}`);
+            setLoadingText(`Error validating waypoints: ${errorMessage}`);
             // Keep error visible for 5 seconds
             await new Promise(resolve => setTimeout(resolve, 5000));
           }

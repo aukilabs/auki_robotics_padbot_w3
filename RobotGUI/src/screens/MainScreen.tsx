@@ -16,6 +16,48 @@ import {
 } from 'react-native';
 import { LogUtils } from '../utils/logging';
 
+// Access the global object in a way that works in React Native
+const globalAny: any = global;
+
+// Create a persistent promotion controller that won't be removed on unmount
+let promotionActive = false;
+let promotionMounted = false;
+let promotionCancelled = false;
+let currentPointIndex = 0;
+
+// Define patrol points globally
+const patrolPoints = [
+  { name: "Patrol Point 1", x: -1.14, y: 2.21, yaw: 3.14 },
+  { name: "Patrol Point 2", x: -6.11, y: 2.35, yaw: -1.57 },
+  { name: "Patrol Point 3", x: -6.08, y: 0.05, yaw: 0 },
+  { name: "Patrol Point 4", x: -1.03, y: 0.01, yaw: 1.57 }
+];
+
+// Create a persistent global function that won't be removed on unmount
+globalAny.startPromotion = async () => {
+  try {
+    await LogUtils.writeDebugToFile('Global startPromotion function called');
+    
+    // Reset any previous state
+    promotionCancelled = false;
+    currentPointIndex = 0;
+    
+    // Set the promotion state to active
+    promotionActive = true;
+    
+    await LogUtils.writeDebugToFile('Promotion activated globally, will start when MainScreen mounts');
+    
+    // Return success - the component will pick up the state when it mounts
+    return true;
+  } catch (error) {
+    await LogUtils.writeDebugToFile(`Error in global startPromotion: ${error}`);
+    // Reset state on error
+    promotionActive = false;
+    promotionCancelled = true;
+    return false;
+  }
+};
+
 interface MainScreenProps {
   onClose: () => void;
   onConfigPress: () => void;
@@ -54,14 +96,77 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [navigationError, setNavigationError] = useState<string>('');
   
-  // Add state to track if patrol is active - start with true to ensure patrol begins
-  const [isPatrolling, setIsPatrolling] = useState(true);
-  
-  // Store patrol state in a ref to access in useEffect cleanup
-  const isPatrollingRef = useRef(true);
+  // Add state to track if patrol is active - start with false since we won't auto-start
+  const [isPatrolling, setIsPatrolling] = useState(false);
   
   // Add ref to track if navigation has been cancelled
   const navigationCancelledRef = useRef(false);
+  
+  // Store patrol state in a ref to access in useEffect cleanup
+  const isPatrollingRef = useRef(false);
+  
+  // Set the mounted ref to true
+  const isMountedRef = useRef(true);
+  
+  // Function to navigate to the next patrol point
+  const navigateToNextPoint = async () => {
+    // Don't continue if patrol has been cancelled or component unmounted
+    if (!isPatrollingRef.current || !isMountedRef.current || navigationCancelledRef.current || promotionCancelled) {
+      await LogUtils.writeDebugToFile('Waypoint sequence cancelled or component unmounted, stopping sequence');
+      return;
+    }
+    
+    if (currentPointIndex < patrolPoints.length) {
+      const point = patrolPoints[currentPointIndex];
+      await LogUtils.writeDebugToFile(`Starting navigation to ${point.name}`);
+      try {
+        // Don't update state if component unmounted or patrol cancelled
+        if (!isPatrollingRef.current || !isMountedRef.current || navigationCancelledRef.current || promotionCancelled) return;
+        
+        setNavigationStatus(NavigationStatus.PATROL);
+        setSelectedProduct({
+          name: point.name,
+          eslCode: `PP${currentPointIndex + 1}`,
+          pose: {
+            x: point.x,
+            y: point.y,
+            z: 0,
+            yaw: point.yaw
+          }
+        });
+        
+        await NativeModules.SlamtecUtils.navigate(
+          point.x,
+          point.y,
+          point.yaw
+        );
+        
+        // Don't update state if component unmounted or patrol cancelled
+        if (!isPatrollingRef.current || !isMountedRef.current || navigationCancelledRef.current || promotionCancelled) return;
+        
+        await LogUtils.writeDebugToFile(`Navigation to ${point.name} completed`);
+        setNavigationStatus(NavigationStatus.ARRIVED);
+        currentPointIndex++;
+        
+        // Move to next point immediately - no timer needed
+        // This will only happen after the previous navigation completes
+        navigateToNextPoint();
+      } catch (error: any) {
+        // Don't update state if component unmounted or patrol cancelled
+        if (!isPatrollingRef.current || !isMountedRef.current || navigationCancelledRef.current || promotionCancelled) return;
+        
+        await LogUtils.writeDebugToFile(`Error during navigation to ${point.name}: ${error.message}`);
+        setNavigationStatus(NavigationStatus.ERROR);
+        setNavigationError(error.message || 'Navigation failed');
+      }
+    } else {
+      // All points visited, return home
+      if (isPatrollingRef.current && isMountedRef.current && !navigationCancelledRef.current && !promotionCancelled) {
+        await LogUtils.writeDebugToFile('All waypoints visited, returning home');
+        await handleGoHome();
+      }
+    }
+  };
   
   // Update ref when state changes
   useEffect(() => {
@@ -90,101 +195,57 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     };
   }, []);
 
-  // Add timer to navigate through all patrol points
+  // Modify the useEffect to not start patrol automatically
   useEffect(() => {
     // Log that we're initializing the patrol sequence
     LogUtils.writeDebugToFile('Initializing waypoint sequence');
     
-    // Ensure patrol is active at the start
-    setIsPatrolling(true);
-    isPatrollingRef.current = true;
+    // Set the mounted flag
+    promotionMounted = true;
+    
+    // Don't start patrol automatically - set to false
+    setIsPatrolling(false);
+    isPatrollingRef.current = false;
     
     // Reset navigation cancelled flag
     navigationCancelledRef.current = false;
     
-    const patrolPoints = [
-      { name: "Waypoint 1", x: -1.14, y: 2.21, yaw: 3.14 },
-      { name: "Waypoint 2", x: -6.11, y: 2.35, yaw: -1.57 },
-      { name: "Waypoint 3", x: -6.08, y: 0.05, yaw: 0 },
-      { name: "Waypoint 4", x: -1.03, y: 0.01, yaw: 1.57 }
-    ];
-
-    let currentPointIndex = 0;
-    let isMounted = true;
-
-    const navigateToNextPoint = async () => {
-      // Don't continue if patrol has been cancelled or component unmounted
-      if (!isPatrollingRef.current || !isMounted || navigationCancelledRef.current) {
-        await LogUtils.writeDebugToFile('Waypoint sequence cancelled or component unmounted, stopping sequence');
-        return;
-      }
-      
-      if (currentPointIndex < patrolPoints.length) {
-        const point = patrolPoints[currentPointIndex];
-        await LogUtils.writeDebugToFile(`Starting navigation to ${point.name}`);
-        try {
-          // Don't update state if component unmounted or patrol cancelled
-          if (!isPatrollingRef.current || !isMounted || navigationCancelledRef.current) return;
-          
-          setNavigationStatus(NavigationStatus.PATROL);
-          setSelectedProduct({
-            name: point.name,
-            eslCode: `PP${currentPointIndex + 1}`,
-            pose: {
-              x: point.x,
-              y: point.y,
-              z: 0,
-              yaw: point.yaw
-            }
-          });
-          
-          await NativeModules.SlamtecUtils.navigate(
-            point.x,
-            point.y,
-            point.yaw
-          );
-          
-          // Don't update state if component unmounted or patrol cancelled
-          if (!isPatrollingRef.current || !isMounted || navigationCancelledRef.current) return;
-          
-          await LogUtils.writeDebugToFile(`Navigation to ${point.name} completed`);
-          setNavigationStatus(NavigationStatus.ARRIVED);
-          currentPointIndex++;
-          
-          // Move to next point immediately - no timer needed
-          // This will only happen after the previous navigation completes
-          navigateToNextPoint();
-        } catch (error: any) {
-          // Don't update state if component unmounted or patrol cancelled
-          if (!isPatrollingRef.current || !isMounted || navigationCancelledRef.current) return;
-          
-          await LogUtils.writeDebugToFile(`Error during navigation to ${point.name}: ${error.message}`);
-          setNavigationStatus(NavigationStatus.ERROR);
-          setNavigationError(error.message || 'Navigation failed');
-        }
+    // Set the mounted ref to true
+    isMountedRef.current = true;
+    
+    // Log the current promotion state
+    LogUtils.writeDebugToFile(`Current promotion state: active=${promotionActive}, cancelled=${promotionCancelled}`);
+    
+    // Add a small delay before checking promotion state to ensure component is fully mounted
+    setTimeout(() => {
+      // Check if promotion was activated while component was unmounted
+      if (promotionActive && !promotionCancelled && isMountedRef.current) {
+        LogUtils.writeDebugToFile('Detected active promotion on component mount, starting patrol');
+        
+        // Set patrol state to active
+        setIsPatrolling(true);
+        isPatrollingRef.current = true;
+        
+        // Set navigation status to PATROL immediately to show the promotion screen
+        setNavigationStatus(NavigationStatus.PATROL);
+        
+        // Start navigation
+        setTimeout(() => {
+          if (isPatrollingRef.current && isMountedRef.current && !navigationCancelledRef.current) {
+            LogUtils.writeDebugToFile('Starting navigation to first waypoint after mount');
+            navigateToNextPoint();
+          } else {
+            LogUtils.writeDebugToFile(`Navigation not started: isPatrolling=${isPatrollingRef.current}, isMounted=${isMountedRef.current}, navigationCancelled=${navigationCancelledRef.current}`);
+          }
+        }, 500); // Give a little more time for the UI to update
       } else {
-        // All points visited, return home
-        if (isPatrollingRef.current && isMounted && !navigationCancelledRef.current) {
-          await LogUtils.writeDebugToFile('All waypoints visited, returning home');
-          await handleGoHome();
-        }
+        LogUtils.writeDebugToFile('No active promotion detected on mount');
       }
-    };
-
-    // Start patrolling after 5 seconds
-    const startupTimer = setTimeout(() => {
-      LogUtils.writeDebugToFile(`Starting waypoint sequence, isPatrolling: ${isPatrollingRef.current}, isMounted: ${isMounted}`);
-      if (isPatrollingRef.current && isMounted && !navigationCancelledRef.current) {
-        LogUtils.writeDebugToFile('Waypoint conditions met, initiating navigation sequence');
-        navigateToNextPoint();
-      } else {
-        LogUtils.writeDebugToFile(`Waypoint sequence not started: isPatrolling=${isPatrollingRef.current}, isMounted=${isMounted}, navigationCancelled=${navigationCancelledRef.current}`);
-      }
-    }, 5000);
+    }, 100); // Small delay to ensure component is fully mounted
 
     return () => {
-      isMounted = false;
-      clearTimeout(startupTimer);
+      promotionMounted = false;
+      isMountedRef.current = false;
       LogUtils.writeDebugToFile('Component unmounted, waypoint sequence cancelled');
     };
   }, []);
@@ -205,6 +266,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   const handleProductSelect = async (product: Product) => {
     // Cancel any ongoing patrol
     setIsPatrolling(false);
+    promotionActive = false;
+    promotionCancelled = true;
     await LogUtils.writeDebugToFile('Waypoint sequence cancelled due to product selection');
     
     // Reset navigation cancelled flag
@@ -294,6 +357,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   const handleGoHome = async () => {
     // Cancel any ongoing patrol unless it's the final step of patrol
     setIsPatrolling(false);
+    promotionActive = false;
+    promotionCancelled = true;
     await LogUtils.writeDebugToFile('Waypoint sequence cancelled due to manual Go Home');
     
     // Reset navigation cancelled flag
@@ -345,6 +410,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     try {
       // Mark navigation as cancelled
       navigationCancelledRef.current = true;
+      promotionCancelled = true;
+      promotionActive = false;
       
       // Cancel patrol sequence
       setIsPatrolling(false);
@@ -360,6 +427,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     } catch (error) {
       // Even if stopping fails, still cancel patrol and return to list
       navigationCancelledRef.current = true;
+      promotionCancelled = true;
+      promotionActive = false;
       setIsPatrolling(false);
       setSelectedProduct(null);
       setNavigationStatus(NavigationStatus.IDLE);
