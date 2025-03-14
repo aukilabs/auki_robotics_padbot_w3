@@ -510,6 +510,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     // Reset navigation cancelled flag
     navigationCancelledRef.current = false;
     
+    // Set navigation status to NAVIGATING immediately
     setNavigationStatus(NavigationStatus.NAVIGATING);
     setSelectedProduct(null);
     
@@ -522,6 +523,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     }
     
     try {
+      // Directly call goHome without showing a confirmation dialog
+      await LogUtils.writeDebugToFile('Starting navigation to home');
       await NativeModules.SlamtecUtils.goHome();
       
       // Only update state if navigation wasn't cancelled
