@@ -575,7 +575,7 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setMaxLineSpeed(double speed, Promise promise) {
+    public void setMaxLineSpeed(String speedStr, Promise promise) {
         executorService.execute(() -> {
             try {
                 String url = BASE_URL + "/api/core/system/v1/parameter";
@@ -583,7 +583,7 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
                 
                 JSONObject body = new JSONObject()
                     .put("param", "base.max_moving_speed")
-                    .put("value", speed);
+                    .put("value", speedStr);
 
                 connection.setRequestMethod("PUT");
                 connection.setRequestProperty("Content-Type", "application/json");

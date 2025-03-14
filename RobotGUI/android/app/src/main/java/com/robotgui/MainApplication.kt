@@ -24,6 +24,7 @@ class MainApplication : Application(), ReactApplication {
             packages.add(DomainUtilsPackage())
             packages.add(CactusPackage())
             packages.add(FileUtilsPackage())
+            packages.add(ConfigManagerPackage())
             return packages
         }
 

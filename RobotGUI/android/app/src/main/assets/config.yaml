@@ -28,3 +28,8 @@ patrol:
   point2: [-6.11, 2.35, -1.57]
   point3: [-6.08, 0.05, 0]
   point4: [-1.03, 0.01, 1.57]  
+
+speeds:
+  patrol: "0.25"
+  product_search: "0.7"
+  default: "0.5"

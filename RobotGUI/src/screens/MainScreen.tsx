@@ -19,6 +19,34 @@ import { LogUtils } from '../utils/logging';
 // Access the global object in a way that works in React Native
 const globalAny: any = global;
 
+// Speed settings from config
+const SPEEDS = {
+  patrol: 0.3,      // Default patrol speed if config not available
+  productSearch: 0.7, // Default product search speed if config not available
+  default: 0.5      // Default speed for other operations
+};
+
+// Load speeds from config
+const loadSpeeds = async () => {
+  try {
+    // Check if ConfigManagerModule is available
+    if (NativeModules.ConfigManagerModule) {
+      const speeds = await NativeModules.ConfigManagerModule.getSpeeds();
+      if (speeds) {
+        SPEEDS.patrol = speeds.patrol;
+        SPEEDS.productSearch = speeds.productSearch;
+        SPEEDS.default = speeds.default;
+        await LogUtils.writeDebugToFile(`Loaded speeds from config: patrol=${SPEEDS.patrol}, productSearch=${SPEEDS.productSearch}, default=${SPEEDS.default}`);
+      }
+    }
+  } catch (error: any) {
+    await LogUtils.writeDebugToFile(`Failed to load speeds from config: ${error.message}`);
+  }
+};
+
+// Load speeds immediately
+loadSpeeds();
+
 // Create a persistent promotion controller that won't be removed on unmount
 let promotionActive = false;
 let promotionMounted = false;
@@ -123,6 +151,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         // Don't update state if component unmounted or patrol cancelled
         if (!isPatrollingRef.current || !isMountedRef.current || navigationCancelledRef.current || promotionCancelled) return;
         
+        // Always keep in PATROL state, don't change to other states during patrol
         setNavigationStatus(NavigationStatus.PATROL);
         setSelectedProduct({
           name: point.name,
@@ -145,7 +174,10 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         if (!isPatrollingRef.current || !isMountedRef.current || navigationCancelledRef.current || promotionCancelled) return;
         
         await LogUtils.writeDebugToFile(`Navigation to ${point.name} completed`);
-        setNavigationStatus(NavigationStatus.ARRIVED);
+        
+        // Don't change navigation status to ARRIVED, keep it in PATROL
+        // setNavigationStatus(NavigationStatus.ARRIVED);
+        
         currentPointIndex++;
         
         // Move to next point immediately - no timer needed
@@ -230,6 +262,17 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         // Set navigation status to PATROL immediately to show the promotion screen
         setNavigationStatus(NavigationStatus.PATROL);
         
+        // Set robot speed to patrol speed (slower)
+        NativeModules.SlamtecUtils.setMaxLineSpeed(SPEEDS.patrol.toString())
+          .then((success: boolean) => {
+            if (success) {
+              LogUtils.writeDebugToFile(`Set robot speed to patrol mode: ${SPEEDS.patrol} m/s`);
+            } else {
+              LogUtils.writeDebugToFile(`Warning: Could not set patrol speed, but continuing with patrol`);
+            }
+          })
+          .catch((error: any) => LogUtils.writeDebugToFile(`Failed to set patrol speed: ${error.message}`));
+        
         // Start navigation
         setTimeout(() => {
           if (isPatrollingRef.current && isMountedRef.current && !navigationCancelledRef.current) {
@@ -277,6 +320,14 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     await LogUtils.writeDebugToFile(`Starting navigation to: ${product.name}`);
     setSelectedProduct(product);
     setNavigationStatus(NavigationStatus.NAVIGATING);
+    
+    // Set robot speed to product search speed (faster)
+    try {
+      await NativeModules.SlamtecUtils.setMaxLineSpeed(SPEEDS.productSearch.toString());
+      await LogUtils.writeDebugToFile(`Set robot speed to product search mode: ${SPEEDS.productSearch} m/s`);
+    } catch (error: any) {
+      await LogUtils.writeDebugToFile(`Failed to set product search speed: ${error.message}`);
+    }
     
     try {
       // Get product coordinates
@@ -367,6 +418,14 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     
     setNavigationStatus(NavigationStatus.NAVIGATING);
     setSelectedProduct(null);
+    
+    // Reset robot speed to default
+    try {
+      await NativeModules.SlamtecUtils.setMaxLineSpeed(SPEEDS.default.toString());
+      await LogUtils.writeDebugToFile(`Reset robot speed to default: ${SPEEDS.default} m/s`);
+    } catch (error: any) {
+      await LogUtils.writeDebugToFile(`Failed to reset robot speed: ${error.message}`);
+    }
     
     try {
       await NativeModules.SlamtecUtils.goHome();
@@ -495,7 +554,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
               resizeMode="cover"
             />
             <View style={styles.tapInstructionContainer}>
-              <Text style={styles.tapInstructionText}>Tap anywhere to stop</Text>
+              <Text style={styles.tapInstructionText}>Tap anywhere for help finding products</Text>
             </View>
           </TouchableOpacity>
         );
@@ -752,7 +811,7 @@ const styles = StyleSheet.create({
   },
   tapInstructionContainer: {
     position: 'absolute',
-    bottom: 50,
+    bottom: 5,
     left: 0,
     right: 0,
     alignItems: 'center',
