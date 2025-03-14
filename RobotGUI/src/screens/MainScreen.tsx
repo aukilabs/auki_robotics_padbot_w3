@@ -12,6 +12,7 @@ import {
   NativeModules,
   BackHandler,
   NativeEventEmitter,
+  Image,
 } from 'react-native';
 import { LogUtils } from '../utils/logging';
 
@@ -92,7 +93,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   // Add timer to navigate through all patrol points
   useEffect(() => {
     // Log that we're initializing the patrol sequence
-    LogUtils.writeDebugToFile('Initializing patrol sequence');
+    LogUtils.writeDebugToFile('Initializing waypoint sequence');
     
     // Ensure patrol is active at the start
     setIsPatrolling(true);
@@ -102,10 +103,10 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     navigationCancelledRef.current = false;
     
     const patrolPoints = [
-      { name: "Patrol Point 1", x: -1.14, y: 2.21, yaw: 3.14 },
-      { name: "Patrol Point 2", x: -6.11, y: 2.35, yaw: -1.57 },
-      { name: "Patrol Point 3", x: -6.08, y: 0.05, yaw: 0 },
-      { name: "Patrol Point 4", x: -1.03, y: 0.01, yaw: 1.57 }
+      { name: "Waypoint 1", x: -1.14, y: 2.21, yaw: 3.14 },
+      { name: "Waypoint 2", x: -6.11, y: 2.35, yaw: -1.57 },
+      { name: "Waypoint 3", x: -6.08, y: 0.05, yaw: 0 },
+      { name: "Waypoint 4", x: -1.03, y: 0.01, yaw: 1.57 }
     ];
 
     let currentPointIndex = 0;
@@ -114,7 +115,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     const navigateToNextPoint = async () => {
       // Don't continue if patrol has been cancelled or component unmounted
       if (!isPatrollingRef.current || !isMounted || navigationCancelledRef.current) {
-        await LogUtils.writeDebugToFile('Patrol cancelled or component unmounted, stopping sequence');
+        await LogUtils.writeDebugToFile('Waypoint sequence cancelled or component unmounted, stopping sequence');
         return;
       }
       
@@ -164,7 +165,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       } else {
         // All points visited, return home
         if (isPatrollingRef.current && isMounted && !navigationCancelledRef.current) {
-          await LogUtils.writeDebugToFile('All patrol points visited, returning home');
+          await LogUtils.writeDebugToFile('All waypoints visited, returning home');
           await handleGoHome();
         }
       }
@@ -172,19 +173,19 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
 
     // Start patrolling after 5 seconds
     const startupTimer = setTimeout(() => {
-      LogUtils.writeDebugToFile(`Starting patrol sequence, isPatrolling: ${isPatrollingRef.current}, isMounted: ${isMounted}`);
+      LogUtils.writeDebugToFile(`Starting waypoint sequence, isPatrolling: ${isPatrollingRef.current}, isMounted: ${isMounted}`);
       if (isPatrollingRef.current && isMounted && !navigationCancelledRef.current) {
-        LogUtils.writeDebugToFile('Patrol conditions met, initiating navigation sequence');
+        LogUtils.writeDebugToFile('Waypoint conditions met, initiating navigation sequence');
         navigateToNextPoint();
       } else {
-        LogUtils.writeDebugToFile(`Patrol sequence not started: isPatrolling=${isPatrollingRef.current}, isMounted=${isMounted}, navigationCancelled=${navigationCancelledRef.current}`);
+        LogUtils.writeDebugToFile(`Waypoint sequence not started: isPatrolling=${isPatrollingRef.current}, isMounted=${isMounted}, navigationCancelled=${navigationCancelledRef.current}`);
       }
     }, 5000);
 
     return () => {
       isMounted = false;
       clearTimeout(startupTimer);
-      LogUtils.writeDebugToFile('Component unmounted, patrol cancelled');
+      LogUtils.writeDebugToFile('Component unmounted, waypoint sequence cancelled');
     };
   }, []);
 
@@ -204,7 +205,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   const handleProductSelect = async (product: Product) => {
     // Cancel any ongoing patrol
     setIsPatrolling(false);
-    await LogUtils.writeDebugToFile('Patrol sequence cancelled due to product selection');
+    await LogUtils.writeDebugToFile('Waypoint sequence cancelled due to product selection');
     
     // Reset navigation cancelled flag
     navigationCancelledRef.current = false;
@@ -293,7 +294,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   const handleGoHome = async () => {
     // Cancel any ongoing patrol unless it's the final step of patrol
     setIsPatrolling(false);
-    await LogUtils.writeDebugToFile('Patrol sequence cancelled due to manual Go Home');
+    await LogUtils.writeDebugToFile('Waypoint sequence cancelled due to manual Go Home');
     
     // Reset navigation cancelled flag
     navigationCancelledRef.current = false;
@@ -347,7 +348,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       
       // Cancel patrol sequence
       setIsPatrolling(false);
-      await LogUtils.writeDebugToFile('Patrol sequence cancelled');
+      await LogUtils.writeDebugToFile('Waypoint sequence cancelled');
       
       // Stop the robot's movement
       await NativeModules.SlamtecUtils.stopNavigation();
@@ -411,24 +412,19 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         );
         
       case NavigationStatus.PATROL:
-        // New case for patrol mode
+        // New full-screen image for patrol mode
         return (
-          <View style={styles.navigationContainer}>
-            <View style={styles.navigationDialog}>
-              <Text style={styles.navigationTitle}>Patrol Mode</Text>
-              <Text style={styles.navigationProductName}>
-                {selectedProduct ? selectedProduct.name : "Patrol Point"}
-              </Text>
-              <ActivityIndicator size="large" color="rgb(0, 215, 68)" style={styles.navigationSpinner} />
-              
-              <TouchableOpacity 
-                style={[styles.navigationButton, styles.cancelButton, { marginTop: 30 }]}
-                onPress={handleReturnToList}
-              >
-                <Text style={styles.navigationButtonText}>Cancel Patrol</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+          <TouchableOpacity 
+            style={styles.fullScreenContainer}
+            onPress={handleReturnToList}
+            activeOpacity={1}
+          >
+            <Image 
+              source={require('../assets/test_image.jpg')} 
+              style={styles.fullScreenImage}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
         );
         
       case NavigationStatus.NAVIGATING:
@@ -668,6 +664,18 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     backgroundColor: '#F44336',
+  },
+  fullScreenContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 10,
+  },
+  fullScreenImage: {
+    width: '100%',
+    height: '100%',
   },
 });
 
