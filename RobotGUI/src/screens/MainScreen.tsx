@@ -15,6 +15,11 @@ import {
   Image,
 } from 'react-native';
 import { LogUtils } from '../utils/logging';
+import { 
+  clearInactivityTimer, 
+  startInactivityTimer, 
+  resetInactivityTimer 
+} from '../utils/inactivityTimer';
 
 // Access the global object in a way that works in React Native
 const globalAny: any = global;
@@ -47,11 +52,18 @@ const loadSpeeds = async () => {
 // Load speeds immediately
 loadSpeeds();
 
-// Create a persistent promotion controller that won't be removed on unmount
+// Inactivity timeout duration (20 seconds for testing)
+const INACTIVITY_TIMEOUT = 20000;
+
+// Global variables to track promotion state across component lifecycles
 let promotionActive = false;
 let promotionMounted = false;
 let promotionCancelled = false;
 let currentPointIndex = 0;
+
+// Global references for functions
+globalAny.clearInactivityTimer = null;
+globalAny.restartPromotion = null;
 
 // Define patrol points globally
 const patrolPoints = [
@@ -60,31 +72,6 @@ const patrolPoints = [
   { name: "Patrol Point 3", x: -6.08, y: 0.05, yaw: 0 },
   { name: "Patrol Point 4", x: -1.03, y: 0.01, yaw: 1.57 }
 ];
-
-// Create a persistent global function that won't be removed on unmount
-globalAny.startPromotion = async () => {
-  try {
-    await LogUtils.writeDebugToFile('Global startPromotion function called');
-    
-    // Reset any previous state
-    promotionCancelled = false;
-    currentPointIndex = 0;
-    
-    // Set the promotion state to active
-    promotionActive = true;
-    
-    await LogUtils.writeDebugToFile('Promotion activated globally, will start when MainScreen mounts');
-    
-    // Return success - the component will pick up the state when it mounts
-    return true;
-  } catch (error) {
-    await LogUtils.writeDebugToFile(`Error in global startPromotion: ${error}`);
-    // Reset state on error
-    promotionActive = false;
-    promotionCancelled = true;
-    return false;
-  }
-};
 
 interface MainScreenProps {
   onClose: () => void;
@@ -115,6 +102,33 @@ enum NavigationStatus {
   PATROL  // Add PATROL as a new status
 }
 
+// Define a global function that will persist even when the component is unmounted
+globalAny.startPromotion = async () => {
+  await LogUtils.writeDebugToFile('Promotion activated globally');
+  
+  // Set the promotion state
+  promotionCancelled = false;
+  currentPointIndex = 0;
+  promotionActive = true;
+  
+  // If the MainScreen is mounted, we can start the promotion immediately
+  if (promotionMounted) {
+    await LogUtils.writeDebugToFile('MainScreen is mounted, starting promotion immediately');
+    
+    // Clear any inactivity timer when manually starting promotion
+    if (globalAny.clearInactivityTimer && typeof globalAny.clearInactivityTimer === 'function') {
+      globalAny.clearInactivityTimer();
+      await LogUtils.writeDebugToFile('Cleared inactivity timer for manual promotion start');
+    }
+    
+    return true;
+  } else {
+    // Otherwise, the promotion will start when the MainScreen mounts
+    await LogUtils.writeDebugToFile('MainScreen not mounted, promotion will start when it mounts');
+    return true;
+  }
+};
+
 const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps): React.JSX.Element => {
   const [searchText, setSearchText] = useState('');
   const [products, setProducts] = useState<Product[]>(initialProducts);
@@ -127,6 +141,9 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   // Add state to track if patrol is active - start with false since we won't auto-start
   const [isPatrolling, setIsPatrolling] = useState(false);
   
+  // Add ref to track inactivity timer
+  const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
+  
   // Add ref to track if navigation has been cancelled
   const navigationCancelledRef = useRef(false);
   
@@ -136,8 +153,91 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   // Set the mounted ref to true
   const isMountedRef = useRef(true);
   
+  // Function to clear the inactivity timer
+  const clearInactivityTimer = () => {
+    if (inactivityTimerRef.current) {
+      clearTimeout(inactivityTimerRef.current);
+      inactivityTimerRef.current = null;
+      LogUtils.writeDebugToFile('Inactivity timer cleared');
+    }
+  };
+  
+  // Store the clearInactivityTimer function in the global scope
+  globalAny.clearInactivityTimer = clearInactivityTimer;
+  
+  // Function to start the inactivity timer
+  const startInactivityTimer = () => {
+    // Clear any existing timer first
+    clearInactivityTimer();
+    
+    // Log that we're starting the timer
+    LogUtils.writeDebugToFile(`Starting inactivity timer (${INACTIVITY_TIMEOUT/1000} seconds)`);
+    
+    // Set a new timer
+    inactivityTimerRef.current = setTimeout(() => {
+      // Only restart promotion if we're not in config screen and not already in promotion
+      if (!isPatrollingRef.current && isMountedRef.current) {
+        LogUtils.writeDebugToFile('Inactivity timer expired, restarting promotion');
+        restartPromotion();
+      }
+    }, INACTIVITY_TIMEOUT);
+  };
+  
+  // Function to restart the promotion
+  const restartPromotion = async () => {
+    try {
+      // Only restart if we're not already in promotion mode
+      if (!isPatrollingRef.current && isMountedRef.current) {
+        await LogUtils.writeDebugToFile('Auto-restarting promotion after inactivity');
+        
+        // Use the same logic as the global startPromotion function
+        promotionCancelled = false;
+        currentPointIndex = 0;
+        promotionActive = true;
+        
+        // Set patrol state to active
+        setIsPatrolling(true);
+        isPatrollingRef.current = true;
+        
+        // Reset navigation cancelled flag to ensure navigation can start
+        navigationCancelledRef.current = false;
+        
+        // Set navigation status to PATROL immediately to show the promotion screen
+        setNavigationStatus(NavigationStatus.PATROL);
+        
+        // Set robot speed to patrol speed
+        try {
+          await NativeModules.SlamtecUtils.setMaxLineSpeed(SPEEDS.patrol.toString());
+          await LogUtils.writeDebugToFile(`Set robot speed to patrol mode: ${SPEEDS.patrol} m/s`);
+        } catch (error: any) {
+          await LogUtils.writeDebugToFile(`Failed to set patrol speed: ${error.message}`);
+        }
+        
+        // Start navigation with a small delay to ensure UI has updated
+        setTimeout(() => {
+          if (isMountedRef.current && !navigationCancelledRef.current) {
+            LogUtils.writeDebugToFile('Starting navigation to first waypoint after auto-restart');
+            // Ensure patrol state is still active
+            isPatrollingRef.current = true;
+            navigateToNextPoint();
+          } else {
+            LogUtils.writeDebugToFile(`Navigation not starting after auto-restart: isMounted=${isMountedRef.current}, navigationCancelled=${navigationCancelledRef.current}`);
+          }
+        }, 1000); // Increased delay to 1 second for more reliable startup
+      }
+    } catch (error: any) {
+      await LogUtils.writeDebugToFile(`Error auto-restarting promotion: ${error.message}`);
+    }
+  };
+  
+  // Store the restartPromotion function in the global scope
+  globalAny.restartPromotion = restartPromotion;
+  
   // Function to navigate to the next patrol point
   const navigateToNextPoint = async () => {
+    // Log the current state for debugging
+    await LogUtils.writeDebugToFile(`navigateToNextPoint called. State: isPatrolling=${isPatrollingRef.current}, isMounted=${isMountedRef.current}, navigationCancelled=${navigationCancelledRef.current}, promotionCancelled=${promotionCancelled}`);
+    
     // Don't continue if patrol has been cancelled or component unmounted
     if (!isPatrollingRef.current || !isMountedRef.current || navigationCancelledRef.current || promotionCancelled) {
       await LogUtils.writeDebugToFile('Waypoint sequence cancelled or component unmounted, stopping sequence');
@@ -146,10 +246,13 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     
     if (currentPointIndex < patrolPoints.length) {
       const point = patrolPoints[currentPointIndex];
-      await LogUtils.writeDebugToFile(`Starting navigation to ${point.name}`);
+      await LogUtils.writeDebugToFile(`Starting navigation to ${point.name} (index: ${currentPointIndex})`);
       try {
-        // Don't update state if component unmounted or patrol cancelled
-        if (!isPatrollingRef.current || !isMountedRef.current || navigationCancelledRef.current || promotionCancelled) return;
+        // Double check patrol state before proceeding
+        if (!isPatrollingRef.current || !isMountedRef.current || navigationCancelledRef.current || promotionCancelled) {
+          await LogUtils.writeDebugToFile('Patrol conditions changed before navigation, aborting');
+          return;
+        }
         
         // Always keep in PATROL state, don't change to other states during patrol
         setNavigationStatus(NavigationStatus.PATROL);
@@ -164,6 +267,9 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           }
         });
         
+        // Log navigation parameters for debugging
+        await LogUtils.writeDebugToFile(`Navigating to coordinates: x=${point.x}, y=${point.y}, yaw=${point.yaw}`);
+        
         await NativeModules.SlamtecUtils.navigate(
           point.x,
           point.y,
@@ -171,7 +277,10 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         );
         
         // Don't update state if component unmounted or patrol cancelled
-        if (!isPatrollingRef.current || !isMountedRef.current || navigationCancelledRef.current || promotionCancelled) return;
+        if (!isPatrollingRef.current || !isMountedRef.current || navigationCancelledRef.current || promotionCancelled) {
+          await LogUtils.writeDebugToFile('Patrol conditions changed after navigation, not proceeding to next point');
+          return;
+        }
         
         await LogUtils.writeDebugToFile(`Navigation to ${point.name} completed`);
         
@@ -206,14 +315,14 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     isPatrollingRef.current = isPatrolling;
     LogUtils.writeDebugToFile(`Patrol state changed to: ${isPatrolling ? 'active' : 'inactive'}`);
   }, [isPatrolling]);
-
+  
   // Handle hardware back button (Android)
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       handleClose();
       return true;
     });
-
+  
     // Add event listener for SlamtecDebug events
     const eventEmitter = new NativeEventEmitter(NativeModules.SlamtecUtils);
     const subscription = eventEmitter.addListener('SlamtecDebug', (event) => {
@@ -221,79 +330,57 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         LogUtils.writeDebugToFile(event.message);
       }
     });
-
+  
     return () => {
       backHandler.remove();
       subscription.remove();
     };
   }, []);
-
-  // Modify the useEffect to not start patrol automatically
+  
+  // Effect to handle component mount/unmount and promotion state
   useEffect(() => {
-    // Log that we're initializing the patrol sequence
-    LogUtils.writeDebugToFile('Initializing waypoint sequence');
-    
-    // Set the mounted flag
-    promotionMounted = true;
-    
-    // Don't start patrol automatically - set to false
-    setIsPatrolling(false);
-    isPatrollingRef.current = false;
-    
-    // Reset navigation cancelled flag
-    navigationCancelledRef.current = false;
-    
     // Set the mounted ref to true
     isMountedRef.current = true;
+    promotionMounted = true;
     
     // Log the current promotion state
-    LogUtils.writeDebugToFile(`Current promotion state: active=${promotionActive}, cancelled=${promotionCancelled}`);
+    LogUtils.writeDebugToFile(`MainScreen mounted. Promotion state: active=${promotionActive}, cancelled=${promotionCancelled}, currentPointIndex=${currentPointIndex}`);
     
-    // Add a small delay before checking promotion state to ensure component is fully mounted
-    setTimeout(() => {
-      // Check if promotion was activated while component was unmounted
-      if (promotionActive && !promotionCancelled && isMountedRef.current) {
-        LogUtils.writeDebugToFile('Detected active promotion on component mount, starting patrol');
-        
-        // Set patrol state to active
-        setIsPatrolling(true);
-        isPatrollingRef.current = true;
-        
-        // Set navigation status to PATROL immediately to show the promotion screen
-        setNavigationStatus(NavigationStatus.PATROL);
-        
-        // Set robot speed to patrol speed (slower)
-        NativeModules.SlamtecUtils.setMaxLineSpeed(SPEEDS.patrol.toString())
-          .then((success: boolean) => {
-            if (success) {
-              LogUtils.writeDebugToFile(`Set robot speed to patrol mode: ${SPEEDS.patrol} m/s`);
-            } else {
-              LogUtils.writeDebugToFile(`Warning: Could not set patrol speed, but continuing with patrol`);
-            }
-          })
-          .catch((error: any) => LogUtils.writeDebugToFile(`Failed to set patrol speed: ${error.message}`));
-        
-        // Start navigation
-        setTimeout(() => {
-          if (isPatrollingRef.current && isMountedRef.current && !navigationCancelledRef.current) {
-            LogUtils.writeDebugToFile('Starting navigation to first waypoint after mount');
-            navigateToNextPoint();
-          } else {
-            LogUtils.writeDebugToFile(`Navigation not started: isPatrolling=${isPatrollingRef.current}, isMounted=${isMountedRef.current}, navigationCancelled=${navigationCancelledRef.current}`);
-          }
-        }, 500); // Give a little more time for the UI to update
-      } else {
-        LogUtils.writeDebugToFile('No active promotion detected on mount');
-      }
-    }, 100); // Small delay to ensure component is fully mounted
-
+    // Initialize waypoint sequence if promotion is active
+    if (promotionActive && !promotionCancelled) {
+      LogUtils.writeDebugToFile('Active promotion detected on mount, starting navigation to first waypoint');
+      
+      // Set patrol state to active
+      setIsPatrolling(true);
+      isPatrollingRef.current = true;
+      
+      // Set navigation status to PATROL immediately to show the promotion screen
+      setNavigationStatus(NavigationStatus.PATROL);
+      
+      // Start navigation with a small delay
+      setTimeout(() => {
+        if (isPatrollingRef.current && isMountedRef.current && !navigationCancelledRef.current) {
+          LogUtils.writeDebugToFile('Starting navigation to first waypoint');
+          navigateToNextPoint();
+        } else {
+          LogUtils.writeDebugToFile(`Navigation not starting: isMounted=${isMountedRef.current}, navigationCancelled=${navigationCancelledRef.current}`);
+        }
+      }, 500);
+    } else {
+      LogUtils.writeDebugToFile('No active promotion detected on mount');
+    }
+    
+    // Clean up on unmount
     return () => {
       promotionMounted = false;
       isMountedRef.current = false;
       LogUtils.writeDebugToFile('Component unmounted, waypoint sequence cancelled');
+      
+      // Clear inactivity timer on unmount
+      clearInactivityTimer();
     };
   }, []);
-
+  
   // Filter products when search text changes
   useEffect(() => {
     if (searchText) {
@@ -306,8 +393,11 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       setFilteredProducts([...products].sort((a, b) => a.name.localeCompare(b.name)));
     }
   }, [searchText, products]);
-
+  
   const handleProductSelect = async (product: Product) => {
+    // Clear any inactivity timer when starting new navigation
+    clearInactivityTimer();
+    
     // Cancel any ongoing patrol
     setIsPatrolling(false);
     promotionActive = false;
@@ -337,13 +427,13 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         y: 0,  // Keep robot at ground level
         z: poseZ
       };
-
+  
       await LogUtils.writeDebugToFile(`Requesting navmesh coordinates for: ${JSON.stringify(coords)}`);
       const navTarget = await NativeModules.DomainUtils.getNavmeshCoord(coords);
       
       // Log the full structure of navTarget
       await LogUtils.writeDebugToFile(`Received navTarget: ${JSON.stringify(navTarget)}`);
-
+  
       // Detailed validation
       if (!navTarget) {
         throw new Error('No navTarget received');
@@ -355,7 +445,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       if (typeof targetCoords.x === 'undefined' || typeof targetCoords.z === 'undefined') {
         throw new Error(`Invalid coordinates: ${JSON.stringify(targetCoords)}`);
       }
-
+  
       await LogUtils.writeDebugToFile(`Raw targetCoords: ${JSON.stringify(targetCoords, null, 2)}`);
       const navigationParams = {
         x: targetCoords.x,
@@ -381,6 +471,10 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         await LogUtils.writeDebugToFile('Navigation command completed');
         await LogUtils.writeDebugToFile('Setting navigation status to ARRIVED');
         setNavigationStatus(NavigationStatus.ARRIVED);
+        
+        // Start inactivity timer after arriving at product
+        startInactivityTimer();
+        await LogUtils.writeDebugToFile('Started inactivity timer after arriving at product');
       } catch (error: any) {
         // Only update error state if navigation wasn't cancelled
         if (!navigationCancelledRef.current) {
@@ -405,7 +499,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       }
     }
   };
-
+  
   const handleGoHome = async () => {
     // Cancel any ongoing patrol unless it's the final step of patrol
     setIsPatrolling(false);
@@ -444,7 +538,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       }
     }
   };
-
+  
   const handleClose = () => {
     Alert.alert(
       'Exit App',
@@ -465,7 +559,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       { cancelable: true }
     );
   };
-
+  
   const handleReturnToList = async () => {
     try {
       // Mark navigation as cancelled
@@ -475,6 +569,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       
       // Cancel patrol sequence
       setIsPatrolling(false);
+      isPatrollingRef.current = false;
       await LogUtils.writeDebugToFile('Waypoint sequence cancelled');
       
       // Stop the robot's movement
@@ -484,18 +579,26 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       // Reset UI state
       setSelectedProduct(null);
       setNavigationStatus(NavigationStatus.IDLE);
+      
+      // Start inactivity timer if we were in promotion mode
+      startInactivityTimer();
+      await LogUtils.writeDebugToFile('Started inactivity timer after interrupting promotion');
     } catch (error) {
       // Even if stopping fails, still cancel patrol and return to list
       navigationCancelledRef.current = true;
       promotionCancelled = true;
       promotionActive = false;
       setIsPatrolling(false);
+      isPatrollingRef.current = false;
       setSelectedProduct(null);
       setNavigationStatus(NavigationStatus.IDLE);
-      await LogUtils.writeDebugToFile('Error stopping navigation, but returned to list anyway');
+      
+      // Start inactivity timer even if there was an error
+      startInactivityTimer();
+      await LogUtils.writeDebugToFile('Error stopping navigation, but returned to list anyway and started inactivity timer');
     }
   };
-
+  
   const renderProductItem = ({ item }: { item: Product }) => (
     <TouchableOpacity 
       style={styles.productItem}
@@ -504,7 +607,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       <Text style={styles.productText}>{item.name} ({item.eslCode})</Text>
     </TouchableOpacity>
   );
-
+  
   // Render different views based on navigation status
   const renderContent = () => {
     switch (navigationStatus) {
@@ -609,9 +712,25 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         );
     }
   };
+  
+  // Function to reset the inactivity timer
+  const resetInactivityTimer = () => {
+    clearInactivityTimer();
+    startInactivityTimer();
+    LogUtils.writeDebugToFile('Inactivity timer reset');
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView 
+      style={styles.container}
+      onTouchStart={() => {
+        // Only reset timer if we're not in promotion mode
+        if (!isPatrollingRef.current && navigationStatus !== NavigationStatus.PATROL) {
+          resetInactivityTimer();
+          LogUtils.writeDebugToFile('Touch detected, reset inactivity timer');
+        }
+      }}
+    >
       <View style={styles.header}>
         <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
           <Text style={styles.closeButtonText}>✕</Text>
@@ -621,7 +740,12 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         
         <TouchableOpacity 
           style={styles.configButton}
-          onPress={onConfigPress}
+          onPress={() => {
+            // Clear inactivity timer when config screen is opened
+            clearInactivityTimer();
+            LogUtils.writeDebugToFile('Config screen opened, cleared inactivity timer');
+            onConfigPress();
+          }}
         >
           <Text style={styles.configButtonText}>⚙</Text>
         </TouchableOpacity>
