@@ -40,7 +40,8 @@ enum NavigationStatus {
   IDLE,
   NAVIGATING,
   ARRIVED,
-  ERROR
+  ERROR,
+  PATROL  // Add PATROL as a new status
 }
 
 const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps): React.JSX.Element => {
@@ -124,7 +125,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           // Don't update state if component unmounted or patrol cancelled
           if (!isPatrollingRef.current || !isMounted || navigationCancelledRef.current) return;
           
-          setNavigationStatus(NavigationStatus.NAVIGATING);
+          setNavigationStatus(NavigationStatus.PATROL);
           setSelectedProduct({
             name: point.name,
             eslCode: `PP${currentPointIndex + 1}`,
@@ -406,6 +407,27 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
             >
               <Text style={styles.homeButtonText}>Go Home</Text>
             </TouchableOpacity>
+          </View>
+        );
+        
+      case NavigationStatus.PATROL:
+        // New case for patrol mode
+        return (
+          <View style={styles.navigationContainer}>
+            <View style={styles.navigationDialog}>
+              <Text style={styles.navigationTitle}>Patrol Mode</Text>
+              <Text style={styles.navigationProductName}>
+                {selectedProduct ? selectedProduct.name : "Patrol Point"}
+              </Text>
+              <ActivityIndicator size="large" color="rgb(0, 215, 68)" style={styles.navigationSpinner} />
+              
+              <TouchableOpacity 
+                style={[styles.navigationButton, styles.cancelButton, { marginTop: 30 }]}
+                onPress={handleReturnToList}
+              >
+                <Text style={styles.navigationButtonText}>Cancel Patrol</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         );
         
