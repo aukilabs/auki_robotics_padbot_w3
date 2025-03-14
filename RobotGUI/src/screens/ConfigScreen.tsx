@@ -266,6 +266,39 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
               <Text style={styles.buttonText}>Start Promotion</Text>
             </TouchableOpacity>
           </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Robot Control</Text>
+            <TouchableOpacity 
+              style={[styles.button, styles.homeButton]}
+              onPress={async () => {
+                try {
+                  // Show loading alert
+                  Alert.alert(
+                    'Going Home',
+                    'Sending robot back to home position...'
+                  );
+                  
+                  // Call the goHome function
+                  await NativeModules.SlamtecUtils.goHome();
+                  
+                  // Show success message
+                  Alert.alert(
+                    'Success',
+                    'Robot is returning to home position.'
+                  );
+                } catch (error: any) {
+                  console.error('Error going home:', error);
+                  Alert.alert(
+                    'Go Home Failed',
+                    'Error: ' + (error.message || 'Unknown error')
+                  );
+                }
+              }}
+            >
+              <Text style={styles.buttonText}>Go Home</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -347,6 +380,9 @@ const styles = StyleSheet.create({
   },
   promotionButton: {
     backgroundColor: '#9C27B0', // Purple color for promotion button
+  },
+  homeButton: {
+    backgroundColor: '#FF9800', // Orange color for home button
   },
   buttonText: {
     color: 'white',

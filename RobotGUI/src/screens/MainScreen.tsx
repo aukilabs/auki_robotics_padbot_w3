@@ -530,13 +530,6 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
                 contentContainerStyle={styles.productListContent}
               />
             )}
-            
-            <TouchableOpacity 
-              style={styles.homeButton}
-              onPress={handleGoHome}
-            >
-              <Text style={styles.homeButtonText}>Go Home</Text>
-            </TouchableOpacity>
           </View>
         );
         
@@ -592,13 +585,6 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
                   onPress={handleReturnToList}
                 >
                   <Text style={styles.navigationButtonText}>Back to List</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity 
-                  style={[styles.navigationButton, styles.navigationHomeButton]}
-                  onPress={handleGoHome}
-                >
-                  <Text style={[styles.navigationButtonText, styles.navigationHomeButtonText]}>Go Home</Text>
                 </TouchableOpacity>
               </View>
             </View>
