@@ -160,10 +160,11 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         setNavigationError(error.message || 'Navigation failed');
       }
     } else {
-      // All points visited, return home
+      // Instead of returning home, reset the index and continue the loop
       if (isPatrollingRef.current && isMountedRef.current && !navigationCancelledRef.current && !promotionCancelled) {
-        await LogUtils.writeDebugToFile('All waypoints visited, returning home');
-        await handleGoHome();
+        await LogUtils.writeDebugToFile('Completed one cycle of waypoints, looping back to the beginning');
+        currentPointIndex = 0; // Reset to the first waypoint
+        navigateToNextPoint(); // Continue the loop
       }
     }
   };
@@ -481,7 +482,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         );
         
       case NavigationStatus.PATROL:
-        // New full-screen image for patrol mode
+        // Full-screen image for patrol mode with tap instruction
         return (
           <TouchableOpacity 
             style={styles.fullScreenContainer}
@@ -493,6 +494,9 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
               style={styles.fullScreenImage}
               resizeMode="cover"
             />
+            <View style={styles.tapInstructionContainer}>
+              <Text style={styles.tapInstructionText}>Tap anywhere to stop</Text>
+            </View>
           </TouchableOpacity>
         );
         
@@ -745,6 +749,23 @@ const styles = StyleSheet.create({
   fullScreenImage: {
     width: '100%',
     height: '100%',
+  },
+  tapInstructionContainer: {
+    position: 'absolute',
+    bottom: 50,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    paddingVertical: 15,
+  },
+  tapInstructionText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: 'white',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 5,
   },
 });
 
