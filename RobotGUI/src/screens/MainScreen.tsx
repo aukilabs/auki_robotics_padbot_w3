@@ -735,22 +735,29 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       }}
     >
       <View style={styles.header}>
-        <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-          <Text style={styles.closeButtonText}>✕</Text>
+        <TouchableOpacity 
+          style={styles.closeButton} 
+          onPress={undefined}
+          onLongPress={handleClose}
+          delayLongPress={3000}
+        >
+          {/* Close button is now invisible but still functional with long press */}
         </TouchableOpacity>
         
         <Text style={styles.headerTitle}>Cactus Assistant</Text>
         
         <TouchableOpacity 
           style={styles.configButton}
-          onPress={() => {
+          onPress={undefined}
+          onLongPress={() => {
             // Clear inactivity timer when config screen is opened
             clearInactivityTimer();
             LogUtils.writeDebugToFile('Config screen opened, cleared inactivity timer');
             onConfigPress();
           }}
+          delayLongPress={3000}
         >
-          <Text style={styles.configButtonText}>⚙</Text>
+          {/* Config button is now invisible but still functional with long press */}
         </TouchableOpacity>
       </View>
       
@@ -780,6 +787,8 @@ const styles = StyleSheet.create({
   closeButton: {
     padding: 5,
     width: 40,
+    height: 40,
+    // No background color or border to make it invisible
   },
   closeButtonText: {
     fontSize: 24,
@@ -788,6 +797,8 @@ const styles = StyleSheet.create({
   configButton: {
     padding: 5,
     width: 40,
+    height: 40,
+    // No background color or border to make it invisible
   },
   configButtonText: {
     fontSize: 32,
