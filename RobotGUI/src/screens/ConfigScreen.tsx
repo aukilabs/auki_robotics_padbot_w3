@@ -273,20 +273,14 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
               style={[styles.button, styles.homeButton]}
               onPress={async () => {
                 try {
-                  // Show loading alert
-                  Alert.alert(
-                    'Going Home',
-                    'Sending robot back to home position...'
-                  );
+                  // Log the action
+                  console.log('Going home...');
                   
-                  // Call the goHome function
+                  // Call the goHome function directly without showing any alerts
                   await NativeModules.SlamtecUtils.goHome();
                   
-                  // Show success message
-                  Alert.alert(
-                    'Success',
-                    'Robot is returning to home position.'
-                  );
+                  // Close the config screen after initiating go home
+                  onClose();
                 } catch (error: any) {
                   console.error('Error going home:', error);
                   Alert.alert(
