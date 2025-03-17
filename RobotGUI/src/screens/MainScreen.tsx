@@ -60,6 +60,8 @@ let promotionActive = false;
 let promotionMounted = false;
 let promotionCancelled = false;
 let currentPointIndex = 0;
+let remountFromConfig = false;  // Add flag to track if we're remounting after config
+let navigatingToConfig = false; // Add flag to track if we're navigating to config
 
 // Global references for functions
 globalAny.clearInactivityTimer = null;
@@ -346,8 +348,9 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     // Log the current promotion state
     LogUtils.writeDebugToFile(`MainScreen mounted. Promotion state: active=${promotionActive}, cancelled=${promotionCancelled}, currentPointIndex=${currentPointIndex}`);
     
-    // Initialize waypoint sequence if promotion is active
-    if (promotionActive && !promotionCancelled) {
+    // Only start promotion if it was explicitly activated via the global startPromotion function
+    // and not cancelled, and we're not remounting after config screen
+    if (promotionActive && !promotionCancelled && !remountFromConfig) {
       LogUtils.writeDebugToFile('Active promotion detected on mount, starting navigation to first waypoint');
       
       // Set patrol state to active
@@ -367,13 +370,27 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         }
       }, 500);
     } else {
-      LogUtils.writeDebugToFile('No active promotion detected on mount');
+      if (remountFromConfig) {
+        LogUtils.writeDebugToFile('Remounting after config screen, not starting promotion automatically');
+        // Reset the flag after we've checked it
+        remountFromConfig = false;
+      } else {
+        LogUtils.writeDebugToFile('No active promotion detected on mount');
+      }
     }
     
     // Clean up on unmount
     return () => {
       promotionMounted = false;
       isMountedRef.current = false;
+      
+      // Set a flag to indicate we're coming from config screen if that's where we're going
+      if (navigatingToConfig) {
+        remountFromConfig = true;
+        navigatingToConfig = false;
+        LogUtils.writeDebugToFile('Setting remountFromConfig flag to true');
+      }
+      
       LogUtils.writeDebugToFile('Component unmounted, waypoint sequence cancelled');
       
       // Clear inactivity timer on unmount
@@ -753,6 +770,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
             // Clear inactivity timer when config screen is opened
             clearInactivityTimer();
             LogUtils.writeDebugToFile('Config screen opened, cleared inactivity timer');
+            // Set flag that we're navigating to config
+            navigatingToConfig = true;
             onConfigPress();
           }}
           delayLongPress={3000}
