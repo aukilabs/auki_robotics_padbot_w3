@@ -292,6 +292,36 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
             >
               <Text style={styles.buttonText}>Go Home</Text>
             </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={[styles.button, styles.mapButton]}
+              onPress={async () => {
+                try {
+                  // Show loading alert
+                  Alert.alert(
+                    'Downloading Map',
+                    'Downloading STCM map file...'
+                  );
+                  
+                  // Call the getStcmMap function
+                  const result = await NativeModules.DomainUtils.getStcmMap(20);
+                  
+                  // Show success message
+                  Alert.alert(
+                    'Map Downloaded',
+                    `Map saved to: ${result.filePath}\nFile size: ${(result.fileSize / 1024).toFixed(2)} KB`
+                  );
+                } catch (error: any) {
+                  console.error('Error downloading map:', error);
+                  Alert.alert(
+                    'Map Download Failed',
+                    'Error: ' + (error.message || 'Unknown error')
+                  );
+                }
+              }}
+            >
+              <Text style={styles.buttonText}>Get Map</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
@@ -377,6 +407,10 @@ const styles = StyleSheet.create({
   },
   homeButton: {
     backgroundColor: '#FF9800', // Orange color for home button
+  },
+  mapButton: {
+    backgroundColor: '#2196F3', // Blue color for map button
+    marginTop: 10,
   },
   buttonText: {
     color: 'white',

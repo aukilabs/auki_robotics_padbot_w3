@@ -44,31 +44,10 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
         get() = sharedPreferences.getString("domain_info", null)
         set(value) = sharedPreferences.edit().putString("domain_info", value).apply()
 
-    private var pendingMapPromise: Promise? = null
-    private var pendingMapParams: Pair<String, Int>? = null
-
     override fun getName(): String = "DomainUtils"
 
     override fun initialize() {
         super.initialize()
-        reactApplicationContext.addActivityEventListener(object : BaseActivityEventListener() {
-            override fun onActivityResult(activity: Activity?, requestCode: Int, resultCode: Int, data: Intent?) {
-                if (requestCode == STORAGE_PERMISSION_CODE) {
-                    if (resultCode == Activity.RESULT_OK) {
-                        // Permission granted, proceed with map download
-                        pendingMapParams?.let { (format, resolution) ->
-                            getMap(format, resolution, pendingMapPromise!!)
-                        }
-                    } else {
-                        // Permission denied
-                        pendingMapPromise?.reject("PERMISSION_ERROR", "Storage permission denied")
-                    }
-                    // Clear pending data
-                    pendingMapParams = null
-                    pendingMapPromise = null
-                }
-            }
-        })
     }
 
     @ReactMethod
@@ -266,173 +245,6 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
     }
 
     @ReactMethod
-    fun getMap(imageFormat: String = "png", resolution: Int = 20, promise: Promise) {
-        scope.launch {
-            try {
-                val domainId = sharedPreferences.getString("domain_id", "") ?: ""
-                val domainInfoStr = domainInfo ?: throw Exception("No domain info available")
-                val domainInfoObj = JSONObject(domainInfoStr)
-                val accessToken = domainInfoObj.getString("access_token")
-                val domainServerObj = domainInfoObj.getJSONObject("domain_server")
-                val domainServerUrl = domainServerObj.getString("url")
-
-                val url = ConfigManager.getNestedString("domain.map_endpoint")
-
-                val client = OkHttpClient()
-                
-                val requestBody = JSONObject().apply {
-                    put("domainId", domainId)
-                    put("domainServerUrl", domainServerUrl)
-                    put("height", 0.1)
-                    put("pixelsPerMeter", resolution)
-                }
-
-                val mediaType = "application/json".toMediaType()
-                val request = Request.Builder()
-                    .url(url)
-                    .post(requestBody.toString().toRequestBody(mediaType))
-                    .addHeader("Authorization", "Bearer $accessToken")
-                    .build()
-
-                val response = client.newCall(request).execute()
-                if (!response.isSuccessful) {
-                    val errorBody = response.body?.string() ?: "No error body"
-                    val error = Exception("Failed to download map: ${response.code}\nRequest Body: ${requestBody.toString()}\nError Body: $errorBody")
-                    error.printStackTrace()
-                    throw error
-                }
-
-                val responseBody = response.body?.string() ?: throw Exception("Empty response body")
-                
-                // Split the data using the boundary marker
-                val boundary = responseBody.split("\n", limit = 2)[0].trim()
-                val parts = responseBody.split(boundary)
-
-                var imageData: ByteArray? = null
-                var yamlContent: String? = null
-
-                // Process each part of the multipart response
-                for (part in parts) {
-                    if (part.contains("name=\"png\"")) {
-                        val imageDataMatch = Regex("name=\"png\"\\s*\\n([a-zA-Z0-9+/=\\n]+)").find(part)
-                        if (imageDataMatch != null) {
-                            val encodedImage = imageDataMatch.groupValues[1].replace("\\s+".toRegex(), "")
-                            imageData = Base64.decode(encodedImage, Base64.DEFAULT)
-                        }
-                    } else if (part.contains("name=\"yaml\"")) {
-                        val yamlMatch = Regex("name=\"yaml\"\\s*\\n(.+)", RegexOption.DOT_MATCHES_ALL).find(part)
-                        if (yamlMatch != null) {
-                            yamlContent = yamlMatch.groupValues[1].trim()
-                        }
-                    }
-                }
-
-                if (imageData == null || yamlContent == null) {
-                    throw Exception("Failed to extract image or YAML data from response")
-                }
-
-                // Convert PNG to requested format
-                val bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
-                if (bitmap == null) {
-                    throw Exception("Failed to decode PNG image data")
-                }
-
-                val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                val cactusDir = File(downloadsDir, "CactusAssistant")
-                if (!cactusDir.exists()) {
-                    cactusDir.mkdirs()
-                }
-
-                val imageFile = File(cactusDir, "map.${imageFormat.lowercase()}")
-                
-                when (imageFormat.lowercase()) {
-                    "bmp" -> {
-                        // Convert PNG to BMP
-                        val bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
-                        if (bitmap != null) {
-                            val outputStream = FileOutputStream(imageFile)
-                            
-                            // BMP Header
-                            val width = bitmap.width
-                            val height = bitmap.height
-                            val bitsPerPixel = 24
-                            val rowPadding = (4 - (width * 3) % 4) % 4
-                            val imageSize = (width * 3 + rowPadding) * height
-                            val fileSize = 54 + imageSize  // 54 = header size
-                            
-                            // BMP File Header (14 bytes)
-                            outputStream.write('B'.code)
-                            outputStream.write('M'.code)
-                            writeInt(outputStream, fileSize)
-                            writeInt(outputStream, 0) // Reserved
-                            writeInt(outputStream, 54) // Offset to pixel data
-                            
-                            // BMP Info Header (40 bytes)
-                            writeInt(outputStream, 40) // Info header size
-                            writeInt(outputStream, width)
-                            writeInt(outputStream, height)
-                            writeShort(outputStream, 1) // Planes
-                            writeShort(outputStream, bitsPerPixel)
-                            writeInt(outputStream, 0) // No compression
-                            writeInt(outputStream, imageSize)
-                            writeInt(outputStream, 2835) // X pixels per meter
-                            writeInt(outputStream, 2835) // Y pixels per meter
-                            writeInt(outputStream, 0) // Colors in color table
-                            writeInt(outputStream, 0) // Important color count
-                            
-                            // Pixel data (bottom-up, BGR)
-                            val pixels = IntArray(width * height)
-                            bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
-                            
-                            for (y in height - 1 downTo 0) {
-                                for (x in 0 until width) {
-                                    val pixel = pixels[y * width + x]
-                                    outputStream.write(pixel and 0xFF) // Blue
-                                    outputStream.write((pixel shr 8) and 0xFF) // Green
-                                    outputStream.write((pixel shr 16) and 0xFF) // Red
-                                }
-                                // Add row padding
-                                for (i in 0 until rowPadding) {
-                                    outputStream.write(0)
-                                }
-                            }
-                            
-                            outputStream.close()
-                            bitmap.recycle()
-                        }
-                    }
-                    "png" -> {
-                        // Save PNG as-is
-                        imageFile.writeBytes(imageData)
-                    }
-                    "pgm" -> {
-                        // Convert to grayscale PGM
-                        // TODO: Implement PGM conversion if needed
-                        throw Exception("PGM format not yet implemented")
-                    }
-                }
-                bitmap.recycle()
-
-                // Save YAML file and update image reference
-                val yamlFile = File(cactusDir, "map.yaml")
-                val yaml = Yaml()
-                val yamlMap = yaml.load<Map<String, Any>>(yamlContent)
-                val updatedYamlMap = yamlMap.toMutableMap()
-                updatedYamlMap["image"] = "map.${imageFormat.lowercase()}"
-                yamlFile.writeText(yaml.dump(updatedYamlMap))
-
-                val result = Arguments.createMap().apply {
-                    putString("imagePath", imageFile.absolutePath)
-                    putString("yamlPath", yamlFile.absolutePath)
-                }
-                promise.resolve(result)
-            } catch (e: Exception) {
-                promise.reject("DOWNLOAD_ERROR", e.message ?: "Unknown error")
-            }
-        }
-    }
-
-    @ReactMethod
     fun getNavmeshCoord(coords: ReadableMap, promise: Promise) {
         scope.launch {
             try {
@@ -538,6 +350,122 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             } catch (e: Exception) {
                 Log.e(TAG, "Error in getNavmeshCoord: ${e.message}", e)
                 promise.reject("NAVMESH_ERROR", "Error getting navmesh coord: ${e.message}")
+            }
+        }
+    }
+
+    @ReactMethod
+    fun getStcmMap(resolution: Int = 20, promise: Promise) {
+        scope.launch {
+            try {
+                val domainId = sharedPreferences.getString("domain_id", "") ?: ""
+                val domainInfoStr = domainInfo ?: throw Exception("No domain info available")
+                val domainInfoObj = JSONObject(domainInfoStr)
+                val accessToken = domainInfoObj.getString("access_token")
+                val domainServerObj = domainInfoObj.getJSONObject("domain_server")
+                val domainServerUrl = domainServerObj.getString("url")
+
+                // Get map endpoint from config
+                val url = ConfigManager.getNestedString("domain.map_endpoint")
+                Log.d(TAG, "Using map endpoint: $url")
+
+                val client = OkHttpClient()
+                
+                val requestBody = JSONObject().apply {
+                    put("domainId", domainId)
+                    put("domainServerUrl", domainServerUrl)
+                    put("height", 0.1)
+                    put("fileType", "stcm")  // Request STCM format
+                    put("pixelsPerMeter", resolution)
+                }
+
+                Log.d(TAG, "Sending request: ${requestBody.toString()}")
+
+                val mediaType = "application/json".toMediaType()
+                val request = Request.Builder()
+                    .url(url)
+                    .post(requestBody.toString().toRequestBody(mediaType))
+                    .addHeader("Authorization", "Bearer $accessToken")
+                    .build()
+
+                val response = client.newCall(request).execute()
+                if (!response.isSuccessful) {
+                    val errorBody = response.body?.string() ?: "No error body"
+                    val error = Exception("Failed to download map: ${response.code}\nRequest Body: ${requestBody.toString()}\nError Body: $errorBody")
+                    error.printStackTrace()
+                    throw error
+                }
+
+                // Get content type to determine how to process the response
+                val contentType = response.header("Content-Type", "")
+                Log.d(TAG, "Response content type: $contentType")
+
+                var stcmData: ByteArray? = null
+
+                if (contentType?.contains("multipart/form-data") == true) {
+                    // Handle multipart response
+                    val responseBody = response.body?.string() ?: throw Exception("Empty response body")
+                    
+                    // Get the boundary from the Content-Type header
+                    val boundaryPattern = Pattern.compile("boundary=([^;\\s]+)")
+                    val boundaryMatcher = boundaryPattern.matcher(contentType)
+                    if (!boundaryMatcher.find()) {
+                        throw Exception("Could not find boundary in Content-Type header")
+                    }
+                    val boundary = "--${boundaryMatcher.group(1)}"
+                    
+                    // Split the data using the boundary marker
+                    val parts = responseBody.split(boundary)
+                    
+                    // Find the part containing the STCM data
+                    for (part in parts) {
+                        if (part.contains("name=\"img\"")) {
+                            val headerEnd = part.indexOf("\r\n\r\n")
+                            if (headerEnd > 0) {
+                                // Extract the base64 encoded data after the header
+                                val base64Data = part.substring(headerEnd + 4).trim()
+                                
+                                // Clean up any whitespace or newlines that might be in the base64 string
+                                val cleanBase64 = base64Data.replace("\\s+".toRegex(), "")
+                                
+                                // Decode the base64 data
+                                stcmData = Base64.decode(cleanBase64, Base64.DEFAULT)
+                                Log.d(TAG, "Successfully decoded ${cleanBase64.length} bytes of base64 data to ${stcmData.size} bytes of binary STCM data")
+                                break
+                            }
+                        }
+                    }
+                } else {
+                    // If not multipart, assume the entire content is the STCM data
+                    stcmData = response.body?.bytes()
+                    Log.d(TAG, "Received ${stcmData?.size ?: 0} bytes of STCM data")
+                }
+
+                if (stcmData == null) {
+                    throw Exception("Failed to extract STCM data from response")
+                }
+
+                // Save the STCM file to Downloads/CactusAssistant directory
+                val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                val cactusDir = File(downloadsDir, "CactusAssistant")
+                if (!cactusDir.exists()) {
+                    cactusDir.mkdirs()
+                }
+
+                // Use a simple filename without timestamp
+                val stcmFile = File(cactusDir, "map.stcm")
+                stcmFile.writeBytes(stcmData)
+
+                Log.d(TAG, "STCM map saved to: ${stcmFile.absolutePath}")
+
+                val result = Arguments.createMap().apply {
+                    putString("filePath", stcmFile.absolutePath)
+                    putInt("fileSize", stcmData.size)
+                }
+                promise.resolve(result)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error downloading STCM map", e)
+                promise.reject("DOWNLOAD_ERROR", e.message ?: "Unknown error")
             }
         }
     }
