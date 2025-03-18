@@ -106,4 +106,20 @@ public class ConfigManagerModule extends ReactContextBaseJavaModule {
             promise.reject("CONFIG_ERROR", "Failed to get speeds: " + e.getMessage());
         }
     }
+
+    @ReactMethod
+    public void getAutoPromotionEnabled(Promise promise) {
+        try {
+            // Get auto promotion enabled setting from config with default value of false
+            String autoPromotionValue = configManager.getNestedString("features.auto_promotion_enabled", "false");
+            boolean autoPromotionEnabled = Boolean.parseBoolean(autoPromotionValue);
+            
+            Log.d(TAG, "Auto promotion enabled: " + autoPromotionEnabled);
+            promise.resolve(autoPromotionEnabled);
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting auto promotion setting from config", e);
+            // Default to false if there's an error
+            promise.resolve(false);
+        }
+    }
 } 
