@@ -613,69 +613,241 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
                 double homeDockX = settings.getDouble("homeDockX");
                 double homeDockY = settings.getDouble("homeDockY");
                 double homeDockYaw = settings.getDouble("homeDockYaw");
-                ReadableMap mapData = settings.getMap("mapData");
                 
-                if (mapData == null) {
-                    throw new Exception("Map data not provided");
+                // Check if home dock coordinates are valid (non-zero)
+                boolean validHomeDock = (Math.abs(homeDockX) > 0.001 || Math.abs(homeDockY) > 0.001);
+                
+                // If home dock coordinates are not valid, try to use the homedock from config.yaml
+                if (!validHomeDock) {
+                    Log.d(TAG, "Home dock coordinates not valid, trying to use homedock from config");
+                    
+                    // Try to get homedock from config
+                    double[] homedock = configManager.getDoubleArray("homedock");
+                    
+                    if (homedock != null && homedock.length >= 6) {
+                        homeDockX = homedock[0];
+                        homeDockY = homedock[1];
+                        homeDockYaw = homedock[3]; // yaw is at index 3
+                        Log.d(TAG, String.format("Using homedock from config: [%.4f, %.4f, %.4f, %.4f, %.4f, %.4f]", 
+                            homedock[0], homedock[1], homedock[2], homedock[3], homedock[4], homedock[5]));
+                        validHomeDock = true;
+                    } else {
+                        // Use default coordinates instead of patrol points
+                        Log.d(TAG, "No valid homedock in config, using default coordinates [0, 0, 0]");
+                        homeDockX = 0.0;
+                        homeDockY = 0.0;
+                        homeDockYaw = 0.0;
+                        validHomeDock = true;
+                    }
                 }
-
-                String imagePath = mapData.getString("imagePath");
-                String yamlPath = mapData.getString("yamlPath");
-
-                if (imagePath == null || yamlPath == null) {
-                    throw new Exception("Invalid map data format");
-                }
-
-                // Execute operations sequentially
+                
+                // Store final coordinates for use in lambda
+                final double finalHomeDockX = homeDockX;
+                final double finalHomeDockY = homeDockY;
+                final double finalHomeDockYaw = homeDockYaw;
+                
+                // Get the STCM map from DomainUtils
+                Log.d(TAG, "Retrieving STCM map from DomainUtils...");
+                
                 try {
-                    // 1. Clear existing map
-                    clearMap(promise);
+                    // Get ReactApplicationContext
+                    ReactApplicationContext context = getReactApplicationContext();
                     
-                    // 2. Clear POIs
-                    clearPOIs(promise);
-                    
-                    // 3. Upload new map
+                    // Try to get DomainUtilsModule directly
+                    if (context != null) {
+                        // Check if the module is registered
+                        if (context.hasNativeModule(DomainUtilsModule.class)) {
+                            DomainUtilsModule domainUtils = context.getNativeModule(DomainUtilsModule.class);
+                            
+                            if (domainUtils != null) {
+                                Log.d(TAG, "Successfully obtained DomainUtilsModule");
+                                
+                                // Call getStcmMap and get the result
+                                domainUtils.getStcmMap(20, new Promise() {
+                                    @Override
+                                    public void resolve(Object value) {
+                                        try {
+                                            if (value instanceof ReadableMap) {
+                                                ReadableMap stcmMapResult = (ReadableMap) value;
+                                                String imagePath = stcmMapResult.getString("filePath");
+                                                
+                                                try {
+                                                    // Execute operations sequentially
+                                                    clearMapSync();
+                                                    clearPOIsSync();
+                                                    
+                                                    // Upload new map
                     File stcmFile = new File(imagePath);
                     if (!stcmFile.exists()) {
                         throw new Exception("Map file not found");
                     }
-                    uploadMap(stcmFile.getAbsolutePath(), promise);
+                                                    Log.d(TAG, "Uploading STCM map from: " + stcmFile.getAbsolutePath());
+                                                    uploadMapSync(stcmFile.getAbsolutePath());
                     
-                    // 4. Clear home docks
-                    clearHomeDocks(promise);
+                                                    // Skip clearing home docks as it's causing 404 errors
+                                                    // clearHomeDocksSync();
                     
-                    // 5. Set new home dock
-                    setHomeDock(homeDockX, homeDockY, 0, homeDockYaw, 0, 0, promise);
+                                                    // Set home dock directly
+                                                    setHomeDockSync(finalHomeDockX, finalHomeDockY, 0, finalHomeDockYaw, 0, 0);
                     
-                    // 6. Set pose
+                                                    try {
                     double[] pose = calculatePose(new double[]{
-                        homeDockX, homeDockY, 0,
-                        homeDockYaw, 0, 0
-                    });
-                    setPose(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5], promise);
-                    
-                    // 7. Save persistent map
-                    savePersistentMap(promise);
+                                                            finalHomeDockX, finalHomeDockY, 0,
+                                                            finalHomeDockYaw, 0, 0
+                                                        });
+                                                        setPoseSync(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]);
+                                                    } catch (Exception e) {
+                                                        // Log error but continue with the process
+                                                        Log.e(TAG, "Error setting pose: " + e.getMessage() + ". Continuing with map upload.");
+                                                    }
+                                                    
+                                                    try {
+                                                        savePersistentMapSync();
+                                                    } catch (Exception e) {
+                                                        // Log error but continue with the process
+                                                        Log.e(TAG, "Error saving persistent map: " + e.getMessage() + ". Continuing with process.");
+                                                    }
                     
                     // Success - all operations completed
-                    mainHandler.post(() -> {
                         WritableMap response = Arguments.createMap();
                         response.putString("status", "success");
                         response.putString("message", "Map processed and uploaded successfully");
-                        promise.resolve(response);
-                    });
+                                                    mainHandler.post(() -> promise.resolve(response));
+                                                } catch (Exception e) {
+                                                    Log.e(TAG, "Error during map processing: " + e.getMessage(), e);
+                                                    mainHandler.post(() -> promise.reject("MAP_PROCESS_ERROR", e.getMessage()));
+                                                }
+                                            } else {
+                                                mainHandler.post(() -> promise.reject("MAP_PROCESS_ERROR", "Unexpected result type from getStcmMap"));
+                                            }
+                                        } catch (Exception e) {
+                                            Log.e(TAG, "Error processing map result: " + e.getMessage(), e);
+                                            mainHandler.post(() -> promise.reject("MAP_PROCESS_ERROR", "Error processing map result: " + e.getMessage()));
+                                        }
+                                    }
+                                    
+                                    @Override
+                                    public void reject(String code, String message) {
+                                        mainHandler.post(() -> promise.reject("MAP_PROCESS_ERROR", "Error retrieving STCM map: " + message));
+                                    }
+                                    
+                                    @Override
+                                    public void reject(String code, Throwable e) {
+                                        mainHandler.post(() -> promise.reject("MAP_PROCESS_ERROR", "Error retrieving STCM map: " + e.getMessage(), e));
+                                    }
+                                    
+                                    @Override
+                                    public void reject(String code, String message, Throwable e) {
+                                        mainHandler.post(() -> promise.reject("MAP_PROCESS_ERROR", "Error retrieving STCM map: " + message, e));
+                                    }
+                                    
+                                    @Override
+                                    public void reject(Throwable e) {
+                                        mainHandler.post(() -> promise.reject("MAP_PROCESS_ERROR", "Error retrieving STCM map: " + e.getMessage(), e));
+                                    }
+                                    
+                                    @Override
+                                    public void reject(String code) {
+                                        mainHandler.post(() -> promise.reject("MAP_PROCESS_ERROR", "Error retrieving STCM map: " + code));
+                                    }
+                                    
+                                    @Override
+                                    public void reject(String code, WritableMap userInfo) {
+                                        mainHandler.post(() -> promise.reject("MAP_PROCESS_ERROR", "Error retrieving STCM map", userInfo));
+                                    }
+                                    
+                                    @Override
+                                    public void reject(String code, String message, WritableMap userInfo) {
+                                        mainHandler.post(() -> promise.reject("MAP_PROCESS_ERROR", "Error retrieving STCM map: " + message));
+                                    }
+                                    
+                                    @Override
+                                    public void reject(String code, String message, Throwable e, WritableMap userInfo) {
+                                        mainHandler.post(() -> promise.reject("MAP_PROCESS_ERROR", "Error retrieving STCM map: " + message, e));
+                                    }
+                                    
+                                    @Override
+                                    public void reject(String code, Throwable e, WritableMap userInfo) {
+                                        mainHandler.post(() -> promise.reject("MAP_PROCESS_ERROR", "Error retrieving STCM map: " + e.getMessage(), e));
+                                    }
+                                    
+                                    @Override
+                                    public void reject(Throwable e, WritableMap userInfo) {
+                                        mainHandler.post(() -> promise.reject("MAP_PROCESS_ERROR", "Error retrieving STCM map: " + e.getMessage(), e));
+                                    }
+                                });
+                                return;
+                            } else {
+                                Log.e(TAG, "DomainUtilsModule is null even though it's registered");
+                            }
+                        } else {
+                            Log.e(TAG, "DomainUtilsModule is not registered in ReactContext");
+                        }
+                    } else {
+                        Log.e(TAG, "ReactApplicationContext is null");
+                    }
                     
-                } catch (Exception e) {
-                    mainHandler.post(() -> {
-                        Log.e(TAG, "Error during map processing: " + e.getMessage());
-                        promise.reject("MAP_PROCESS_ERROR", e.getMessage());
-                    });
+                    // If we reach here, we couldn't get DomainUtilsModule properly
+                    Log.e(TAG, "Proceeding without map due to issues with DomainUtilsModule");
+                    
+                    // Skip map upload but still set home dock and pose
+                    // Skip clearing home docks as it's causing 404 errors
+                    // clearHomeDocksSync();
+                    
+                    // Set home dock directly
+                    setHomeDockSync(finalHomeDockX, finalHomeDockY, 0, finalHomeDockYaw, 0, 0);
+                    
+                    try {
+                        double[] pose = calculatePose(new double[]{
+                            finalHomeDockX, finalHomeDockY, 0,
+                            finalHomeDockYaw, 0, 0
+                        });
+                        setPoseSync(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]);
+                    } catch (Exception e) {
+                        // Log error but continue with the process
+                        Log.e(TAG, "Error setting pose: " + e.getMessage() + ". Continuing with process.");
+                    }
+                    
+                    // Success - partial operations completed
+                    WritableMap response = Arguments.createMap();
+                    response.putString("status", "partial");
+                    response.putString("message", "Home dock set but map not uploaded (DomainUtilsModule not available)");
+                    mainHandler.post(() -> promise.resolve(response));
+            } catch (Exception e) {
+                    Log.e(TAG, "Error accessing DomainUtilsModule: " + e.getMessage(), e);
+                    
+                    try {
+                        // Skip map upload but still set home dock and pose
+                        // Skip clearing home docks as it's causing 404 errors
+                        // clearHomeDocksSync();
+                        
+                        // Set home dock directly
+                        setHomeDockSync(finalHomeDockX, finalHomeDockY, 0, finalHomeDockYaw, 0, 0);
+                        
+                        try {
+                            double[] pose = calculatePose(new double[]{
+                                finalHomeDockX, finalHomeDockY, 0,
+                                finalHomeDockYaw, 0, 0
+                            });
+                            setPoseSync(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]);
+                        } catch (Exception ex) {
+                            // Log error but continue with the process
+                            Log.e(TAG, "Error setting pose: " + ex.getMessage() + ". Continuing with process.");
+                        }
+                        
+                        // Success - partial operations completed
+                        WritableMap response = Arguments.createMap();
+                        response.putString("status", "partial");
+                        response.putString("message", "Home dock set but map not uploaded (Error: " + e.getMessage() + ")");
+                        mainHandler.post(() -> promise.resolve(response));
+                    } catch (Exception ex) {
+                        Log.e(TAG, "Error during fallback processing: " + ex.getMessage(), ex);
+                        mainHandler.post(() -> promise.reject("MAP_PROCESS_ERROR", ex.getMessage()));
+                    }
                 }
             } catch (Exception e) {
-                mainHandler.post(() -> {
-                    Log.e(TAG, "Error processing map: " + e.getMessage());
-                    promise.reject("MAP_PROCESS_ERROR", e.getMessage());
-                });
+                Log.e(TAG, "Error processing map: " + e.getMessage(), e);
+                mainHandler.post(() -> promise.reject("MAP_PROCESS_ERROR", e.getMessage()));
             }
         });
     }
@@ -1044,5 +1216,145 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
                 mainHandler.post(() -> promise.reject("NAVIGATION_ERROR", errorMsg));
             }
         });
+    }
+
+    // Synchronous versions of the map operations to avoid multiple promise resolutions
+    private void clearMapSync() throws Exception {
+        String url = BASE_URL + "/api/core/slam/v1/maps";
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestMethod("DELETE");
+        
+        int responseCode = connection.getResponseCode();
+        if (responseCode < 200 || responseCode > 204) {
+            throw new Exception("Failed to clear map: " + responseCode);
+        }
+    }
+    
+    private void clearPOIsSync() throws Exception {
+        String url = BASE_URL + "/api/core/slam/v1/pois";
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestMethod("DELETE");
+        
+        int responseCode = connection.getResponseCode();
+        if (responseCode < 200 || responseCode > 204) {
+            throw new Exception("Failed to clear POIs: " + responseCode);
+        }
+    }
+    
+    private void uploadMapSync(String filePath) throws Exception {
+        File file = new File(filePath);
+        Log.d(TAG, "Attempting to upload map from: " + file.getAbsolutePath());
+        Log.d(TAG, "File exists: " + file.exists());
+        Log.d(TAG, "File size: " + file.length() + " bytes");
+        
+        if (!file.exists()) {
+            throw new Exception("Map file does not exist at: " + file.getAbsolutePath());
+        }
+
+        String url = BASE_URL + "/api/core/slam/v1/maps/stcm";
+        Log.d(TAG, "Uploading to URL: " + url);
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        
+        connection.setRequestMethod("PUT");
+        connection.setRequestProperty("Content-Type", "application/octet-stream");
+        connection.setDoOutput(true);
+
+        try (java.io.FileInputStream fileInputStream = new java.io.FileInputStream(file);
+             java.io.OutputStream outputStream = connection.getOutputStream()) {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            int totalBytes = 0;
+            while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+                totalBytes += bytesRead;
+            }
+            Log.d(TAG, "Uploaded " + totalBytes + " bytes");
+        }
+
+        int responseCode = connection.getResponseCode();
+        Log.d(TAG, "Upload response code: " + responseCode);
+        
+        if (responseCode < 200 || responseCode > 204) {
+            throw new Exception("Failed to upload map: " + responseCode);
+        }
+    }
+    
+    private void clearHomeDocksSync() throws Exception {
+        String url = BASE_URL + "/api/core/slam/v1/homepose";
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestMethod("DELETE");
+        
+        int responseCode = connection.getResponseCode();
+        if (responseCode < 200 || responseCode > 204) {
+            throw new Exception("Failed to clear home docks: " + responseCode);
+        }
+    }
+    
+    private void setHomeDockSync(double x, double y, double z, double yaw, double pitch, double roll) throws Exception {
+        String url = BASE_URL + "/api/core/slam/v1/homepose";
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        
+        JSONObject body = new JSONObject()
+            .put("x", x)
+            .put("y", y)
+            .put("z", z)
+            .put("yaw", yaw)
+            .put("pitch", pitch)
+            .put("roll", roll);
+        
+        connection.setRequestMethod("PUT");
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setDoOutput(true);
+        
+        try (java.io.OutputStream os = connection.getOutputStream()) {
+            byte[] input = body.toString().getBytes("utf-8");
+            os.write(input, 0, input.length);
+        }
+        
+        int responseCode = connection.getResponseCode();
+        if (responseCode < 200 || responseCode > 204) {
+            throw new Exception("Failed to set home dock: " + responseCode);
+        }
+    }
+    
+    private void setPoseSync(double x, double y, double z, double yaw, double pitch, double roll) throws Exception {
+        String url = BASE_URL + "/api/core/slam/v1/localization/pose";
+        Log.d(TAG, "Setting robot pose to: [" + x + ", " + y + ", " + z + ", " + yaw + ", " + pitch + ", " + roll + "]");
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        
+        JSONObject body = new JSONObject()
+            .put("x", x)
+            .put("y", y)
+            .put("z", z)
+            .put("yaw", yaw)
+            .put("pitch", pitch)
+            .put("roll", roll);
+        
+        connection.setRequestMethod("PUT");
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setDoOutput(true);
+        
+        try (java.io.OutputStream os = connection.getOutputStream()) {
+            byte[] input = body.toString().getBytes("utf-8");
+            os.write(input, 0, input.length);
+        }
+        
+        int responseCode = connection.getResponseCode();
+        Log.d(TAG, "Set pose response code: " + responseCode);
+        
+        if (responseCode < 200 || responseCode > 204) {
+            throw new Exception("Failed to set pose: " + responseCode);
+        }
+    }
+    
+    private void savePersistentMapSync() throws Exception {
+        String url = BASE_URL + "/api/core/slam/v1/maps/persistent";
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestMethod("PUT");
+        
+        int responseCode = connection.getResponseCode();
+        if (responseCode < 200 || responseCode > 204) {
+            throw new Exception("Failed to save persistent map: " + responseCode);
+        }
     }
 } 

@@ -176,6 +176,18 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 val accessToken = domainInfoObj.getString("access_token")
                 val domainServer = domainInfoObj.getString("domain_server")
 
+                // After successful authentication, download the map in a separate coroutine
+                scope.launch {
+                    try {
+                        Log.d(TAG, "Authentication successful, downloading map...")
+                        
+                        // Download map directly without using Promise
+                        downloadMapAfterAuth()
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error downloading map after authentication: ${e.message}", e)
+                    }
+                }
+
                 // Return response with domain server URL
                 val result = Arguments.createMap().apply {
                     putBoolean("success", true)
@@ -468,6 +480,317 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 promise.reject("DOWNLOAD_ERROR", e.message ?: "Unknown error")
             }
         }
+    }
+
+    // Helper method to download map after authentication without using Promise
+    private suspend fun downloadMapAfterAuth() {
+        try {
+            val domainId = sharedPreferences.getString("domain_id", "") ?: ""
+            val domainInfoStr = domainInfo ?: throw Exception("No domain info available")
+            val domainInfoObj = JSONObject(domainInfoStr)
+            val accessToken = domainInfoObj.getString("access_token")
+            val domainServerObj = domainInfoObj.getJSONObject("domain_server")
+            val domainServerUrl = domainServerObj.getString("url")
+
+            // Get map endpoint from config
+            val url = ConfigManager.getNestedString("domain.map_endpoint")
+            Log.d(TAG, "Using map endpoint: $url")
+
+            val client = OkHttpClient()
+            
+            val requestBody = JSONObject().apply {
+                put("domainId", domainId)
+                put("domainServerUrl", domainServerUrl)
+                put("height", 0.1)
+                put("fileType", "stcm")  // Request STCM format
+                put("pixelsPerMeter", 20)
+            }
+
+            Log.d(TAG, "Sending request: ${requestBody.toString()}")
+
+            val mediaType = "application/json".toMediaType()
+            val request = Request.Builder()
+                .url(url)
+                .post(requestBody.toString().toRequestBody(mediaType))
+                .addHeader("Authorization", "Bearer $accessToken")
+                .build()
+
+            val response = client.newCall(request).execute()
+            if (!response.isSuccessful) {
+                val errorBody = response.body?.string() ?: "No error body"
+                Log.e(TAG, "Failed to download map: ${response.code}\nRequest Body: ${requestBody.toString()}\nError Body: $errorBody")
+                return
+            }
+
+            // Get content type to determine how to process the response
+            val contentType = response.header("Content-Type", "")
+            Log.d(TAG, "Response content type: $contentType")
+
+            var stcmData: ByteArray? = null
+
+            if (contentType?.contains("multipart/form-data") == true) {
+                // Handle multipart response
+                val responseBody = response.body?.string() ?: throw Exception("Empty response body")
+                
+                // Get the boundary from the Content-Type header
+                val boundaryPattern = Pattern.compile("boundary=([^;\\s]+)")
+                val boundaryMatcher = boundaryPattern.matcher(contentType)
+                if (!boundaryMatcher.find()) {
+                    Log.e(TAG, "Could not find boundary in Content-Type header")
+                    return
+                }
+                val boundary = "--${boundaryMatcher.group(1)}"
+                
+                // Split the data using the boundary marker
+                val parts = responseBody.split(boundary)
+                
+                // Find the part containing the STCM data
+                for (part in parts) {
+                    if (part.contains("name=\"img\"")) {
+                        val headerEnd = part.indexOf("\r\n\r\n")
+                        if (headerEnd > 0) {
+                            // Extract the base64 encoded data after the header
+                            val base64Data = part.substring(headerEnd + 4).trim()
+                            
+                            // Clean up any whitespace or newlines that might be in the base64 string
+                            val cleanBase64 = base64Data.replace("\\s+".toRegex(), "")
+                            
+                            // Decode the base64 data
+                            stcmData = Base64.decode(cleanBase64, Base64.DEFAULT)
+                            Log.d(TAG, "Successfully decoded ${cleanBase64.length} bytes of base64 data to ${stcmData.size} bytes of binary STCM data")
+                            break
+                        }
+                    }
+                }
+            } else {
+                // If not multipart, assume the entire content is the STCM data
+                stcmData = response.body?.bytes()
+                Log.d(TAG, "Received ${stcmData?.size ?: 0} bytes of STCM data")
+            }
+
+            if (stcmData == null) {
+                Log.e(TAG, "Failed to extract STCM data from response")
+                return
+            }
+
+            // Save the STCM file to Downloads/CactusAssistant directory
+            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val cactusDir = File(downloadsDir, "CactusAssistant")
+            if (!cactusDir.exists()) {
+                cactusDir.mkdirs()
+            }
+
+            // Use a simple filename without timestamp
+            val stcmFile = File(cactusDir, "map.stcm")
+            stcmFile.writeBytes(stcmData)
+
+            Log.d(TAG, "STCM map saved to: ${stcmFile.absolutePath}")
+            
+            // Now perform the additional steps after downloading the map
+            try {
+                val slamIp = ConfigManager.getString("slam_ip", "127.0.0.1")
+                val slamPort = ConfigManager.getInt("slam_port", 1448)
+                val baseUrl = "http://$slamIp:$slamPort"
+                
+                // Step 1: Housekeeping - clear old data
+                Log.d(TAG, "Clearing old POIs and map data")
+                clearPOIs(baseUrl)
+                clearMap(baseUrl)
+                
+                // Step 2: Upload the new map
+                Log.d(TAG, "Uploading new map: ${stcmFile.absolutePath}")
+                uploadMap(baseUrl, stcmFile.absolutePath)
+                
+                // Step 3: Update Homedock location
+                val homedock = ConfigManager.getDoubleArray("homedock")
+                if (homedock != null && homedock.size >= 6) {
+                    Log.d(TAG, "Setting home dock at [${homedock[0]}, ${homedock[1]}, ${homedock[2]}, ${homedock[3]}, ${homedock[4]}, ${homedock[5]}]")
+                    clearHomeDocks(baseUrl)
+                    setHomeDock(baseUrl, homedock[0], homedock[1], homedock[2], homedock[3], homedock[4], homedock[5])
+                    
+                    // Step 4: Update robot pose based on Homedock
+                    val pose = calculatePose(homedock)
+                    Log.d(TAG, "Setting robot pose at [${pose[0]}, ${pose[1]}, ${pose[2]}, ${pose[3]}, ${pose[4]}, ${pose[5]}]")
+                    setPose(baseUrl, pose[0], pose[1], pose[2], pose[3], pose[4], pose[5])
+                } else {
+                    Log.e(TAG, "No valid homedock configuration found")
+                }
+                
+                // Step 5: Ensure map is persistent
+                Log.d(TAG, "Saving persistent map")
+                savePersistentMap(baseUrl)
+                
+                Log.d(TAG, "Map processing completed successfully")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error during map processing steps: ${e.message}", e)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error downloading map after authentication", e)
+        }
+    }
+    
+    // Helper methods for map processing
+    
+    private fun clearPOIs(baseUrl: String) {
+        try {
+            val url = URL("$baseUrl/api/core/artifact/v1/pois")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "DELETE"
+            val responseCode = connection.responseCode
+            Log.d(TAG, "Clear POIs response code: $responseCode")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error clearing POIs: ${e.message}", e)
+        }
+    }
+    
+    private fun clearMap(baseUrl: String) {
+        try {
+            val url = URL("$baseUrl/api/core/slam/v1/maps")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "DELETE"
+            val responseCode = connection.responseCode
+            Log.d(TAG, "Clear map response code: $responseCode")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error clearing map: ${e.message}", e)
+        }
+    }
+    
+    private fun uploadMap(baseUrl: String, filePath: String) {
+        try {
+            val file = File(filePath)
+            if (!file.exists()) {
+                Log.e(TAG, "Map file does not exist: $filePath")
+                return
+            }
+            
+            val url = URL("$baseUrl/api/core/slam/v1/maps/stcm")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "PUT"
+            connection.setRequestProperty("Content-Type", "application/octet-stream")
+            connection.doOutput = true
+            
+            FileInputStream(file).use { input ->
+                connection.outputStream.use { output ->
+                    val buffer = ByteArray(4096)
+                    var bytesRead: Int
+                    var totalBytes = 0
+                    while (input.read(buffer).also { bytesRead = it } != -1) {
+                        output.write(buffer, 0, bytesRead)
+                        totalBytes += bytesRead
+                    }
+                    Log.d(TAG, "Uploaded $totalBytes bytes")
+                }
+            }
+            
+            val responseCode = connection.responseCode
+            Log.d(TAG, "Upload map response code: $responseCode")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error uploading map: ${e.message}", e)
+        }
+    }
+    
+    private fun clearHomeDocks(baseUrl: String) {
+        try {
+            val url = URL("$baseUrl/api/core/slam/v1/homepose")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "DELETE"
+            val responseCode = connection.responseCode
+            Log.d(TAG, "Clear home docks response code: $responseCode")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error clearing home docks: ${e.message}", e)
+        }
+    }
+    
+    private fun setHomeDock(baseUrl: String, x: Double, y: Double, z: Double, yaw: Double, pitch: Double, roll: Double) {
+        try {
+            val url = URL("$baseUrl/api/core/slam/v1/homepose")
+            val connection = url.openConnection() as HttpURLConnection
+            
+            val body = JSONObject().apply {
+                put("x", x)
+                put("y", y)
+                put("z", z)
+                put("yaw", yaw)
+                put("pitch", pitch)
+                put("roll", roll)
+            }
+            
+            connection.requestMethod = "PUT"
+            connection.setRequestProperty("Content-Type", "application/json")
+            connection.doOutput = true
+            
+            connection.outputStream.use { os ->
+                os.write(body.toString().toByteArray())
+            }
+            
+            val responseCode = connection.responseCode
+            Log.d(TAG, "Set home dock response code: $responseCode")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error setting home dock: ${e.message}", e)
+        }
+    }
+    
+    private fun setPose(baseUrl: String, x: Double, y: Double, z: Double, yaw: Double, pitch: Double, roll: Double) {
+        try {
+            val url = URL("$baseUrl/api/core/slam/v1/localization/pose")
+            val connection = url.openConnection() as HttpURLConnection
+            
+            val body = JSONObject().apply {
+                put("x", x)
+                put("y", y)
+                put("z", z)
+                put("yaw", yaw)
+                put("pitch", pitch)
+                put("roll", roll)
+            }
+            
+            connection.requestMethod = "PUT"
+            connection.setRequestProperty("Content-Type", "application/json")
+            connection.doOutput = true
+            
+            connection.outputStream.use { os ->
+                os.write(body.toString().toByteArray())
+            }
+            
+            val responseCode = connection.responseCode
+            Log.d(TAG, "Set pose response code: $responseCode")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error setting pose: ${e.message}", e)
+        }
+    }
+    
+    private fun savePersistentMap(baseUrl: String) {
+        try {
+            val url = URL("$baseUrl/api/core/slam/v1/maps/persistent")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "PUT"
+            
+            val responseCode = connection.responseCode
+            Log.d(TAG, "Save persistent map response code: $responseCode")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error saving persistent map: ${e.message}", e)
+        }
+    }
+    
+    private fun calculatePose(homedock: DoubleArray, distanceInMeters: Double = 0.2): DoubleArray {
+        val x = homedock[0]
+        val y = homedock[1]
+        val z = homedock[2]
+        val yaw = homedock[3]
+        val pitch = homedock[4]
+        val roll = homedock[5]
+        
+        val dx = distanceInMeters * Math.cos(yaw)
+        val dz = distanceInMeters * Math.sin(yaw)
+        
+        return doubleArrayOf(
+            x + dx,  // new x
+            y,       // y remains unchanged
+            z + dz,  // new z
+            yaw,     // yaw remains unchanged
+            pitch,   // pitch remains unchanged
+            roll     // roll remains unchanged
+        )
     }
 
     private fun writeInt(out: FileOutputStream, value: Int) {
