@@ -116,6 +116,14 @@ globalAny.startPromotion = async () => {
   // Reset the remountFromConfig flag to ensure promotion starts even when coming from config screen
   remountFromConfig = false;
   
+  // Set robot speed to patrol speed immediately
+  try {
+    await NativeModules.SlamtecUtils.setMaxLineSpeed(SPEEDS.patrol.toString());
+    await LogUtils.writeDebugToFile(`Set robot speed to patrol mode: ${SPEEDS.patrol} m/s`);
+  } catch (error: any) {
+    await LogUtils.writeDebugToFile(`Failed to set patrol speed: ${error.message}`);
+  }
+  
   // If the MainScreen is mounted, we can start the promotion immediately
   if (promotionMounted) {
     await LogUtils.writeDebugToFile('MainScreen is mounted, starting promotion immediately');
@@ -362,6 +370,16 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       
       // Set navigation status to PATROL immediately to show the promotion screen
       setNavigationStatus(NavigationStatus.PATROL);
+      
+      // Set robot speed to patrol speed
+      (async () => {
+        try {
+          await NativeModules.SlamtecUtils.setMaxLineSpeed(SPEEDS.patrol.toString());
+          await LogUtils.writeDebugToFile(`Set robot speed to patrol mode: ${SPEEDS.patrol} m/s when mounting`);
+        } catch (error: any) {
+          await LogUtils.writeDebugToFile(`Failed to set patrol speed when mounting: ${error.message}`);
+        }
+      })();
       
       // Start navigation with a small delay
       setTimeout(() => {
