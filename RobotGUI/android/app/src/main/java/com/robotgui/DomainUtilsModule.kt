@@ -96,6 +96,82 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
     }
 
     @ReactMethod
+    fun refreshToken(promise: Promise) {
+        try {
+            // Get stored credentials
+            val email = sharedPreferences.getString("email", null)
+            val password = sharedPreferences.getString("password", null)
+            val domainId = sharedPreferences.getString("domain_id", null)
+
+            if (email.isNullOrEmpty() || password.isNullOrEmpty() || domainId.isNullOrEmpty()) {
+                throw Exception("Missing stored credentials")
+            }
+
+            // Launch authentication in coroutine
+            scope.launch {
+                try {
+                    val client = OkHttpClient()
+                    
+                    // First get DDS token
+                    val ddsLoginUrl = "$baseUrl/$domainId/login"
+                    val ddsLoginJson = JSONObject().apply {
+                        put("email", email)
+                        put("password", password)
+                    }
+                    
+                    val ddsLoginRequest = Request.Builder()
+                        .url(ddsLoginUrl)
+                        .post(ddsLoginJson.toString().toRequestBody("application/json".toMediaType()))
+                        .build()
+
+                    client.newCall(ddsLoginRequest).execute().use { response ->
+                        if (!response.isSuccessful) {
+                            throw Exception("DDS login failed: ${response.code}")
+                        }
+
+                        val ddsLoginResponse = JSONObject(response.body?.string() ?: throw Exception("Empty DDS response"))
+                        val newDdsToken = ddsLoginResponse.getString("token")
+                        ddsToken = newDdsToken
+                        
+                        // Store domain info
+                        domainInfo = ddsLoginResponse.toString()
+                        
+                        // Now get Posemesh token
+                        val posemeshLoginUrl = "$baseUrl/$domainId/posemesh/login"
+                        val posemeshLoginRequest = Request.Builder()
+                            .url(posemeshLoginUrl)
+                            .addHeader("Authorization", "Bearer $newDdsToken")
+                            .post("".toRequestBody(null))
+                            .build()
+
+                        client.newCall(posemeshLoginRequest).execute().use { posemeshResponse ->
+                            if (!posemeshResponse.isSuccessful) {
+                                throw Exception("Posemesh login failed: ${posemeshResponse.code}")
+                            }
+
+                            val posemeshLoginResponse = JSONObject(posemeshResponse.body?.string() ?: throw Exception("Empty Posemesh response"))
+                            posemeshToken = posemeshLoginResponse.getString("token")
+                        }
+                    }
+
+                    // Return success on main thread
+                    withContext(Dispatchers.Main) {
+                        promise.resolve(JSONObject(domainInfo ?: "{}").toString())
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Token refresh failed", e)
+                    withContext(Dispatchers.Main) {
+                        promise.reject("REFRESH_ERROR", "Token refresh failed: ${e.message}")
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to refresh token", e)
+            promise.reject("REFRESH_ERROR", "Failed to refresh token: ${e.message}")
+        }
+    }
+
+    @ReactMethod
     fun authenticate(email: String?, password: String?, domainId: String?, promise: Promise) {
         scope.launch {
             try {

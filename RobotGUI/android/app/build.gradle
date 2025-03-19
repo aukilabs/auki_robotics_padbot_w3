@@ -24,7 +24,7 @@ react {
     //   The list of variants to that are debuggable. For those we're going to
     //   skip the bundling of the JS bundle and the assets. By default is just 'debug'.
     //   If you add flavors like lite, prod, etc. you'll have to list your debuggableVariants.
-    // debuggableVariants = ["liteDebug", "prodDebug"]
+    debuggableVariants = []
 
     /* Bundling */
     //   A list containing the node command and its flags. Default is just 'node'.
@@ -89,7 +89,7 @@ android {
         versionName "1.0"
     }
     signingConfigs {
-        debug {
+        release {
             storeFile file('debug.keystore')
             storePassword 'android'
             keyAlias 'androiddebugkey'
@@ -97,26 +97,17 @@ android {
         }
     }
     buildTypes {
-        debug {
-            signingConfig signingConfigs.debug
-        }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
-            minifyEnabled false  // Temporarily disable minification
-            debuggable true     // Enable debugging
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            debuggable true
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            if (variant.buildType.name == 'release') {
-                outputFileName = "CactusAssistant.apk"
-            } else {
-                outputFileName = "CactusAssistant-${variant.buildType.name}.apk"
-            }
+            outputFileName = "CactusAssistant.apk"
         }
     }
 

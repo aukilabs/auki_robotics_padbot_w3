@@ -75,6 +75,9 @@ const patrolPoints = [
   { name: "Patrol Point 4", x: -1.03, y: 0.01, yaw: 1.57 }
 ];
 
+// Add token refresh interval (55 minutes to refresh before expiration)
+const TOKEN_REFRESH_INTERVAL = 55 * 60 * 1000;
+
 interface MainScreenProps {
   onClose: () => void;
   onConfigPress: () => void;
@@ -156,6 +159,9 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   
   // Add ref to track inactivity timer
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Add ref to track token refresh interval
+  const tokenRefreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
   // Add ref to track if navigation has been cancelled
   const navigationCancelledRef = useRef(false);
@@ -432,6 +438,33 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     }
   }, [searchText, products]);
   
+  // Function to refresh the authentication token
+  const refreshToken = async () => {
+    try {
+      await LogUtils.writeDebugToFile('Refreshing authentication token');
+      const result = await NativeModules.DomainUtils.refreshToken();
+      await LogUtils.writeDebugToFile('Token refresh successful');
+      return true;
+    } catch (error: any) {
+      await LogUtils.writeDebugToFile(`Token refresh failed: ${error.message}`);
+      return false;
+    }
+  };
+
+  // Effect to handle token refresh
+  useEffect(() => {
+    // Start token refresh interval
+    tokenRefreshIntervalRef.current = setInterval(refreshToken, TOKEN_REFRESH_INTERVAL);
+    
+    // Clean up on unmount
+    return () => {
+      if (tokenRefreshIntervalRef.current) {
+        clearInterval(tokenRefreshIntervalRef.current);
+        tokenRefreshIntervalRef.current = null;
+      }
+    };
+  }, []);
+
   const handleProductSelect = async (product: Product) => {
     // Clear any inactivity timer when starting new navigation
     clearInactivityTimer();
@@ -460,96 +493,134 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       await LogUtils.writeDebugToFile(`Failed to set product search speed: ${error.message}`);
     }
     
-    try {
-      // Get product coordinates
-      const poseZ = product.pose.pz || product.pose.z;  // Try pz first, then fall back to z
-      const coords = {
-        x: product.pose.px || product.pose.x,  // Try px first, then fall back to x
-        y: 0,  // Keep robot at ground level
-        z: poseZ
-      };
-  
-      await LogUtils.writeDebugToFile(`Requesting navmesh coordinates for: ${JSON.stringify(coords)}`);
-      const navTarget = await NativeModules.DomainUtils.getNavmeshCoord(coords);
-      
-      // Log the full structure of navTarget
-      await LogUtils.writeDebugToFile(`Received navTarget: ${JSON.stringify(navTarget)}`);
-  
-      // Detailed validation
-      if (!navTarget) {
-        throw new Error('No navTarget received');
-      }
-      
-      // Check if we're getting the expected structure or direct coordinates
-      const targetCoords = navTarget.transformedCoords || navTarget;
-      
-      if (typeof targetCoords.x === 'undefined' || typeof targetCoords.z === 'undefined') {
-        throw new Error(`Invalid coordinates: ${JSON.stringify(targetCoords)}`);
-      }
-  
-      await LogUtils.writeDebugToFile(`Raw targetCoords: ${JSON.stringify(targetCoords, null, 2)}`);
-      const navigationParams = {
-        x: targetCoords.x,
-        y: targetCoords.z,  // z is passed as y
-        yaw: targetCoords.yaw || -Math.PI
-      };
-      await LogUtils.writeDebugToFile(`Calling navigateProduct with exact params: ${JSON.stringify(navigationParams, null, 2)}`);
-      
+    const attemptNavigation = async (retryCount = 0) => {
       try {
-        await LogUtils.writeDebugToFile('Starting navigation command...');
-        await NativeModules.SlamtecUtils.navigateProduct(
-          targetCoords.x,
-          targetCoords.z,  // Pass z as y since the API expects (x,y) plane movement
-          targetCoords.yaw || -Math.PI
-        );
+        // Get product coordinates
+        const poseZ = product.pose.pz || product.pose.z;
+        const coords = {
+          x: product.pose.px || product.pose.x,
+          y: 0,
+          z: poseZ
+        };
+    
+        await LogUtils.writeDebugToFile(`Requesting navmesh coordinates for: ${JSON.stringify(coords)}`);
+        const navTarget = await NativeModules.DomainUtils.getNavmeshCoord(coords);
         
-        // Check if navigation was cancelled during the process
-        if (navigationCancelledRef.current) {
-          await LogUtils.writeDebugToFile('Navigation was cancelled during product navigation, not updating status');
+        // Log the full structure of navTarget
+        await LogUtils.writeDebugToFile(`Received navTarget: ${JSON.stringify(navTarget)}`);
+    
+        // Detailed validation
+        if (!navTarget) {
+          throw new Error('No navTarget received');
+        }
+        
+        // Check if we're getting the expected structure or direct coordinates
+        const targetCoords = navTarget.transformedCoords || navTarget;
+        
+        if (typeof targetCoords.x === 'undefined' || typeof targetCoords.z === 'undefined') {
+          throw new Error(`Invalid coordinates: ${JSON.stringify(targetCoords)}`);
+        }
+    
+        await LogUtils.writeDebugToFile(`Raw targetCoords: ${JSON.stringify(targetCoords, null, 2)}`);
+        const navigationParams = {
+          x: targetCoords.x,
+          y: targetCoords.z,  // z is passed as y
+          yaw: targetCoords.yaw || -Math.PI
+        };
+        await LogUtils.writeDebugToFile(`Calling navigateProduct with exact params: ${JSON.stringify(navigationParams, null, 2)}`);
+        
+        try {
+          await LogUtils.writeDebugToFile('Starting navigation command...');
+          await NativeModules.SlamtecUtils.navigateProduct(
+            targetCoords.x,
+            targetCoords.z,  // Pass z as y since the API expects (x,y) plane movement
+            targetCoords.yaw || -Math.PI
+          );
+          
+          // Check if navigation was cancelled during the process
+          if (navigationCancelledRef.current) {
+            await LogUtils.writeDebugToFile('Navigation was cancelled during product navigation, not updating status');
+            return;
+          }
+          
+          await LogUtils.writeDebugToFile('Navigation command completed');
+          await LogUtils.writeDebugToFile('Setting navigation status to ARRIVED');
+          setNavigationStatus(NavigationStatus.ARRIVED);
+          
+          // Only start the inactivity timer if auto-promotion is enabled in the configuration
+          // This prevents promotion from automatically starting after a user-initiated navigation
+          try {
+            const autoPromotionEnabled = await NativeModules.ConfigManagerModule.getAutoPromotionEnabled();
+            if (autoPromotionEnabled) {
+              await LogUtils.writeDebugToFile('Auto-promotion enabled, starting inactivity timer after arriving at product');
+              startInactivityTimer();
+            } else {
+              await LogUtils.writeDebugToFile('Auto-promotion disabled, not starting inactivity timer');
+            }
+          } catch (error) {
+            // Default to not starting promotion if we can't check the config
+            await LogUtils.writeDebugToFile('Error checking auto-promotion config, defaulting to not starting timer');
+          }
+        } catch (error: any) {
+          // Check if error is due to token expiration
+          if (error.message?.includes('token') || error.message?.includes('unauthorized') || error.message?.includes('401')) {
+            await LogUtils.writeDebugToFile('Token expired, attempting to refresh');
+            
+            if (retryCount < 1) {  // Only retry once
+              const refreshed = await refreshToken();
+              if (refreshed) {
+                await LogUtils.writeDebugToFile('Token refreshed, retrying navigation');
+                return attemptNavigation(retryCount + 1);
+              }
+            }
+            
+            // If we've already retried or refresh failed, show error and return to list
+            await LogUtils.writeDebugToFile('Token refresh failed or max retries reached');
+            setNavigationStatus(NavigationStatus.ERROR);
+            setNavigationError('Session expired. Please return to list and try again.');
+            return;
+          }
+          
+          // Handle other errors as before
+          if (!navigationCancelledRef.current) {
+            const errorMsg = error.message || 'Navigation failed. Please try again.';
+            await LogUtils.writeDebugToFile(`Error: ${errorMsg}`);
+            setNavigationStatus(NavigationStatus.ERROR);
+            setNavigationError(errorMsg);
+          }
+        }
+      } catch (error: any) {
+        // Check if error is due to token expiration
+        if (error.message?.includes('token') || error.message?.includes('unauthorized') || error.message?.includes('401')) {
+          await LogUtils.writeDebugToFile('Token expired, attempting to refresh');
+          
+          if (retryCount < 1) {  // Only retry once
+            const refreshed = await refreshToken();
+            if (refreshed) {
+              await LogUtils.writeDebugToFile('Token refreshed, retrying navigation');
+              return attemptNavigation(retryCount + 1);
+            }
+          }
+          
+          // If we've already retried or refresh failed, show error and return to list
+          await LogUtils.writeDebugToFile('Token refresh failed or max retries reached');
+          setNavigationStatus(NavigationStatus.ERROR);
+          setNavigationError('Session expired. Please return to list and try again.');
           return;
         }
         
-        await LogUtils.writeDebugToFile('Navigation command completed');
-        await LogUtils.writeDebugToFile('Setting navigation status to ARRIVED');
-        setNavigationStatus(NavigationStatus.ARRIVED);
-        
-        // Only start the inactivity timer if auto-promotion is enabled in the configuration
-        // This prevents promotion from automatically starting after a user-initiated navigation
-        try {
-          const autoPromotionEnabled = await NativeModules.ConfigManagerModule.getAutoPromotionEnabled();
-          if (autoPromotionEnabled) {
-            await LogUtils.writeDebugToFile('Auto-promotion enabled, starting inactivity timer after arriving at product');
-            startInactivityTimer();
-          } else {
-            await LogUtils.writeDebugToFile('Auto-promotion disabled, not starting inactivity timer');
-          }
-        } catch (error) {
-          // Default to not starting promotion if we can't check the config
-          await LogUtils.writeDebugToFile('Error checking auto-promotion config, defaulting to not starting timer');
-        }
-      } catch (error: any) {
-        // Only update error state if navigation wasn't cancelled
+        // Handle other errors as before
         if (!navigationCancelledRef.current) {
-          await LogUtils.writeDebugToFile('Navigation command failed');
           const errorMsg = error.message || 'Navigation failed. Please try again.';
-          await LogUtils.writeDebugToFile(`Navigation API Error: ${JSON.stringify({
-            code: error.code || 'unknown',
-            message: errorMsg,
-            raw: error
-          }, null, 2)}`);
+          await LogUtils.writeDebugToFile(`Error: ${errorMsg}`);
           setNavigationStatus(NavigationStatus.ERROR);
           setNavigationError(errorMsg);
         }
       }
-    } catch (error: any) {
-      // Only update error state if navigation wasn't cancelled
-      if (!navigationCancelledRef.current) {
-        const errorMsg = error.message || 'Navigation failed. Please try again.';
-        await LogUtils.writeDebugToFile(`Error: ${errorMsg}`);
-        setNavigationStatus(NavigationStatus.ERROR);
-        setNavigationError(errorMsg);
-      }
-    }
+    };
+    
+    // Start the navigation attempt
+    await attemptNavigation();
   };
   
   const handleGoHome = async () => {
