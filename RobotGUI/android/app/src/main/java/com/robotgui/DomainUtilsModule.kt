@@ -336,105 +336,12 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
     fun getNavmeshCoord(coords: ReadableMap, promise: Promise) {
         scope.launch {
             try {
-                val domainInfoStr = domainInfo ?: throw Exception("Domain info not found")
-                val domainInfoObj = JSONObject(domainInfoStr)
-                val accessToken = domainInfoObj.getString("access_token")
-                val domainServerObj = domainInfoObj.getJSONObject("domain_server")
-                val domainServer = domainServerObj.getString("url")
-                val domainId = sharedPreferences.getString("domain_id", "") ?: throw Exception("Domain ID not found")
-
-                // Get input coordinates and transform Z
-                val inputX = coords.getDouble("x")
-                var inputZ = coords.getDouble("z")
-                inputZ = if (inputZ > 0) -Math.abs(inputZ) else Math.abs(inputZ)
-
-                val url = URL(ConfigManager.getNestedString("domain.navmesh_endpoint"))
-                val connection = url.openConnection() as HttpURLConnection
-
-                val body = JSONObject().apply {
-                    put("domainId", domainId)
-                    put("domainServerUrl", domainServer)
-                    put("target", JSONObject().apply {
-                        put("x", inputX)
-                        put("y", 0)
-                        put("z", inputZ)
-                    })
-                    put("radius", 0.5)
-                }
-
-                connection.apply {
-                    requestMethod = "POST"
-                    setRequestProperty("Content-Type", "application/json")
-                    setRequestProperty("Authorization", "Bearer $accessToken")
-                    setRequestProperty("Accept", "application/json")
-                    doOutput = true
-                    outputStream.write(body.toString().toByteArray())
-                }
-
-                val responseCode = connection.responseCode
-                if (responseCode !in 200..299) {
-                    val errorStream = connection.errorStream
-                    val errorResponse = errorStream?.bufferedReader()?.readText() ?: "No error details available"
-                    throw Exception("Failed to get navmesh coord: $responseCode\nError: $errorResponse")
-                }
-
-                val response = connection.inputStream.bufferedReader().readText()
-                val responseJson = JSONObject(response)
-                val restrictedCoords = responseJson.getJSONObject("restricted")
-
-                // Get coordinates exactly as in Python
-                val x1 = inputX
-                val z1 = inputZ
-                val x2 = restrictedCoords.getDouble("x")
-                var z2 = restrictedCoords.getDouble("z")
-
-                // Calculate deltas exactly as in Python
-                val deltaX = x1 - x2
-                val deltaZ = z1 - z2
-
-                // Transform z2 exactly as in Python
-                z2 = if (z2 > 0) -Math.abs(z2) else Math.abs(z2)
-
-                // Calculate yaw exactly as in Python
-                var yaw = Math.atan2(deltaZ, deltaX)
-                yaw = Math.round(yaw * 100.0) / 100.0  // Round to 2 decimal places first
-                yaw = if (yaw > 0) -Math.abs(yaw) else Math.abs(yaw)  // Then negate if positive
+                // Get fresh token
+                val token = getToken() ?: throw Exception("Failed to get token")
                 
-                // Reverse yaw by 180 degrees (π radians)
-                yaw += Math.PI
-                // Normalize yaw to [-π, π]
-                if (yaw > Math.PI) {
-                    yaw -= 2 * Math.PI
-                } else if (yaw < -Math.PI) {
-                    yaw += 2 * Math.PI
-                }
-
-                val result = Arguments.createMap().apply {
-                    putDouble("x", x2)
-                    putDouble("z", z2)
-                    putDouble("yaw", yaw)
-                    // Add debug information
-                    putMap("debug", Arguments.createMap().apply {
-                        putMap("productCoords", Arguments.createMap().apply {
-                            putDouble("x", coords.getDouble("x"))
-                            putDouble("z", coords.getDouble("z"))
-                        })
-                        putMap("transformedCoords", Arguments.createMap().apply {
-                            putDouble("x", inputX)
-                            putDouble("z", inputZ)
-                        })
-                        putMap("navmeshResult", Arguments.createMap().apply {
-                            putDouble("x", x2)
-                            putDouble("z", z2)
-                            putDouble("yaw", yaw)
-                            putDouble("deltaX", deltaX)
-                            putDouble("deltaZ", deltaZ)
-                        })
-                    })
-                }
-                
+                // Now proceed with navmesh request
+                val result = getNavmeshCoordWithToken(coords)
                 promise.resolve(result)
-
             } catch (e: Exception) {
                 Log.e(TAG, "Error in getNavmeshCoord: ${e.message}", e)
                 promise.reject("NAVMESH_ERROR", "Error getting navmesh coord: ${e.message}")
@@ -883,6 +790,189 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             (value and 0xFF).toByte(),
             ((value shr 8) and 0xFF).toByte()
         ))
+    }
+
+    private suspend fun getToken(): String? {
+        try {
+            val email = sharedPreferences.getString("email", "") ?: ""
+            val password = sharedPreferences.getString("password", "") ?: ""
+            val domainId = sharedPreferences.getString("domain_id", "") ?: ""
+
+            if (email.isEmpty() || password.isEmpty() || domainId.isEmpty()) {
+                Log.e(TAG, "Missing credentials")
+                return null
+            }
+
+            // 1. Auth User Posemesh
+            val url1 = URL("https://api.posemesh.org/user/login")
+            val connection1 = url1.openConnection() as HttpURLConnection
+            
+            val body1 = JSONObject().apply {
+                put("email", email)
+                put("password", password)
+            }
+
+            connection1.apply {
+                requestMethod = "POST"
+                setRequestProperty("Content-Type", "application/json")
+                setRequestProperty("Accept", "application/json")
+                doOutput = true
+                outputStream.write(body1.toString().toByteArray())
+            }
+
+            if (connection1.responseCode !in 200..299) {
+                Log.e(TAG, "Failed to authenticate posemesh account")
+                return null
+            }
+
+            val response1 = connection1.inputStream.bufferedReader().readText()
+            val repJson1 = JSONObject(response1)
+            val posemeshToken = repJson1.getString("access_token")
+
+            // 2. Auth DDS
+            val url2 = URL("https://api.posemesh.org/service/domains-access-token")
+            val connection2 = url2.openConnection() as HttpURLConnection
+            
+            connection2.apply {
+                requestMethod = "POST"
+                setRequestProperty("Accept", "application/json")
+                setRequestProperty("Authorization", "Bearer $posemeshToken")
+            }
+
+            if (connection2.responseCode !in 200..299) {
+                Log.e(TAG, "Failed to authenticate domain dds")
+                return null
+            }
+
+            val response2 = connection2.inputStream.bufferedReader().readText()
+            val repJson2 = JSONObject(response2)
+            val ddsToken = repJson2.getString("access_token")
+
+            // 3. Auth Domain
+            val url3 = URL("https://dds.posemesh.org/api/v1/domains/$domainId/auth")
+            val connection3 = url3.openConnection() as HttpURLConnection
+            
+            connection3.apply {
+                requestMethod = "POST"
+                setRequestProperty("Accept", "application/json")
+                setRequestProperty("Authorization", "Bearer $ddsToken")
+            }
+
+            if (connection3.responseCode !in 200..299) {
+                Log.e(TAG, "Failed to authenticate domain access")
+                return null
+            }
+
+            val response3 = connection3.inputStream.bufferedReader().readText()
+            domainInfo = response3
+
+            // Parse domain info to get access token
+            val domainInfoObj = JSONObject(response3)
+            return domainInfoObj.getString("access_token")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error getting token: ${e.message}")
+            return null
+        }
+    }
+
+    private fun getNavmeshCoordWithToken(coords: ReadableMap): ReadableMap {
+        val domainInfoStr = domainInfo ?: throw Exception("Domain info not found")
+        val domainInfoObj = JSONObject(domainInfoStr)
+        val accessToken = domainInfoObj.getString("access_token")
+        val domainServerObj = domainInfoObj.getJSONObject("domain_server")
+        val domainServer = domainServerObj.getString("url")
+        val domainId = sharedPreferences.getString("domain_id", "") ?: throw Exception("Domain ID not found")
+
+        // Get input coordinates and transform Z
+        val inputX = coords.getDouble("x")
+        var inputZ = coords.getDouble("z")
+        inputZ = if (inputZ > 0) -Math.abs(inputZ) else Math.abs(inputZ)
+
+        val url = URL(ConfigManager.getNestedString("domain.navmesh_endpoint"))
+        val connection = url.openConnection() as HttpURLConnection
+
+        val body = JSONObject().apply {
+            put("domainId", domainId)
+            put("domainServerUrl", domainServer)
+            put("target", JSONObject().apply {
+                put("x", inputX)
+                put("y", 0)
+                put("z", inputZ)
+            })
+            put("radius", 0.5)
+        }
+
+        connection.apply {
+            requestMethod = "POST"
+            setRequestProperty("Content-Type", "application/json")
+            setRequestProperty("Authorization", "Bearer $accessToken")
+            setRequestProperty("Accept", "application/json")
+            doOutput = true
+            outputStream.write(body.toString().toByteArray())
+        }
+
+        val responseCode = connection.responseCode
+        if (responseCode !in 200..299) {
+            val errorStream = connection.errorStream
+            val errorResponse = errorStream?.bufferedReader()?.readText() ?: "No error details available"
+            Log.e(TAG, "Navmesh validation failed: $responseCode\nError: $errorResponse")
+            throw Exception("Failed to get navmesh coord: $responseCode\nError: $errorResponse")
+        }
+
+        val response = connection.inputStream.bufferedReader().readText()
+        val responseJson = JSONObject(response)
+        val restrictedCoords = responseJson.getJSONObject("restricted")
+
+        // Get coordinates exactly as in Python
+        val x1 = inputX
+        val z1 = inputZ
+        val x2 = restrictedCoords.getDouble("x")
+        var z2 = restrictedCoords.getDouble("z")
+
+        // Calculate deltas exactly as in Python
+        val deltaX = x1 - x2
+        val deltaZ = z1 - z2
+
+        // Transform z2 exactly as in Python
+        z2 = if (z2 > 0) -Math.abs(z2) else Math.abs(z2)
+
+        // Calculate yaw exactly as in Python
+        var yaw = Math.atan2(deltaZ, deltaX)
+        yaw = Math.round(yaw * 100.0) / 100.0  // Round to 2 decimal places first
+        yaw = if (yaw > 0) -Math.abs(yaw) else Math.abs(yaw)  // Then negate if positive
+        
+        // Reverse yaw by 180 degrees (π radians)
+        yaw += Math.PI
+        // Normalize yaw to [-π, π]
+        if (yaw > Math.PI) {
+            yaw -= 2 * Math.PI
+        } else if (yaw < -Math.PI) {
+            yaw += 2 * Math.PI
+        }
+
+        return Arguments.createMap().apply {
+            putDouble("x", x2)
+            putDouble("z", z2)
+            putDouble("yaw", yaw)
+            // Add debug information
+            putMap("debug", Arguments.createMap().apply {
+                putMap("productCoords", Arguments.createMap().apply {
+                    putDouble("x", coords.getDouble("x"))
+                    putDouble("z", coords.getDouble("z"))
+                })
+                putMap("transformedCoords", Arguments.createMap().apply {
+                    putDouble("x", inputX)
+                    putDouble("z", inputZ)
+                })
+                putMap("navmeshResult", Arguments.createMap().apply {
+                    putDouble("x", x2)
+                    putDouble("z", z2)
+                    putDouble("yaw", yaw)
+                    putDouble("deltaX", deltaX)
+                    putDouble("deltaZ", deltaZ)
+                })
+            })
+        }
     }
 
     // Add more domain-specific methods here
