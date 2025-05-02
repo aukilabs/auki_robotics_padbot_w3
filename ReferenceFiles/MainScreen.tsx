@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
-  View,
-  Text,
+  SafeAreaView,
   StyleSheet,
-  FlatList,
+  Text,
+  View,
   TouchableOpacity,
-  Dimensions,
+  FlatList,
   TextInput,
-  Image,
-  ScrollView,
+  ActivityIndicator,
   Alert,
   NativeModules,
+  BackHandler,
   NativeEventEmitter,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
   AppState,
   AppStateStatus,
-  SafeAreaView,
-  BackHandler,
-  ActivityIndicator,
 } from 'react-native';
 import { LogUtils } from '../utils/logging';
 import { 
@@ -24,6 +24,7 @@ import {
   startInactivityTimer, 
   resetInactivityTimer 
 } from '../utils/inactivityTimer';
+import DeviceStorage from '../utils/deviceStorage';
 
 // Access the global object in a way that works in React Native
 const globalAny: any = global;
@@ -86,13 +87,13 @@ const TOKEN_VALIDATION_INTERVAL = 15 * 60 * 1000;
 // Add token expiration time estimate (60 minutes)
 const TOKEN_EXPIRATION_TIME = 60 * 60 * 1000;
 
-// Add AuthState object to track token state
+// Create a shared auth state object
 const AuthState = {
   lastRefreshTime: 0,
   isRefreshing: false,
+  tokenValid: false,
   validationInProgress: false,
   lastValidationTime: 0,
-  tokenValid: false,
 };
 
 interface MainScreenProps {
@@ -104,6 +105,7 @@ interface MainScreenProps {
 interface Product {
   name: string;
   eslCode: string;
+  description?: string;
   pose: {
     x: number;
     y: number;
@@ -113,6 +115,8 @@ interface Product {
     py?: number;
     pz?: number;
   };
+  id?: string;     // ID from the backend
+  image?: string;  // Image filename from the backend
 }
 
 // Navigation status states
@@ -180,9 +184,6 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   // Add ref to track token refresh interval
   const tokenRefreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Add ref to track token validation interval
-  const tokenValidationIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  
   // Add ref to track if navigation has been cancelled
   const navigationCancelledRef = useRef(false);
   
@@ -192,8 +193,26 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   // Set the mounted ref to true
   const isMountedRef = useRef(true);
   
+  // Robot call data state
+  const [robotCallData, setRobotCallData] = useState<any>(null);
+  const [isRobotCallLoading, setIsRobotCallLoading] = useState(false);
+  const [lastRobotCallHandled, setLastRobotCallHandled] = useState(false);
+  const robotCallCooldownRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Add polling interval ref
+  const robotCallPollingRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Add ref to track token validation interval
+  const tokenValidationIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
   // Add ref to track app state
-  const appStateRef = useRef<string>(AppState.currentState);
+  const appStateRef = useRef(AppState.currentState);
+  
+  // Add posePollingRef to track the interval for robot pose polling
+  const posePollingRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Add a ref to track current navigation status for use in polling
+  const currentNavigationStatusRef = useRef(NavigationStatus.IDLE);
   
   // Function to clear the inactivity timer
   const clearInactivityTimer = () => {
@@ -445,6 +464,13 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       
       // Clear inactivity timer on unmount
       clearInactivityTimer();
+      
+      // Also clear pose polling interval
+      if (posePollingRef.current) {
+        clearInterval(posePollingRef.current);
+        posePollingRef.current = null;
+        LogUtils.writeDebugToFile('Robot pose polling stopped on component unmount');
+      }
     };
   }, []);
   
@@ -486,6 +512,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       }
       
       // Make a lightweight API call to verify the token is still valid
+      // For example, try to fetch a minimal piece of data
       try {
         const result = await NativeModules.DomainUtils.testTokenValidity();
         await LogUtils.writeDebugToFile(`Token validation successful: ${JSON.stringify(result)}`);
@@ -586,7 +613,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     };
   }, []);
 
-  // Effect to handle token validation and refresh
+  // Effect to handle initial token validation and set up intervals
   useEffect(() => {
     // Initial token validation
     (async () => {
@@ -673,7 +700,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
             return;
           }
         }
-
+        
         // Get product coordinates
         const poseZ = product.pose.pz || product.pose.z;
         const coords = {
@@ -745,18 +772,18 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           if (error.message?.includes('token') || error.message?.includes('unauthorized') || error.message?.includes('401')) {
             await LogUtils.writeDebugToFile('Token expired, attempting to refresh');
             
-            if (retryCount < 1) {  // Only retry once
-              await LogUtils.writeDebugToFile('Attempting to validate and refresh token');
-              // Try validation first
-              if (await validateToken(true)) {
-                await LogUtils.writeDebugToFile('Token refreshed, retrying navigation');
+            if (retryCount < 3) {  // Allow up to 3 retries instead of just 1
+              const refreshed = await refreshToken();
+              if (refreshed) {
+                await LogUtils.writeDebugToFile(`Token refreshed, retrying navigation (attempt ${retryCount + 1}/3)`);
                 return attemptNavigation(retryCount + 1);
               }
             }
             
-            // If we've already retried or refresh failed, show error and return to list
+            // If we've exhausted all retries or refresh failed, show error dialog
             await LogUtils.writeDebugToFile('Token refresh failed or max retries reached');
             
+            // Show a more informative error dialog
             Alert.alert(
               'Authentication Error',
               'Your session has expired and automatic renewal failed. Please try again or restart the application.',
@@ -765,7 +792,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
                   text: 'Return to List', 
                   onPress: () => {
                     setNavigationStatus(NavigationStatus.ERROR);
-                    setNavigationError('Session expired. Please try again.');
+                    setNavigationError(error.message || 'Session expired. Please try again.');
                   }
                 }
               ]
@@ -786,18 +813,18 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         if (error.message?.includes('token') || error.message?.includes('unauthorized') || error.message?.includes('401')) {
           await LogUtils.writeDebugToFile('Token expired, attempting to refresh');
           
-          if (retryCount < 1) {  // Only retry once
-            await LogUtils.writeDebugToFile('Attempting to validate and refresh token');
-            // Try validation first
-            if (await validateToken(true)) {
-              await LogUtils.writeDebugToFile('Token refreshed, retrying navigation');
+          if (retryCount < 3) {  // Allow up to 3 retries instead of just 1
+            const refreshed = await refreshToken();
+            if (refreshed) {
+              await LogUtils.writeDebugToFile(`Token refreshed, retrying navigation (attempt ${retryCount + 1}/3)`);
               return attemptNavigation(retryCount + 1);
             }
           }
           
-          // If we've already retried or refresh failed, show error and return to list
+          // If we've exhausted all retries or refresh failed, show error dialog
           await LogUtils.writeDebugToFile('Token refresh failed or max retries reached');
           
+          // Show a more informative error dialog
           Alert.alert(
             'Authentication Error',
             'Your session has expired and automatic renewal failed. Please try again or restart the application.',
@@ -806,7 +833,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
                 text: 'Return to List', 
                 onPress: () => {
                   setNavigationStatus(NavigationStatus.ERROR);
-                  setNavigationError('Session expired. Please try again.');
+                  setNavigationError(error.message || 'Session expired. Please try again.');
                 }
               }
             ]
@@ -826,73 +853,6 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     
     // Start the navigation attempt
     await attemptNavigation();
-  };
-  
-  const handleGoHome = async () => {
-    // Cancel any ongoing patrol unless it's the final step of patrol
-    setIsPatrolling(false);
-    promotionActive = false;
-    promotionCancelled = true;
-    await LogUtils.writeDebugToFile('Waypoint sequence cancelled due to manual Go Home');
-    
-    // Reset navigation cancelled flag
-    navigationCancelledRef.current = false;
-    
-    // Set navigation status to NAVIGATING immediately
-    setNavigationStatus(NavigationStatus.NAVIGATING);
-    setSelectedProduct(null);
-    
-    // Validate token before attempting navigation
-    if (!await validateToken()) {
-      await LogUtils.writeDebugToFile('Token validation failed before going home, attempting refresh');
-      
-      if (!await refreshToken()) {
-        // If token refresh fails, show error dialog
-        await LogUtils.writeDebugToFile('Token refresh failed, cannot proceed with navigation');
-        
-        Alert.alert(
-          'Authentication Error',
-          'Your session has expired and automatic renewal failed. Please try again or restart the application.',
-          [
-            { 
-              text: 'Return to List', 
-              onPress: () => {
-                setNavigationStatus(NavigationStatus.ERROR);
-                setNavigationError('Session expired. Please try again.');
-              }
-            }
-          ]
-        );
-        return;
-      }
-    }
-    
-    // Reset robot speed to default
-    try {
-      await NativeModules.SlamtecUtils.setMaxLineSpeed(SPEEDS.default.toString());
-      await LogUtils.writeDebugToFile(`Reset robot speed to default: ${SPEEDS.default} m/s`);
-    } catch (error: any) {
-      await LogUtils.writeDebugToFile(`Failed to reset robot speed: ${error.message}`);
-    }
-    
-    try {
-      // Directly call goHome without showing a confirmation dialog
-      await LogUtils.writeDebugToFile('Starting navigation to home');
-      await NativeModules.SlamtecUtils.goHome();
-      
-      // Only update state if navigation wasn't cancelled
-      if (!navigationCancelledRef.current) {
-        setNavigationStatus(NavigationStatus.IDLE);
-      }
-    } catch (error: any) {
-      // Only update error state if navigation wasn't cancelled
-      if (!navigationCancelledRef.current) {
-        const errorMsg = error.message || 'Navigation to home failed. Please try again.';
-        await LogUtils.writeDebugToFile(`Go Home error: ${errorMsg}`);
-        setNavigationStatus(NavigationStatus.ERROR);
-        setNavigationError(errorMsg);
-      }
-    }
   };
   
   const handleClose = () => {
@@ -936,6 +896,12 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       setSelectedProduct(null);
       setNavigationStatus(NavigationStatus.IDLE);
       
+      // If we just handled a robot call, implement cooldown period before restarting polling
+      if (lastRobotCallHandled) {
+        await LogUtils.writeDebugToFile('Robot call cooldown period starting (60 seconds)');
+        // Will be reset in the useEffect
+      }
+      
       // Only start inactivity timer if auto-promotion is enabled
       try {
         const autoPromotionEnabled = await NativeModules.ConfigManagerModule.getAutoPromotionEnabled();
@@ -975,16 +941,233 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     }
   };
   
-  const renderProductItem = ({ item }: { item: Product }) => (
-    <TouchableOpacity 
-      style={styles.productItem}
-      onPress={() => handleProductSelect(item)}
-    >
-      <Text style={styles.productText}>{item.name} ({item.eslCode})</Text>
-    </TouchableOpacity>
-  );
+  const handleGoHome = async () => {
+    // Cancel any ongoing patrol unless it's the final step of patrol
+    setIsPatrolling(false);
+    promotionActive = false;
+    promotionCancelled = true;
+    await LogUtils.writeDebugToFile('Waypoint sequence cancelled due to manual Go Home');
+    
+    // Reset navigation cancelled flag
+    navigationCancelledRef.current = false;
+    
+    // Set navigation status to NAVIGATING immediately
+    setNavigationStatus(NavigationStatus.NAVIGATING);
+    setSelectedProduct(null);
+    
+    // Reset robot speed to default
+    try {
+      await NativeModules.SlamtecUtils.setMaxLineSpeed(SPEEDS.default.toString());
+      await LogUtils.writeDebugToFile(`Reset robot speed to default: ${SPEEDS.default} m/s`);
+    } catch (error: any) {
+      await LogUtils.writeDebugToFile(`Failed to reset robot speed: ${error.message}`);
+    }
+    
+    try {
+      // Directly call goHome without showing a confirmation dialog
+      await LogUtils.writeDebugToFile('Starting navigation to home');
+      await NativeModules.SlamtecUtils.goHome();
+      
+      // Only update state if navigation wasn't cancelled
+      if (!navigationCancelledRef.current) {
+        // When going home, we skip ARRIVED state and go directly to IDLE
+        // This ensures no "We have arrived" dialog is shown
+        await LogUtils.writeDebugToFile('Robot arrived home, transitioning directly to IDLE state');
+        
+        // Go directly to IDLE state (not ARRIVED) to close any dialogs
+        setNavigationStatus(NavigationStatus.IDLE);
+      }
+    } catch (error: any) {
+      // Only update error state if navigation wasn't cancelled
+      if (!navigationCancelledRef.current) {
+        const errorMsg = error.message || 'Navigation to home failed. Please try again.';
+        await LogUtils.writeDebugToFile(`Go Home error: ${errorMsg}`);
+        setNavigationStatus(NavigationStatus.ERROR);
+        setNavigationError(errorMsg);
+      }
+    }
+  };
   
-  // Render different views based on navigation status
+  const renderProductItem = ({ item }: { item: Product }) => {
+    // Create the image URL if both id and image are available
+    const imageUrl = item.id && item.image ? 
+      `https://conference-backend-0.aukiverse.com/api/files/gkzgdbw8bnw0bs7/${item.id}/${item.image}` : null;
+    
+    return (
+      <View style={styles.productItem}>
+        <View style={styles.productContent}>
+          <View style={styles.productTextContainer}>
+            <Text style={styles.productText}>{item.name}</Text>
+            <Text style={styles.productDescription}>{item.description || 'No description available'}</Text>
+            <TouchableOpacity 
+              style={styles.findButton}
+              onPress={() => handleProductSelect(item)}
+            >
+              <Text style={styles.findButtonText}>Find</Text>
+              <Text style={{color: '#FFFFFF', fontWeight: 'bold'}}>→</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.productImageContainer}>
+            {imageUrl ? (
+              <Image 
+                source={{ uri: imageUrl }} 
+                style={styles.productImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <View style={styles.placeholderImage}>
+                <Text style={styles.placeholderText}>{item.name.charAt(0)}</Text>
+              </View>
+            )}
+          </View>
+        </View>
+      </View>
+    );
+  };
+  
+  // Function for automatic polling of robot call data
+  const fetchRobotCallData = async () => {
+    try {
+      // Only poll when not navigating
+      if (navigationStatus !== NavigationStatus.IDLE) {
+        return;
+      }
+      
+      await LogUtils.writeDebugToFile('Polling for robot call data...');
+      
+      const result = await NativeModules.DomainUtils.getRobotCall();
+      
+      // Skip if no data or null data
+      if (!result || !result.data) {
+        return;
+      }
+      
+      await LogUtils.writeDebugToFile(`Received robot call data: ${JSON.stringify(result)}`);
+      
+      // Parse the data (it comes as a string)
+      try {
+        const parsedData = JSON.parse(result.data);
+        
+        // Only process if there's valid data and ID
+        if (parsedData && parsedData.id) {
+          await LogUtils.writeDebugToFile(`Processing robot call with ID: ${parsedData.id}`);
+          
+          // Look up product with matching ID
+          const matchingProduct = products.find(product => product.id === parsedData.id);
+          
+          if (matchingProduct) {
+            // Found a matching product
+            await LogUtils.writeDebugToFile(`Found matching product for ID ${parsedData.id}: ${matchingProduct.name}`);
+            
+            // Set that we've handled a robot call
+            setLastRobotCallHandled(true);
+            
+            // Start navigation immediately without showing any dialog
+            await LogUtils.writeDebugToFile(`Automatically navigating to product: ${matchingProduct.name}`);
+            
+            // Start navigation and clear data
+            handleProductSelect(matchingProduct);
+            
+            // Use the proper write function to clear the robot call data with PUT method
+            try {
+              // First get the metadata to extract the data_id
+              const callData = await NativeModules.DomainUtils.getRobotCall();
+              
+              if (callData && callData.metadata && callData.metadata.id) {
+                // Use the specific data_id from the metadata when clearing
+                const dataId = callData.metadata.id;
+                await LogUtils.writeDebugToFile(`Clearing robot call with specific data_id: ${dataId}`);
+                
+                // Write empty ID to clear the data, using the correct data_id
+                const clearResult = await NativeModules.DomainUtils.writeRobotCall(JSON.stringify({ id: null }), "PUT", dataId);
+                await LogUtils.writeDebugToFile(`Clear result: ${JSON.stringify(clearResult)}`);
+                
+                // Verify the data was cleared
+                const verifyData = await NativeModules.DomainUtils.getRobotCall();
+                await LogUtils.writeDebugToFile(`Verification after write: ${JSON.stringify(verifyData)}`);
+              } else {
+                await LogUtils.writeDebugToFile('Could not get data_id from robot call metadata, using default approach');
+                
+                // Fallback to original approach
+                const clearResult = await NativeModules.DomainUtils.writeRobotCall(JSON.stringify({ id: null }), "PUT", null);
+                await LogUtils.writeDebugToFile(`Fallback clear result: ${JSON.stringify(clearResult)}`);
+              }
+            } catch (clearError: any) {
+              await LogUtils.writeDebugToFile(`Failed to clear robot call data: ${clearError.message}`);
+            }
+          } else {
+            // No matching product found
+            await LogUtils.writeDebugToFile(`Robot call data ID ${parsedData.id} not found in products list`);
+          }
+        }
+      } catch (parseError: any) {
+        await LogUtils.writeDebugToFile(`Error parsing robot call data: ${parseError.message}`);
+      }
+    } catch (error: any) {
+      await LogUtils.writeDebugToFile(`Error fetching robot call data: ${error.message}`);
+    }
+  };
+  
+  // Set up polling for robot call data
+  useEffect(() => {
+    // Clear any previous cooldown timer
+    if (robotCallCooldownRef.current) {
+      clearTimeout(robotCallCooldownRef.current);
+      robotCallCooldownRef.current = null;
+    }
+    
+    // Start polling when component mounts and not navigating
+    if (navigationStatus === NavigationStatus.IDLE) {
+      // Check if we just finished handling a robot call
+      if (lastRobotCallHandled) {
+        // Start cooldown timer for 1 minute before restarting polling
+        LogUtils.writeDebugToFile('Starting 60-second cooldown before restarting robot call polling');
+        
+        robotCallCooldownRef.current = setTimeout(() => {
+          // After cooldown, start polling and reset the handled flag
+          LogUtils.writeDebugToFile('Robot call cooldown completed, resuming polling');
+          setLastRobotCallHandled(false);
+          
+          // Start polling after cooldown
+          fetchRobotCallData();
+          robotCallPollingRef.current = setInterval(fetchRobotCallData, 5000);
+        }, 60000); // 1 minute cooldown
+      } else {
+        // No cooldown needed, start polling immediately
+        // Poll immediately on mount
+        fetchRobotCallData();
+        
+        // Set up polling interval (every 5 seconds)
+        robotCallPollingRef.current = setInterval(fetchRobotCallData, 5000);
+        
+        LogUtils.writeDebugToFile('Started robot call polling');
+      }
+    } else {
+      // Clear polling when navigating
+      if (robotCallPollingRef.current) {
+        clearInterval(robotCallPollingRef.current);
+        robotCallPollingRef.current = null;
+        LogUtils.writeDebugToFile('Stopped robot call polling due to navigation');
+      }
+    }
+    
+    // Clean up polling on unmount or navigation state changes
+    return () => {
+      if (robotCallPollingRef.current) {
+        clearInterval(robotCallPollingRef.current);
+        robotCallPollingRef.current = null;
+        LogUtils.writeDebugToFile('Cleaned up robot call polling');
+      }
+      
+      if (robotCallCooldownRef.current) {
+        clearTimeout(robotCallCooldownRef.current);
+        robotCallCooldownRef.current = null;
+        LogUtils.writeDebugToFile('Cleaned up robot call cooldown timer');
+      }
+    };
+  }, [navigationStatus, lastRobotCallHandled]);
+  
+  // Modify the renderContent function to remove the robot call button
   const renderContent = () => {
     switch (navigationStatus) {
       case NavigationStatus.IDLE:
@@ -992,22 +1175,33 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           <View style={styles.searchContainer}>
             <TextInput
               style={styles.searchInput}
-              placeholder="Search products..."
+              placeholder="Search for a person or place..."
               placeholderTextColor="#999"
               value={searchText}
               onChangeText={setSearchText}
             />
             
             {isLoading ? (
-              <ActivityIndicator size="large" color="rgb(0, 215, 68)" />
+              <ActivityIndicator size="large" color="#2670F8" />
             ) : (
-              <FlatList
-                data={filteredProducts}
-                renderItem={renderProductItem}
-                keyExtractor={item => item.eslCode}
-                style={styles.productList}
-                contentContainerStyle={styles.productListContent}
-              />
+              <>
+                <FlatList
+                  data={filteredProducts}
+                  renderItem={renderProductItem}
+                  keyExtractor={item => item.eslCode}
+                  style={styles.productList}
+                  contentContainerStyle={[styles.productListContent, { paddingBottom: 100 }]}
+                  keyboardShouldPersistTaps="handled"
+                />
+                <View style={styles.homeButtonContainer}>
+                  <TouchableOpacity
+                    style={styles.homeButton}
+                    onPress={handleGoHome}
+                  >
+                    <Text style={styles.homeButtonText}>Go Home</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
             )}
           </View>
         );
@@ -1039,7 +1233,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
               <Text style={styles.navigationProductName}>
                 {selectedProduct ? selectedProduct.name : "Home"}
               </Text>
-              <ActivityIndicator size="large" color="rgb(0, 215, 68)" style={styles.navigationSpinner} />
+              <ActivityIndicator size="large" color="#2670F8" style={styles.navigationSpinner} />
               
               <TouchableOpacity 
                 style={[styles.navigationButton, styles.cancelButton, { marginTop: 30 }]}
@@ -1108,6 +1302,206 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     }
   };
 
+  // Add a dedicated function to stop pose polling
+  const stopPosePolling = async () => {
+    if (posePollingRef.current) {
+      clearInterval(posePollingRef.current);
+      posePollingRef.current = null;
+      await LogUtils.writeDebugToFile('Robot pose polling stopped explicitly');
+      return true;
+    }
+    return false;
+  };
+
+  // Helper function to convert from yaw to quaternion (assuming pitch and roll are 0)
+  const yawToQuaternion = (yaw: number) => {
+    const halfYaw = yaw / 2;
+    return {
+      w: Math.cos(halfYaw),
+      x: 0,
+      y: 0,
+      z: Math.sin(halfYaw)
+    };
+  };
+  
+  // Helper function to transform coordinates from robot system to our coordinate system
+  const transformCoordinates = (x: number, y: number, yaw: number) => {
+    // In the new system:
+    // x remains the same
+    // y becomes 0 (ground plane)
+    // z becomes the old y, but inverted
+    const z = -y; // Invert y to get z
+    
+    // Convert yaw to quaternion
+    const quaternion = yawToQuaternion(yaw);
+    
+    return {
+      x,
+      y: 0,
+      z,
+      quaternion,
+      // Keep the original values for reference
+      originalX: x,
+      originalY: y,
+      originalYaw: yaw
+    };
+  };
+
+  // Function to read the pose and log it
+  const readRobotPose = async () => {
+    try {
+      // Only continue polling if we're in NAVIGATING or PATROL states
+      if (currentNavigationStatusRef.current !== NavigationStatus.NAVIGATING && 
+          currentNavigationStatusRef.current !== NavigationStatus.PATROL) {
+        await stopPosePolling();
+        await LogUtils.writeDebugToFile(`Auto-stopped polling - not in NAVIGATING/PATROL state`);
+        return;
+      }
+      
+      const pose = await NativeModules.SlamtecUtils.getCurrentPose();
+      if (pose) {
+        const timestamp = Date.now();
+        
+        // Transform coordinates and add quaternion
+        const transformedPose = transformCoordinates(pose.x, pose.y, pose.yaw);
+        
+        // Create formatted log string with the transformed pose including quaternion
+        const logString = 
+          `ROBOT_POSE: ${timestamp} - ` +
+          `pos=[${transformedPose.x.toFixed(4)}, ${transformedPose.y.toFixed(4)}, ${transformedPose.z.toFixed(4)}], ` +
+          `quat=[${transformedPose.quaternion.w.toFixed(4)}, ${transformedPose.quaternion.x.toFixed(4)}, ` +
+          `${transformedPose.quaternion.y.toFixed(4)}, ${transformedPose.quaternion.z.toFixed(4)}], ` +
+          `original=[${transformedPose.originalX.toFixed(4)}, ${transformedPose.originalY.toFixed(4)}, ${transformedPose.originalYaw.toFixed(4)}]`;
+          
+        await LogUtils.writeDebugToFile(logString);
+        
+        // Create JSON payload in the requested format
+        // Convert millisecond timestamp to nanoseconds by multiplying by 1,000,000
+        const timestampNano = BigInt(timestamp) * BigInt(1000000);
+        
+        // Get device identifiers from global storage
+        const identifiers = DeviceStorage.getIdentifiers();
+        
+        // If identifiers are not in global storage, log an error
+        if (!DeviceStorage.hasIdentifiers()) {
+          await LogUtils.writeDebugToFile("Error: Device identifiers not found in global storage!");
+        }
+        
+        const poseData = {
+          name: "PadBot",
+          device_id: identifiers.deviceId || "unknown_device_id",
+          device_type: "padbot-robot-w3",
+          timestamp: timestampNano.toString(),
+          pose: {
+            px: transformedPose.x,
+            py: transformedPose.y,
+            pz: transformedPose.z,
+            rx: transformedPose.quaternion.x,
+            ry: transformedPose.quaternion.y,
+            rz: transformedPose.quaternion.z,
+            rw: transformedPose.quaternion.w
+          },
+          mac_address: identifiers.macAddress || "unknown_mac_address"
+        };
+        
+        // Log the JSON format to debug
+        await LogUtils.writeDebugToFile(JSON.stringify(poseData));
+
+        // Send the pose data to the domain
+        try {
+          // Always use PUT when a data ID exists, otherwise use POST to create one
+          const robotPoseDataId = DeviceStorage.getIdentifiers().robotPoseDataId;
+          
+          if (robotPoseDataId) {
+            // If we have a stored data ID, use PUT
+            await LogUtils.writeDebugToFile(`Using PUT with existing data ID: ${robotPoseDataId}`);
+            const result = await NativeModules.DomainUtils.writeRobotPose(JSON.stringify(poseData), "PUT", robotPoseDataId);
+            await LogUtils.writeDebugToFile(`Pose data sent successfully with PUT: ${JSON.stringify(result)}`);
+          } else {
+            // If no data ID yet, use POST to create one
+            await LogUtils.writeDebugToFile(`Using POST to create new robot pose data`);
+            const result = await NativeModules.DomainUtils.writeRobotPose(JSON.stringify(poseData), "POST", null);
+            await LogUtils.writeDebugToFile(`Pose data sent successfully with POST: ${JSON.stringify(result)}`);
+            
+            // If this was a POST and we got a data ID back, store it for future updates
+            if (result.dataId) {
+              DeviceStorage.setRobotPoseDataId(result.dataId);
+              await LogUtils.writeDebugToFile(`Stored new robot pose data ID: ${result.dataId}`);
+            }
+          }
+        } catch (error: any) {
+          await LogUtils.writeDebugToFile(`Error sending pose data: ${error.message}`);
+        }
+      }
+    } catch (error: any) {
+      await LogUtils.writeDebugToFile(`Error getting robot pose: ${error.message}`);
+    }
+  };
+
+  // Define startPosePolling outside the useEffect so it can be called from multiple places
+  const startPosePolling = async () => {
+    try {
+      // ALWAYS clear any existing interval first to prevent duplicates
+      await stopPosePolling();
+      
+      await LogUtils.writeDebugToFile('Starting robot pose polling at 2 times per second');
+      
+      // Call once immediately
+      await readRobotPose();
+      
+      // Only set up interval if we're in NAVIGATING or PATROL states
+      if (currentNavigationStatusRef.current === NavigationStatus.NAVIGATING || 
+          currentNavigationStatusRef.current === NavigationStatus.PATROL) {
+        posePollingRef.current = setInterval(readRobotPose, 500);
+        await LogUtils.writeDebugToFile('Robot pose polling started successfully');
+      } else {
+        await LogUtils.writeDebugToFile(`Not starting polling interval - not in NAVIGATING/PATROL state`);
+      }
+    } catch (error: any) {
+      await LogUtils.writeDebugToFile(`Error starting pose polling: ${error.message}`);
+    }
+  };
+
+  // Watch for navigation status changes and manage polling based on NavigationStatus
+  useEffect(() => {
+    const handleNavigationStateChange = async () => {
+      // Log the state change
+      await LogUtils.writeDebugToFile(`Navigation state changed to: ${NavigationStatus[navigationStatus]}`);
+      
+      // Only poll in NAVIGATING or PATROL states
+      if (navigationStatus === NavigationStatus.NAVIGATING || 
+          navigationStatus === NavigationStatus.PATROL) {
+        // Start polling if not already polling
+        if (!posePollingRef.current) {
+          await LogUtils.writeDebugToFile(`Starting polling in ${NavigationStatus[navigationStatus]} state`);
+          await startPosePolling();
+        }
+      } else {
+        // Stop polling in all other states
+        await stopPosePolling();
+        await LogUtils.writeDebugToFile(`Polling stopped in ${NavigationStatus[navigationStatus]} state`);
+      }
+    };
+    
+    // Call the handler immediately when navigation status changes
+    handleNavigationStateChange();
+    
+    // Clean up when component unmounts or navigation state changes
+    return () => {
+      if (posePollingRef.current) {
+        clearInterval(posePollingRef.current);
+        posePollingRef.current = null;
+        LogUtils.writeDebugToFile('Robot pose polling stopped on cleanup');
+      }
+    };
+  }, [navigationStatus]);
+
+  // Update ref when navigation status changes
+  useEffect(() => {
+    currentNavigationStatusRef.current = navigationStatus;
+    LogUtils.writeDebugToFile(`Navigation status updated to: ${NavigationStatus[navigationStatus]}`);
+  }, [navigationStatus]);
+
   return (
     <SafeAreaView 
       style={styles.container}
@@ -1131,7 +1525,11 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           {/* Close button is now invisible but still functional with long press */}
         </TouchableOpacity>
         
-        <Text style={styles.headerTitle}>Cactus Assistant</Text>
+        <Image 
+          source={require('../assets/AppIcon_Gotu.png')}
+          style={styles.headerLogo}
+          resizeMode="contain"
+        />
         
         <TouchableOpacity 
           style={styles.configButton}
@@ -1158,87 +1556,106 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#404040',
+    backgroundColor: '#F4F6F6',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 15,
+    backgroundColor: '#FFFFFF',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'rgb(0, 215, 68)',
+  headerLogo: {
+    width: 200,
+    height: 80,
     flex: 1,
-    textAlign: 'center',
+    alignSelf: 'center',
   },
   closeButton: {
     padding: 5,
     width: 40,
     height: 40,
-    // No background color or border to make it invisible
-  },
-  closeButtonText: {
-    fontSize: 24,
-    color: 'rgb(0, 215, 68)',
   },
   configButton: {
     padding: 5,
     width: 40,
     height: 40,
-    // No background color or border to make it invisible
-  },
-  configButtonText: {
-    fontSize: 32,
-    color: 'rgb(0, 215, 68)',
-    textAlign: 'right',
   },
   searchContainer: {
     flex: 1,
-    padding: 20,
+    padding: 16,
   },
   searchInput: {
-    backgroundColor: '#303030',
-    color: 'white',
-    borderWidth: 2,
-    borderColor: 'rgb(0, 215, 68)',
-    borderRadius: 5,
-    padding: 15,
-    fontSize: 22,
-    marginBottom: 20,
-    minHeight: 60,
+    backgroundColor: '#FFFFFF',
+    color: '#101010',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 20,
+    marginBottom: 16,
+    fontFamily: 'DM Sans',
   },
   productList: {
     flex: 1,
-    backgroundColor: '#303030',
-    borderRadius: 5,
   },
   productListContent: {
-    paddingVertical: 5,
+    paddingVertical: 8,
+    paddingBottom: 100,
   },
   productItem: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#505050',
-    minHeight: 60,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    marginBottom: 12,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  productContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  productTextContainer: {
+    flex: 3,
+    paddingRight: 16,
   },
   productText: {
-    color: 'white',
-    fontSize: 18,
-  },
-  homeButton: {
-    backgroundColor: 'rgb(0, 215, 68)',
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 20,
-    minHeight: 50,
-  },
-  homeButtonText: {
-    color: '#404040',
-    fontSize: 18,
+    color: '#101010',
+    fontSize: 20,
     fontWeight: 'bold',
+    marginBottom: 4,
+    fontFamily: 'DM Sans',
+  },
+  productDescription: {
+    color: '#596168',
+    fontSize: 15,
+    marginBottom: 12,
+    fontFamily: 'DM Sans',
+  },
+  findButton: {
+    backgroundColor: '#2670F8',
+    borderRadius: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+  },
+  findButtonText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '500',
+    marginRight: 4,
+    fontFamily: 'DM Sans',
   },
   navigationContainer: {
     position: 'absolute',
@@ -1246,69 +1663,72 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
   navigationDialog: {
-    backgroundColor: '#404040',
-    borderRadius: 10,
-    padding: 30,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 24,
     width: '80%',
     maxWidth: 500,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   navigationTitle: {
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: 'bold',
-    color: 'rgb(0, 215, 68)',
-    marginBottom: 20,
+    color: '#101010',
+    marginBottom: 16,
     textAlign: 'center',
+    fontFamily: 'DM Sans',
   },
   navigationProductName: {
-    fontSize: 28,
-    color: 'white',
+    fontSize: 25,
+    color: '#101010',
     textAlign: 'center',
-    marginBottom: 30,
+    marginBottom: 24,
+    fontFamily: 'DM Sans',
   },
   navigationSpinner: {
-    marginTop: 20,
+    marginTop: 16,
   },
   navigationErrorText: {
-    fontSize: 24,
-    color: '#F44336',
+    fontSize: 20,
+    color: '#E74C3C',
     textAlign: 'center',
-    marginVertical: 20,
+    marginVertical: 16,
+    fontFamily: 'DM Sans',
   },
   navigationButtonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
-    marginTop: 20,
+    marginTop: 16,
   },
   navigationButton: {
-    backgroundColor: '#666',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 5,
-    minWidth: 150,
-    marginHorizontal: 10,
+    backgroundColor: '#2670F8',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    minWidth: 120,
+    marginHorizontal: 8,
   },
   navigationButtonText: {
-    color: 'white',
+    color: '#FFFFFF',
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: '500',
     textAlign: 'center',
-  },
-  navigationHomeButton: {
-    backgroundColor: 'rgb(0, 215, 68)',
-  },
-  navigationHomeButtonText: {
-    color: '#404040',
+    fontFamily: 'DM Sans',
   },
   cancelButton: {
-    backgroundColor: '#F44336',
+    backgroundColor: '#E74C3C',
   },
   fullScreenContainer: {
     position: 'absolute',
@@ -1324,20 +1744,66 @@ const styles = StyleSheet.create({
   },
   tapInstructionContainer: {
     position: 'absolute',
-    bottom: 5,
+    bottom: 24,
     left: 0,
     right: 0,
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    paddingVertical: 15,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    paddingVertical: 16,
   },
   tapInstructionText: {
-    fontSize: 28,
+    fontSize: 25,
     fontWeight: 'bold',
-    color: 'white',
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 5,
+    color: '#FFFFFF',
+    fontFamily: 'DM Sans',
+  },
+  homeButtonContainer: {
+    position: 'absolute',
+    bottom: 16,
+    left: 16,
+    right: 16,
+    backgroundColor: 'transparent',
+    zIndex: 10,
+    elevation: 5,
+  },
+  homeButton: {
+    backgroundColor: '#2670F8',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  homeButtonText: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '500',
+    fontFamily: 'DM Sans',
+  },
+  productImageContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  productImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+  },
+  placeholderImage: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#E0E0E0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  placeholderText: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  actionButtonContainer: {
+    marginBottom: 10,
   },
 });
 

@@ -24,6 +24,9 @@ import androidx.core.content.ContextCompat
 import android.app.Activity
 import android.content.Intent
 import java.util.regex.Pattern
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.io.FileWriter
 
 class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
     private val TAG = "DomainUtilsModule"
@@ -97,77 +100,257 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
 
     @ReactMethod
     fun refreshToken(promise: Promise) {
-        try {
-            // Get stored credentials
-            val email = sharedPreferences.getString("email", null)
-            val password = sharedPreferences.getString("password", null)
-            val domainId = sharedPreferences.getString("domain_id", null)
-
-            if (email.isNullOrEmpty() || password.isNullOrEmpty() || domainId.isNullOrEmpty()) {
-                throw Exception("Missing stored credentials")
-            }
-
-            // Launch authentication in coroutine
-            scope.launch {
-                try {
-                    val client = OkHttpClient()
-                    
-                    // First get DDS token
-                    val ddsLoginUrl = "$baseUrl/$domainId/login"
-                    val ddsLoginJson = JSONObject().apply {
-                        put("email", email)
-                        put("password", password)
-                    }
-                    
-                    val ddsLoginRequest = Request.Builder()
-                        .url(ddsLoginUrl)
-                        .post(ddsLoginJson.toString().toRequestBody("application/json".toMediaType()))
-                        .build()
-
-                    client.newCall(ddsLoginRequest).execute().use { response ->
-                        if (!response.isSuccessful) {
-                            throw Exception("DDS login failed: ${response.code}")
-                        }
-
-                        val ddsLoginResponse = JSONObject(response.body?.string() ?: throw Exception("Empty DDS response"))
-                        val newDdsToken = ddsLoginResponse.getString("token")
-                        ddsToken = newDdsToken
-                        
-                        // Store domain info
-                        domainInfo = ddsLoginResponse.toString()
-                        
-                        // Now get Posemesh token
-                        val posemeshLoginUrl = "$baseUrl/$domainId/posemesh/login"
-                        val posemeshLoginRequest = Request.Builder()
-                            .url(posemeshLoginUrl)
-                            .addHeader("Authorization", "Bearer $newDdsToken")
-                            .post("".toRequestBody(null))
-                            .build()
-
-                        client.newCall(posemeshLoginRequest).execute().use { posemeshResponse ->
-                            if (!posemeshResponse.isSuccessful) {
-                                throw Exception("Posemesh login failed: ${posemeshResponse.code}")
-                            }
-
-                            val posemeshLoginResponse = JSONObject(posemeshResponse.body?.string() ?: throw Exception("Empty Posemesh response"))
-                            posemeshToken = posemeshLoginResponse.getString("token")
-                        }
-                    }
-
-                    // Return success on main thread
-                    withContext(Dispatchers.Main) {
-                        promise.resolve(JSONObject(domainInfo ?: "{}").toString())
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Token refresh failed", e)
-                    withContext(Dispatchers.Main) {
-                        promise.reject("REFRESH_ERROR", "Token refresh failed: ${e.message}")
-                    }
+        scope.launch {
+            try {
+                logToFile("Starting token refresh...")
+                
+                // Get stored credentials
+                val email = sharedPreferences.getString("email", "") ?: ""
+                val password = sharedPreferences.getString("password", "") ?: ""
+                val domainId = sharedPreferences.getString("domain_id", "") ?: ""
+                
+                logToFile("Refreshing token with email: $email, domainId: $domainId")
+                
+                if (email.isEmpty() || password.isEmpty() || domainId.isEmpty()) {
+                    val errorMsg = "Missing stored credentials for token refresh"
+                    logToFile(errorMsg)
+                    throw Exception(errorMsg)
                 }
+                
+                // Perform full re-authentication flow (same as testTokenValidity and authenticate)
+                
+                // 1. Authenticate with Posemesh
+                val url1 = URL("https://api.posemesh.org/user/login")
+                logToFile("Posemesh user login URL: $url1")
+                
+                val connection1 = url1.openConnection() as HttpURLConnection
+                
+                val body1 = JSONObject().apply {
+                    put("email", email)
+                    put("password", password)
+                }
+
+                connection1.apply {
+                    requestMethod = "POST"
+                    setRequestProperty("Content-Type", "application/json")
+                    setRequestProperty("Accept", "application/json")
+                    doOutput = true
+                    outputStream.write(body1.toString().toByteArray())
+                }
+
+                val responseCode1 = connection1.responseCode
+                logToFile("Posemesh user login response code: $responseCode1")
+
+                if (responseCode1 !in 200..299) {
+                    val errorMessage = "Token refresh: Failed to authenticate posemesh account: $responseCode1"
+                    logToFile(errorMessage)
+                    throw Exception(errorMessage)
+                }
+
+                val response1 = connection1.inputStream.bufferedReader().readText()
+                logToFile("Posemesh user login response: ${response1.take(200)}${if (response1.length > 200) "..." else ""}")
+                
+                val repJson1 = JSONObject(response1)
+                val posemeshTokenValue = repJson1.getString("access_token")
+                posemeshToken = posemeshTokenValue
+                logToFile("Posemesh token received (first 10 chars): ${posemeshTokenValue.take(10)}...")
+
+                // 2. Auth DDS
+                val url2 = URL("https://api.posemesh.org/service/domains-access-token")
+                logToFile("DDS authentication URL: $url2")
+                
+                val connection2 = url2.openConnection() as HttpURLConnection
+                
+                connection2.apply {
+                    requestMethod = "POST"
+                    setRequestProperty("Accept", "application/json")
+                    setRequestProperty("Authorization", "Bearer $posemeshToken")
+                }
+
+                val responseCode2 = connection2.responseCode
+                logToFile("DDS authentication response code: $responseCode2")
+
+                if (responseCode2 !in 200..299) {
+                    val errorMessage = "Token refresh: Failed to authenticate domain dds: $responseCode2"
+                    logToFile(errorMessage)
+                    throw Exception(errorMessage)
+                }
+
+                val response2 = connection2.inputStream.bufferedReader().readText()
+                logToFile("DDS authentication response: $response2")
+                
+                val repJson2 = JSONObject(response2)
+                val ddsTokenValue = repJson2.getString("access_token")
+                ddsToken = ddsTokenValue
+                logToFile("DDS token received (first 10 chars): ${ddsTokenValue.take(10)}...")
+
+                // 3. Auth Domain
+                val url3 = URL("https://dds.posemesh.org/api/v1/domains/$domainId/auth")
+                logToFile("Domain authentication URL: $url3")
+                
+                val connection3 = url3.openConnection() as HttpURLConnection
+                
+                connection3.apply {
+                    requestMethod = "POST"
+                    setRequestProperty("Accept", "application/json")
+                    setRequestProperty("Authorization", "Bearer $ddsToken")
+                }
+
+                val responseCode3 = connection3.responseCode
+                logToFile("Domain authentication response code: $responseCode3")
+
+                if (responseCode3 !in 200..299) {
+                    val errorMessage = "Token refresh: Failed to authenticate domain access: $responseCode3"
+                    logToFile(errorMessage)
+                    throw Exception(errorMessage)
+                }
+
+                val response3 = connection3.inputStream.bufferedReader().readText()
+                logToFile("Domain authentication response: ${response3.take(200)}${if (response3.length > 200) "..." else ""}")
+                
+                // Update stored domain info
+                domainInfo = response3
+                logToFile("Updated domain info after token refresh")
+                
+                // Return the updated domain info
+                logToFile("Token refresh completed successfully")
+                promise.resolve(domainInfo)
+            } catch (e: Exception) {
+                Log.e(TAG, "Token refresh failed", e)
+                logToFile("Token refresh failed: ${e.message}")
+                promise.reject("REFRESH_ERROR", "Token refresh failed: ${e.message}")
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to refresh token", e)
-            promise.reject("REFRESH_ERROR", "Failed to refresh token: ${e.message}")
+        }
+    }
+
+    @ReactMethod
+    fun testTokenValidity(promise: Promise) {
+        scope.launch {
+            try {
+                logToFile("Starting token validation...")
+                
+                // Check if we have domain info
+                val domainInfoStr = domainInfo ?: throw Exception("No domain info available")
+                logToFile("Domain info from storage: $domainInfoStr")
+                
+                // Instead of testing existing token validity, try a re-authentication approach
+                // This mimics what the ConfigScreen does
+                val email = sharedPreferences.getString("email", "") ?: ""
+                val password = sharedPreferences.getString("password", "") ?: ""
+                val domainId = sharedPreferences.getString("domain_id", "") ?: ""
+                
+                logToFile("Re-authenticating with email: $email, domainId: $domainId")
+                
+                if (email.isEmpty() || password.isEmpty() || domainId.isEmpty()) {
+                    val errorMsg = "Missing stored credentials for token validation"
+                    logToFile(errorMsg)
+                    throw Exception(errorMsg)
+                }
+                
+                // 1. Re-authenticate with Posemesh
+                val url1 = URL("https://api.posemesh.org/user/login")
+                logToFile("Posemesh user login URL: $url1")
+                
+                val connection1 = url1.openConnection() as HttpURLConnection
+                
+                val body1 = JSONObject().apply {
+                    put("email", email)
+                    put("password", password)
+                }
+
+                connection1.apply {
+                    requestMethod = "POST"
+                    setRequestProperty("Content-Type", "application/json")
+                    setRequestProperty("Accept", "application/json")
+                    doOutput = true
+                    outputStream.write(body1.toString().toByteArray())
+                }
+
+                val responseCode1 = connection1.responseCode
+                logToFile("Posemesh user login response code: $responseCode1")
+
+                if (responseCode1 !in 200..299) {
+                    val errorMessage = "Token validation: Failed to authenticate posemesh account: $responseCode1"
+                    logToFile(errorMessage)
+                    throw Exception(errorMessage)
+                }
+
+                val response1 = connection1.inputStream.bufferedReader().readText()
+                logToFile("Posemesh user login response: ${response1.take(200)}${if (response1.length > 200) "..." else ""}")
+                
+                val repJson1 = JSONObject(response1)
+                val posemeshTokenValue = repJson1.getString("access_token")
+                posemeshToken = posemeshTokenValue
+                logToFile("Posemesh token received (first 10 chars): ${posemeshTokenValue.take(10)}...")
+
+                // 2. Auth DDS
+                val url2 = URL("https://api.posemesh.org/service/domains-access-token")
+                logToFile("DDS authentication URL: $url2")
+                
+                val connection2 = url2.openConnection() as HttpURLConnection
+                
+                connection2.apply {
+                    requestMethod = "POST"
+                    setRequestProperty("Accept", "application/json")
+                    setRequestProperty("Authorization", "Bearer $posemeshToken")
+                }
+
+                val responseCode2 = connection2.responseCode
+                logToFile("DDS authentication response code: $responseCode2")
+
+                if (responseCode2 !in 200..299) {
+                    val errorMessage = "Token validation: Failed to authenticate domain dds: $responseCode2"
+                    logToFile(errorMessage)
+                    throw Exception(errorMessage)
+                }
+
+                val response2 = connection2.inputStream.bufferedReader().readText()
+                logToFile("DDS authentication response: $response2")
+                
+                val repJson2 = JSONObject(response2)
+                val ddsTokenValue = repJson2.getString("access_token")
+                ddsToken = ddsTokenValue
+                logToFile("DDS token received (first 10 chars): ${ddsTokenValue.take(10)}...")
+
+                // 3. Auth Domain
+                val url3 = URL("https://dds.posemesh.org/api/v1/domains/$domainId/auth")
+                logToFile("Domain authentication URL: $url3")
+                
+                val connection3 = url3.openConnection() as HttpURLConnection
+                
+                connection3.apply {
+                    requestMethod = "POST"
+                    setRequestProperty("Accept", "application/json")
+                    setRequestProperty("Authorization", "Bearer $ddsToken")
+                }
+
+                val responseCode3 = connection3.responseCode
+                logToFile("Domain authentication response code: $responseCode3")
+
+                if (responseCode3 !in 200..299) {
+                    val errorMessage = "Token validation: Failed to authenticate domain access: $responseCode3"
+                    logToFile(errorMessage)
+                    throw Exception(errorMessage)
+                }
+
+                val response3 = connection3.inputStream.bufferedReader().readText()
+                logToFile("Domain authentication response: ${response3.take(200)}${if (response3.length > 200) "..." else ""}")
+                
+                // Update the stored domain info with new credentials
+                domainInfo = response3
+                logToFile("Updated domain info after token validation")
+                
+                // If we reached here, token validation was successful
+                logToFile("Token validation successful via re-authentication")
+                val result = Arguments.createMap()
+                result.putBoolean("valid", true)
+                result.putString("message", "Token is valid")
+                promise.resolve(result)
+            } catch (e: Exception) {
+                Log.e(TAG, "Token validation error: ${e.message}", e)
+                logToFile("Token validation error: ${e.message}")
+                promise.reject("TOKEN_VALIDATION_ERROR", "Token validation failed: ${e.message}")
+            }
         }
     }
 
@@ -972,6 +1155,27 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     putDouble("deltaZ", deltaZ)
                 })
             })
+        }
+    }
+
+    // Add this helper method for logging to file
+    private fun logToFile(message: String) {
+        try {
+            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val logFile = File(downloadsDir, "debug_log.txt")
+            val timestamp = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(java.util.Date())
+            val logMessage = "[$timestamp] $message\n"
+            
+            if (!logFile.exists()) {
+                logFile.createNewFile()
+            }
+            
+            // Append to file
+            FileWriter(logFile, true).use { writer ->
+                writer.append(logMessage)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error writing to debug log file: ${e.message}", e)
         }
     }
 
