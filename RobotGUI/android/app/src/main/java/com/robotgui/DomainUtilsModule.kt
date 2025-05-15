@@ -1107,7 +1107,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
     
     private fun clearHomeDocks(baseUrl: String) {
         try {
-            val url = URL("$baseUrl/api/core/slam/v1/homepose")
+            val url = URL("$baseUrl/api/core/slam/v1/homedocks")
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "DELETE"
             val responseCode = connection.responseCode
