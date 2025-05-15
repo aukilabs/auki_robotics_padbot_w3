@@ -918,7 +918,37 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
         }
     }
     
-    // New method to get homedock pose from QR ID (similar to GetPose button in ConfigScreen)
+    // Add helper methods for storing/retrieving homedock data in SharedPreferences
+    private fun saveHomedockData(x: Double, y: Double, z: Double, yaw: Double, pitch: Double, roll: Double) {
+        sharedPreferences.edit()
+            .putFloat("homedock_x", x.toFloat())
+            .putFloat("homedock_y", y.toFloat())
+            .putFloat("homedock_z", z.toFloat())
+            .putFloat("homedock_yaw", yaw.toFloat())
+            .putFloat("homedock_pitch", pitch.toFloat())
+            .putFloat("homedock_roll", roll.toFloat())
+            .putLong("homedock_saved_time", System.currentTimeMillis())
+            .apply()
+        logToFile("Saved homedock data to preferences: x=$x, y=$y, z=$z, yaw=$yaw")
+    }
+    
+    private fun getStoredHomedockData(): DoubleArray? {
+        // Check if we have stored homedock data
+        if (!sharedPreferences.contains("homedock_x")) {
+            return null
+        }
+        
+        return doubleArrayOf(
+            sharedPreferences.getFloat("homedock_x", 0f).toDouble(),
+            sharedPreferences.getFloat("homedock_y", 0f).toDouble(),
+            sharedPreferences.getFloat("homedock_z", 0f).toDouble(),
+            sharedPreferences.getFloat("homedock_yaw", 0f).toDouble(),
+            sharedPreferences.getFloat("homedock_pitch", 0f).toDouble(),
+            sharedPreferences.getFloat("homedock_roll", 0f).toDouble()
+        )
+    }
+
+    // Modify getHomedockPoseFromQrId to save the pose when successful
     private suspend fun getHomedockPoseFromQrId(qrId: String): WritableMap? {
         try {
             Log.d(TAG, "Getting pose data for QR ID: $qrId")
@@ -997,6 +1027,9 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             logToFile("Transformed coordinates: Original (px=$px, py=$py, pz=$pz) -> Transformed (px=$px, py=$transformedPy, pz=$transformedPz)")
             logToFile("Converted quaternion (rx=$rx, ry=$ry, rz=$rz, rw=$rw) -> yaw=$yaw")
             
+            // Store the homedock data in SharedPreferences for future use
+            saveHomedockData(px, transformedPy, transformedPz, yaw, 0.0, 0.0)
+            
             // Create the result object
             val result = Arguments.createMap().apply {
                 putDouble("px", px)
@@ -1009,36 +1042,39 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             return result
         } catch (e: Exception) {
             Log.e(TAG, "Error getting homedock pose from QR ID", e)
-            logToFile("Error getting homedock pose from QR ID: ${e.message}")
+            logToFile("Error getting homedock pose from QR ID")
             return null
         }
     }
     
-    // Fallback to using homedock from config.yaml
+    // Update fallbackToConfigHomedock to use SharedPreferences instead of config.yaml
     private fun fallbackToConfigHomedock(baseUrl: String) {
         try {
-            val homedock = ConfigManager.getDoubleArray("homedock")
-            if (homedock != null && homedock.size >= 6) {
-                Log.d(TAG, "Setting home dock from config.yaml: x=${homedock[0]}, y=${homedock[1]}, z=${homedock[2]}, yaw=${homedock[3]}")
-                logToFile("Setting home dock from config.yaml: x=${homedock[0]}, y=${homedock[1]}, z=${homedock[2]}, yaw=${homedock[3]}")
+            // Try to get homedock from SharedPreferences
+            val storedHomedock = getStoredHomedockData()
+            
+            if (storedHomedock != null) {
+                // Use stored homedock from SharedPreferences
+                Log.d(TAG, "Setting home dock from stored preferences: x=${storedHomedock[0]}, y=${storedHomedock[1]}, z=${storedHomedock[2]}, yaw=${storedHomedock[3]}")
+                logToFile("Setting home dock from stored preferences: x=${storedHomedock[0]}, y=${storedHomedock[1]}, z=${storedHomedock[2]}, yaw=${storedHomedock[3]}")
                 clearHomeDocks(baseUrl)
-                setHomeDock(baseUrl, homedock[0], homedock[1], homedock[2], homedock[3], homedock[4], homedock[5])
+                setHomeDock(baseUrl, storedHomedock[0], storedHomedock[1], storedHomedock[2], storedHomedock[3], storedHomedock[4], storedHomedock[5])
                 
                 // Update robot pose based on Homedock
-                val pose = calculatePose(homedock)
-                Log.d(TAG, "Setting robot pose from config.yaml: x=${pose[0]}, y=${pose[1]}, z=${pose[2]}, yaw=${pose[3]}")
-                logToFile("Setting robot pose from config.yaml: x=${pose[0]}, y=${pose[1]}, z=${pose[2]}, yaw=${pose[3]}")
+                val pose = calculatePose(storedHomedock)
+                Log.d(TAG, "Setting robot pose from stored prefs: x=${pose[0]}, y=${pose[1]}, z=${pose[2]}, yaw=${pose[3]}")
+                logToFile("Setting robot pose from stored prefs: x=${pose[0]}, y=${pose[1]}, z=${pose[2]}, yaw=${pose[3]}")
                 setPose(baseUrl, pose[0], pose[1], pose[2], pose[3], pose[4], pose[5])
             } else {
-                Log.e(TAG, "No valid homedock configuration found in config.yaml")
-                logToFile("No valid homedock configuration found in config.yaml")
+                Log.e(TAG, "No valid homedock data available in preferences")
+                logToFile("No valid homedock data available in preferences")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error setting homedock from config", e)
-            logToFile("Error setting homedock from config: ${e.message}")
+            Log.e(TAG, "Error setting homedock from stored data", e)
+            logToFile("Error setting homedock from stored data")
         }
     }
-    
+
     private fun clearPOIs(baseUrl: String) {
         try {
             val url = URL("$baseUrl/api/core/artifact/v1/pois")
