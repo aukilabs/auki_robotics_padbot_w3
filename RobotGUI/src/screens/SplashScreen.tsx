@@ -33,8 +33,48 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
           setLoadingText('Authenticating...');
           await LogUtils.writeDebugToFile('Attempting authentication...');
         }
-        await NativeModules.DomainUtils.authenticate(null, null, null);
-        await LogUtils.writeDebugToFile('Authentication successful');
+        
+        let authSuccess = false;
+        try {
+          await NativeModules.DomainUtils.authenticate(null, null, null);
+          await LogUtils.writeDebugToFile('Authentication successful');
+          authSuccess = true;
+        } catch (authError: any) {
+          await LogUtils.writeDebugToFile(`Authentication error: ${authError.message}`);
+          if (isMounted) {
+            setLoadingText('Authentication failed. Some features may be limited.');
+            await new Promise(resolve => setTimeout(resolve, 2000));
+          }
+        }
+        
+        // Update map
+        try {
+          if (isMounted) {
+            setLoadingText('Updating map...');
+            await LogUtils.writeDebugToFile('Updating map...');
+          }
+          
+          // Only try to update map if authentication was successful
+          if (authSuccess) {
+            // Check if map is already being downloaded from authenticate
+            // The authenticate method already triggers map download, so we'll just wait here
+            await LogUtils.writeDebugToFile('Authentication successful - map download was triggered during authentication');
+            
+            // Wait a reasonable amount of time for the map download to progress
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            
+            // No need to explicitly call downloadAndProcessMap() here as it was initiated during authentication
+            await LogUtils.writeDebugToFile('Map update complete');
+          } else {
+            await LogUtils.writeDebugToFile('Skipping map update due to authentication failure');
+          }
+        } catch (mapError: any) {
+          await LogUtils.writeDebugToFile(`Map update error: ${mapError.message}, proceeding anyway`);
+          if (isMounted) {
+            setLoadingText('Map update failed. Using existing map.');
+            await new Promise(resolve => setTimeout(resolve, 1500));
+          }
+        }
         
         // Load products first
         if (isMounted) {

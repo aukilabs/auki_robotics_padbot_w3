@@ -28,6 +28,7 @@ import java.util.regex.Pattern
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.io.FileWriter
+import java.util.concurrent.atomic.AtomicBoolean
 
 class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
     private val TAG = "DomainUtilsModule"
@@ -35,6 +36,8 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
     private val sharedPreferences = reactContext.getSharedPreferences("DomainAuth", Context.MODE_PRIVATE)
     private val STORAGE_PERMISSION_CODE = 1001
     private val baseUrl = "https://dds.posemesh.org/api/v1/domains"
+    // Flag to prevent concurrent map downloads
+    private val isDownloadingMap = AtomicBoolean(false)
 
     private var posemeshToken: String?
         get() = sharedPreferences.getString("posemesh_token", null)
@@ -446,12 +449,25 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 // After successful authentication, download the map in a separate coroutine
                 scope.launch {
                     try {
-                        Log.d(TAG, "Authentication successful, downloading map...")
+                        Log.d(TAG, "Authentication successful, initiating map download...")
+                        logToFile("Authentication successful, initiating map download...")
                         
-                        // Download map directly without using Promise
-                        downloadMapAfterAuth()
+                        // Only start the download if it's not already in progress
+                        if (isDownloadingMap.compareAndSet(false, true)) {
+                            try {
+                                // Download map directly without using Promise
+                                downloadMapAfterAuth()
+                            } finally {
+                                // Always reset the flag when done
+                                isDownloadingMap.set(false)
+                            }
+                        } else {
+                            Log.d(TAG, "Map download already in progress, skipping duplicate request after authentication")
+                            logToFile("Map download already in progress, skipping duplicate request after authentication")
+                        }
                     } catch (e: Exception) {
                         Log.e(TAG, "Error downloading map after authentication: ${e.message}", e)
+                        logToFile("Error downloading map after authentication: ${e.message}")
                     }
                 }
 
@@ -656,9 +672,47 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
         }
     }
 
+    @ReactMethod
+    fun downloadAndProcessMap(promise: Promise) {
+        scope.launch {
+            try {
+                Log.d(TAG, "Starting downloadAndProcessMap")
+                // Check if a map download is already in progress
+                if (isDownloadingMap.compareAndSet(false, true)) {
+                    try {
+                        // Call the existing method that downloads and processes the map
+                        downloadMapAfterAuth()
+                        Log.d(TAG, "Map download and processing completed successfully")
+                        promise.resolve(true)
+                    } finally {
+                        // Always reset the flag when done, regardless of success or failure
+                        isDownloadingMap.set(false)
+                    }
+                } else {
+                    // A download is already in progress
+                    Log.d(TAG, "Map download already in progress, skipping duplicate request")
+                    logToFile("Map download already in progress, skipping duplicate request")
+                    promise.resolve(true) // Resolve with success since another download is handling it
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in downloadAndProcessMap: ${e.message}", e)
+                promise.reject("MAP_ERROR", "Failed to download and process map: ${e.message}")
+            }
+        }
+    }
+
     // Helper method to download map after authentication without using Promise
     private suspend fun downloadMapAfterAuth() {
+        // Only proceed if no download is in progress (additional safety check)
+        if (!isDownloadingMap.get()) {
+            Log.d(TAG, "Skipping downloadMapAfterAuth as flag indicates no download should be in progress")
+            logToFile("Skipping downloadMapAfterAuth as flag indicates no download should be in progress")
+            return
+        }
+        
         try {
+            Log.d(TAG, "Starting downloadMapAfterAuth process")
+            logToFile("Starting downloadMapAfterAuth process")
             val domainId = sharedPreferences.getString("domain_id", "") ?: ""
             val domainInfoStr = domainInfo ?: throw Exception("No domain info available")
             val domainInfoObj = JSONObject(domainInfoStr)
@@ -669,6 +723,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             // Get map endpoint from config
             val url = ConfigManager.getNestedString("domain.map_endpoint")
             Log.d(TAG, "Using map endpoint: $url")
+            logToFile("Using map endpoint: $url")
 
             val client = OkHttpClient()
             
@@ -680,7 +735,8 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 put("pixelsPerMeter", 20)
             }
 
-            Log.d(TAG, "Sending request: ${requestBody.toString()}")
+            Log.d(TAG, "Sending map request: ${requestBody.toString()}")
+            logToFile("Sending map request: ${requestBody.toString()}")
 
             val mediaType = "application/json".toMediaType()
             val request = Request.Builder()
@@ -689,42 +745,59 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 .addHeader("Authorization", "Bearer $accessToken")
                 .build()
 
+            Log.d(TAG, "Executing map download request")
+            logToFile("Executing map download request")
             val response = client.newCall(request).execute()
             if (!response.isSuccessful) {
                 val errorBody = response.body?.string() ?: "No error body"
-                Log.e(TAG, "Failed to download map: ${response.code}\nRequest Body: ${requestBody.toString()}\nError Body: $errorBody")
-                return
+                val errorMsg = "Failed to download map: ${response.code}\nRequest Body: ${requestBody.toString()}\nError Body: $errorBody"
+                Log.e(TAG, errorMsg)
+                logToFile(errorMsg)
+                throw Exception(errorMsg)
             }
 
             // Get content type to determine how to process the response
             val contentType = response.header("Content-Type", "")
             Log.d(TAG, "Response content type: $contentType")
+            logToFile("Response content type: $contentType")
 
             var stcmData: ByteArray? = null
 
             if (contentType?.contains("multipart/form-data") == true) {
                 // Handle multipart response
                 val responseBody = response.body?.string() ?: throw Exception("Empty response body")
+                Log.d(TAG, "Processing multipart/form-data response")
+                logToFile("Processing multipart/form-data response")
                 
                 // Get the boundary from the Content-Type header
                 val boundaryPattern = Pattern.compile("boundary=([^;\\s]+)")
                 val boundaryMatcher = boundaryPattern.matcher(contentType)
                 if (!boundaryMatcher.find()) {
-                    Log.e(TAG, "Could not find boundary in Content-Type header")
-                    return
+                    val errorMsg = "Could not find boundary in Content-Type header"
+                    Log.e(TAG, errorMsg)
+                    logToFile(errorMsg)
+                    throw Exception(errorMsg)
                 }
                 val boundary = "--${boundaryMatcher.group(1)}"
+                Log.d(TAG, "Found boundary: $boundary")
+                logToFile("Found boundary: $boundary")
                 
                 // Split the data using the boundary marker
                 val parts = responseBody.split(boundary)
+                Log.d(TAG, "Split response into ${parts.size} parts")
+                logToFile("Split response into ${parts.size} parts")
                 
                 // Find the part containing the STCM data
                 for (part in parts) {
                     if (part.contains("name=\"img\"")) {
+                        Log.d(TAG, "Found img part in multipart response")
+                        logToFile("Found img part in multipart response")
                         val headerEnd = part.indexOf("\r\n\r\n")
                         if (headerEnd > 0) {
                             // Extract the base64 encoded data after the header
                             val base64Data = part.substring(headerEnd + 4).trim()
+                            Log.d(TAG, "Extracted base64 data of length: ${base64Data.length}")
+                            logToFile("Extracted base64 data of length: ${base64Data.length}")
                             
                             // Clean up any whitespace or newlines that might be in the base64 string
                             val cleanBase64 = base64Data.replace("\\s+".toRegex(), "")
@@ -732,6 +805,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                             // Decode the base64 data
                             stcmData = Base64.decode(cleanBase64, Base64.DEFAULT)
                             Log.d(TAG, "Successfully decoded ${cleanBase64.length} bytes of base64 data to ${stcmData.size} bytes of binary STCM data")
+                            logToFile("Successfully decoded ${cleanBase64.length} bytes of base64 data to ${stcmData.size} bytes of binary STCM data")
                             break
                         }
                     }
@@ -739,12 +813,15 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             } else {
                 // If not multipart, assume the entire content is the STCM data
                 stcmData = response.body?.bytes()
-                Log.d(TAG, "Received ${stcmData?.size ?: 0} bytes of STCM data")
+                Log.d(TAG, "Received ${stcmData?.size ?: 0} bytes of raw STCM data")
+                logToFile("Received ${stcmData?.size ?: 0} bytes of raw STCM data")
             }
 
             if (stcmData == null) {
-                Log.e(TAG, "Failed to extract STCM data from response")
-                return
+                val errorMsg = "Failed to extract STCM data from response"
+                Log.e(TAG, errorMsg)
+                logToFile(errorMsg)
+                throw Exception(errorMsg)
             }
 
             // Save the STCM file to Downloads/CactusAssistant directory
@@ -752,58 +829,215 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             val cactusDir = File(downloadsDir, "CactusAssistant")
             if (!cactusDir.exists()) {
                 cactusDir.mkdirs()
+                Log.d(TAG, "Created CactusAssistant directory in Downloads folder")
+                logToFile("Created CactusAssistant directory in Downloads folder")
             }
 
             // Use a simple filename without timestamp
             val stcmFile = File(cactusDir, "map.stcm")
             stcmFile.writeBytes(stcmData)
-
             Log.d(TAG, "STCM map saved to: ${stcmFile.absolutePath}")
+            logToFile("STCM map saved to: ${stcmFile.absolutePath}")
             
             // Now perform the additional steps after downloading the map
             try {
                 val slamIp = ConfigManager.getString("slam_ip", "127.0.0.1")
                 val slamPort = ConfigManager.getInt("slam_port", 1448)
                 val baseUrl = "http://$slamIp:$slamPort"
+                Log.d(TAG, "Using SLAM API base URL: $baseUrl")
+                logToFile("Using SLAM API base URL: $baseUrl")
                 
                 // Step 1: Housekeeping - clear old data
                 Log.d(TAG, "Clearing old POIs and map data")
+                logToFile("Clearing old POIs and map data")
                 clearPOIs(baseUrl)
                 clearMap(baseUrl)
                 
                 // Step 2: Upload the new map
                 Log.d(TAG, "Uploading new map: ${stcmFile.absolutePath}")
+                logToFile("Uploading new map: ${stcmFile.absolutePath}")
                 uploadMap(baseUrl, stcmFile.absolutePath)
                 
-                // Step 3: Update Homedock location
-                val homedock = ConfigManager.getDoubleArray("homedock")
-                if (homedock != null && homedock.size >= 6) {
-                    Log.d(TAG, "Setting home dock at [${homedock[0]}, ${homedock[1]}, ${homedock[2]}, ${homedock[3]}, ${homedock[4]}, ${homedock[5]}]")
-                    clearHomeDocks(baseUrl)
-                    setHomeDock(baseUrl, homedock[0], homedock[1], homedock[2], homedock[3], homedock[4], homedock[5])
-                    
-                    // Step 4: Update robot pose based on Homedock
-                    val pose = calculatePose(homedock)
-                    Log.d(TAG, "Setting robot pose at [${pose[0]}, ${pose[1]}, ${pose[2]}, ${pose[3]}, ${pose[4]}, ${pose[5]}]")
-                    setPose(baseUrl, pose[0], pose[1], pose[2], pose[3], pose[4], pose[5])
-                } else {
-                    Log.e(TAG, "No valid homedock configuration found")
+                // Step 3: Update Homedock location using the same process as the GetPose button
+                try {
+                    // Get the homedock QR ID from stored preferences
+                    val homedockQrId = sharedPreferences.getString("homedock_qr_id", "")
+                    if (!homedockQrId.isNullOrEmpty()) {
+                        Log.d(TAG, "Found homedock_qr_id: $homedockQrId, getting pose data")
+                        logToFile("Found homedock_qr_id: $homedockQrId, getting pose data")
+                        
+                        // Use the same method as GetPose button to retrieve the pose data
+                        val poseData = getHomedockPoseFromQrId(homedockQrId)
+                        
+                        if (poseData != null) {
+                            val px = poseData.getDouble("px")
+                            val py = poseData.getDouble("py")
+                            val pz = poseData.getDouble("pz")
+                            val yaw = poseData.getDouble("yaw")
+                            
+                            Log.d(TAG, "Setting home dock from QR data: x=$px, y=$py, z=$pz, yaw=$yaw")
+                            logToFile("Setting home dock from QR data: x=$px, y=$py, z=$pz, yaw=$yaw")
+                            clearHomeDocks(baseUrl)
+                            setHomeDock(baseUrl, px, py, pz, yaw, 0.0, 0.0)
+                            
+                            // Step 4: Update robot pose based on Homedock
+                            val pose = calculatePose(doubleArrayOf(px, py, pz, yaw, 0.0, 0.0))
+                            Log.d(TAG, "Setting robot pose from QR data: x=${pose[0]}, y=${pose[1]}, z=${pose[2]}, yaw=${pose[3]}")
+                            logToFile("Setting robot pose from QR data: x=${pose[0]}, y=${pose[1]}, z=${pose[2]}, yaw=${pose[3]}")
+                            setPose(baseUrl, pose[0], pose[1], pose[2], pose[3], pose[4], pose[5])
+                        } else {
+                            Log.d(TAG, "Failed to get pose data from QR ID, falling back to config")
+                            logToFile("Failed to get pose data from QR ID, falling back to config")
+                            fallbackToConfigHomedock(baseUrl)
+                        }
+                    } else {
+                        Log.d(TAG, "No homedock_qr_id found, falling back to config")
+                        logToFile("No homedock_qr_id found, falling back to config")
+                        fallbackToConfigHomedock(baseUrl)
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error setting home dock from QR ID: ${e.message}", e)
+                    logToFile("Error setting home dock from QR ID: ${e.message}, falling back to config")
+                    fallbackToConfigHomedock(baseUrl)
                 }
                 
                 // Step 5: Ensure map is persistent
                 Log.d(TAG, "Saving persistent map")
+                logToFile("Saving persistent map")
                 savePersistentMap(baseUrl)
                 
                 Log.d(TAG, "Map processing completed successfully")
+                logToFile("Map processing completed successfully")
             } catch (e: Exception) {
                 Log.e(TAG, "Error during map processing steps: ${e.message}", e)
+                logToFile("Error during map processing steps: ${e.message}")
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error downloading map after authentication", e)
+            logToFile("Error downloading map after authentication: ${e.message}")
         }
     }
     
-    // Helper methods for map processing
+    // New method to get homedock pose from QR ID (similar to GetPose button in ConfigScreen)
+    private suspend fun getHomedockPoseFromQrId(qrId: String): WritableMap? {
+        try {
+            Log.d(TAG, "Getting pose data for QR ID: $qrId")
+            logToFile("Getting pose data for QR ID: $qrId")
+            
+            // Get the domain ID and domain server from stored credentials/auth
+            val domainId = sharedPreferences.getString("domain_id", "") ?: ""
+            if (domainId.isEmpty()) {
+                Log.d(TAG, "Missing domain ID")
+                logToFile("Missing domain ID")
+                return null
+            }
+            
+            // Get domain info to extract the domain server URL
+            val domainInfoStr = domainInfo ?: return null
+            val domainInfoObj = JSONObject(domainInfoStr)
+            val domainServerObj = domainInfoObj.getJSONObject("domain_server")
+            val domainServer = domainServerObj.getString("url")
+            val accessToken = domainInfoObj.getString("access_token")
+            
+            Log.d(TAG, "Fetching lighthouse data for QR ID: $qrId from domain server: $domainServer")
+            logToFile("Fetching lighthouse data for QR ID: $qrId from domain server: $domainServer")
+            
+            // Construct the lighthouses endpoint URL
+            val url = URL("$domainServer/api/v1/domains/$domainId/lighthouses")
+            
+            // Set up the connection
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "GET"
+            connection.setRequestProperty("Accept", "application/json")
+            connection.setRequestProperty("Authorization", "Bearer $accessToken")
+            
+            val responseCode = connection.responseCode
+            Log.d(TAG, "Get lighthouses response code: $responseCode")
+            logToFile("Get lighthouses response code: $responseCode")
+            
+            if (responseCode !in 200..299) {
+                Log.e(TAG, "Failed to get lighthouse data, response code: $responseCode")
+                logToFile("Failed to get lighthouse data, response code: $responseCode")
+                return null
+            }
+            
+            // Read the full response
+            val responseText = connection.inputStream.bufferedReader().readText()
+            
+            // Find the matching lighthouse by short_id
+            val matchingLighthouse = findLighthouseByShortId(responseText, qrId)
+            
+            if (matchingLighthouse == null) {
+                Log.d(TAG, "No lighthouse found with short_id: $qrId")
+                logToFile("No lighthouse found with short_id: $qrId")
+                return null
+            }
+            
+            // Get original position values
+            val px = matchingLighthouse.optDouble("px", 0.0)
+            val py = matchingLighthouse.optDouble("py", 0.0)
+            val pz = matchingLighthouse.optDouble("pz", 0.0)
+            
+            // Get original rotation values (quaternion)
+            val rx = matchingLighthouse.optDouble("rx", 0.0)
+            val ry = matchingLighthouse.optDouble("ry", 0.0)
+            val rz = matchingLighthouse.optDouble("rz", 0.0)
+            val rw = matchingLighthouse.optDouble("rw", 0.0)
+            
+            // Step 1 & 2: Swap py and pz, then invert the new py (which was pz)
+            val transformedPy = -pz  // Swap and invert
+            val transformedPz = py   // Just swap
+            
+            // Step 3: Convert quaternion to yaw
+            val yaw = quaternionToYaw(rx, ry, rz, rw)
+            
+            // Log the transformation
+            Log.d(TAG, "Transformed coordinates: Original (px=$px, py=$py, pz=$pz) -> Transformed (px=$px, py=$transformedPy, pz=$transformedPz)")
+            Log.d(TAG, "Converted quaternion (rx=$rx, ry=$ry, rz=$rz, rw=$rw) -> yaw=$yaw")
+            logToFile("Transformed coordinates: Original (px=$px, py=$py, pz=$pz) -> Transformed (px=$px, py=$transformedPy, pz=$transformedPz)")
+            logToFile("Converted quaternion (rx=$rx, ry=$ry, rz=$rz, rw=$rw) -> yaw=$yaw")
+            
+            // Create the result object
+            val result = Arguments.createMap().apply {
+                putDouble("px", px)
+                putDouble("py", transformedPy)
+                putDouble("pz", transformedPz)
+                putDouble("yaw", yaw)
+                putString("short_id", qrId)
+            }
+            
+            return result
+        } catch (e: Exception) {
+            Log.e(TAG, "Error getting homedock pose from QR ID", e)
+            logToFile("Error getting homedock pose from QR ID: ${e.message}")
+            return null
+        }
+    }
+    
+    // Fallback to using homedock from config.yaml
+    private fun fallbackToConfigHomedock(baseUrl: String) {
+        try {
+            val homedock = ConfigManager.getDoubleArray("homedock")
+            if (homedock != null && homedock.size >= 6) {
+                Log.d(TAG, "Setting home dock from config.yaml: x=${homedock[0]}, y=${homedock[1]}, z=${homedock[2]}, yaw=${homedock[3]}")
+                logToFile("Setting home dock from config.yaml: x=${homedock[0]}, y=${homedock[1]}, z=${homedock[2]}, yaw=${homedock[3]}")
+                clearHomeDocks(baseUrl)
+                setHomeDock(baseUrl, homedock[0], homedock[1], homedock[2], homedock[3], homedock[4], homedock[5])
+                
+                // Update robot pose based on Homedock
+                val pose = calculatePose(homedock)
+                Log.d(TAG, "Setting robot pose from config.yaml: x=${pose[0]}, y=${pose[1]}, z=${pose[2]}, yaw=${pose[3]}")
+                logToFile("Setting robot pose from config.yaml: x=${pose[0]}, y=${pose[1]}, z=${pose[2]}, yaw=${pose[3]}")
+                setPose(baseUrl, pose[0], pose[1], pose[2], pose[3], pose[4], pose[5])
+            } else {
+                Log.e(TAG, "No valid homedock configuration found in config.yaml")
+                logToFile("No valid homedock configuration found in config.yaml")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error setting homedock from config", e)
+            logToFile("Error setting homedock from config: ${e.message}")
+        }
+    }
     
     private fun clearPOIs(baseUrl: String) {
         try {
@@ -812,8 +1046,10 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             connection.requestMethod = "DELETE"
             val responseCode = connection.responseCode
             Log.d(TAG, "Clear POIs response code: $responseCode")
+            logToFile("Clear POIs response code: $responseCode")
         } catch (e: Exception) {
             Log.e(TAG, "Error clearing POIs: ${e.message}", e)
+            logToFile("Error clearing POIs: ${e.message}")
         }
     }
     
@@ -824,8 +1060,10 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             connection.requestMethod = "DELETE"
             val responseCode = connection.responseCode
             Log.d(TAG, "Clear map response code: $responseCode")
+            logToFile("Clear map response code: $responseCode")
         } catch (e: Exception) {
             Log.e(TAG, "Error clearing map: ${e.message}", e)
+            logToFile("Error clearing map: ${e.message}")
         }
     }
     
@@ -834,6 +1072,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             val file = File(filePath)
             if (!file.exists()) {
                 Log.e(TAG, "Map file does not exist: $filePath")
+                logToFile("Map file does not exist: $filePath")
                 return
             }
             
@@ -853,13 +1092,16 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                         totalBytes += bytesRead
                     }
                     Log.d(TAG, "Uploaded $totalBytes bytes")
+                    logToFile("Uploaded $totalBytes bytes")
                 }
             }
             
             val responseCode = connection.responseCode
             Log.d(TAG, "Upload map response code: $responseCode")
+            logToFile("Upload map response code: $responseCode")
         } catch (e: Exception) {
             Log.e(TAG, "Error uploading map: ${e.message}", e)
+            logToFile("Error uploading map: ${e.message}")
         }
     }
     
@@ -870,8 +1112,10 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             connection.requestMethod = "DELETE"
             val responseCode = connection.responseCode
             Log.d(TAG, "Clear home docks response code: $responseCode")
+            logToFile("Clear home docks response code: $responseCode")
         } catch (e: Exception) {
             Log.e(TAG, "Error clearing home docks: ${e.message}", e)
+            logToFile("Error clearing home docks: ${e.message}")
         }
     }
     
@@ -899,8 +1143,10 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             
             val responseCode = connection.responseCode
             Log.d(TAG, "Set home dock response code: $responseCode")
+            logToFile("Set home dock response code: $responseCode")
         } catch (e: Exception) {
             Log.e(TAG, "Error setting home dock: ${e.message}", e)
+            logToFile("Error setting home dock: ${e.message}")
         }
     }
     
@@ -928,21 +1174,27 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             
             val responseCode = connection.responseCode
             Log.d(TAG, "Set pose response code: $responseCode")
+            logToFile("Set pose response code: $responseCode")
         } catch (e: Exception) {
             Log.e(TAG, "Error setting pose: ${e.message}", e)
+            logToFile("Error setting pose: ${e.message}")
         }
     }
     
     private fun savePersistentMap(baseUrl: String) {
         try {
-            val url = URL("$baseUrl/api/core/slam/v1/maps/persistent")
+            // Updated endpoint and method based on Python example
+            val url = URL("$baseUrl/api/multi-floor/map/v1/stcm/:save")
             val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "PUT"
+            connection.requestMethod = "POST"
+            connection.setRequestProperty("Content-Type", "application/octet-stream")
             
             val responseCode = connection.responseCode
             Log.d(TAG, "Save persistent map response code: $responseCode")
+            logToFile("Save persistent map response code: $responseCode")
         } catch (e: Exception) {
             Log.e(TAG, "Error saving persistent map: ${e.message}", e)
+            logToFile("Error saving persistent map: ${e.message}")
         }
     }
     
@@ -1318,7 +1570,6 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 connection.setRequestProperty("Authorization", "Bearer $accessToken")
                 
                 val responseCode = connection.responseCode
-                logToFile("Get lighthouses response code: $responseCode")
                 
                 if (responseCode !in 200..299) {
                     val errorMessage = if (responseCode == 404) {
@@ -1331,7 +1582,6 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 
                 // Read the full response
                 val responseText = connection.inputStream.bufferedReader().readText()
-                logToFile("FULL LIGHTHOUSE RESPONSE: $responseText")
                 
                 // Find the matching lighthouse by short_id
                 val matchingLighthouse = findLighthouseByShortId(responseText, qrId)
@@ -1444,39 +1694,33 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
         try {
             val responseObj = JSONObject(responseJson)
             
-            // Try parsing as an array first
-            try {
-                val lighthousesArray = JSONArray(responseJson)
-                logToFile("Response contains an array of ${lighthousesArray.length()} lighthouses")
+            // Check if it's a direct array or an object with poses field
+            if (responseObj.has("poses")) {
+                // Handle object with poses array
+                val posesArray = responseObj.getJSONArray("poses")
+                logToFile("Found 'poses' field with ${posesArray.length()} items")
                 
-                // Iterate through all lighthouses to find matching short_id
-                for (i in 0 until lighthousesArray.length()) {
-                    val lighthouse = lighthousesArray.getJSONObject(i)
+                for (i in 0 until posesArray.length()) {
+                    val lighthouse = posesArray.getJSONObject(i)
                     val lighthouseShortId = lighthouse.optString("short_id", "")
-                    logToFile("Checking lighthouse $i with short_id: $lighthouseShortId")
                     
-                    // Check if this lighthouse matches our short_id
                     if (lighthouseShortId.equals(shortId, ignoreCase = true)) {
                         logToFile("Found matching lighthouse with short_id: $shortId")
                         return lighthouse
                     }
                 }
                 
-                logToFile("No lighthouse found with matching short_id in array")
-                
-            } catch (e: Exception) {
-                // Not a valid JSONArray, try as JSONObject with nested array
-                logToFile("Response is not an array, trying to parse as object: ${e.message}")
-                
-                // Check if there's a 'poses' field in the response (not 'lighthouses')
-                if (responseObj.has("poses")) {
-                    val posesArray = responseObj.getJSONArray("poses")
-                    logToFile("Found 'poses' field with ${posesArray.length()} items")
+                logToFile("No lighthouse found with matching short_id in 'poses' array")
+            } else {
+                // Try parsing as direct array
+                try {
+                    val lighthousesArray = JSONArray(responseJson)
+                    logToFile("Response contains an array of ${lighthousesArray.length()} lighthouses")
                     
-                    for (i in 0 until posesArray.length()) {
-                        val lighthouse = posesArray.getJSONObject(i)
+                    // Iterate through all lighthouses to find matching short_id
+                    for (i in 0 until lighthousesArray.length()) {
+                        val lighthouse = lighthousesArray.getJSONObject(i)
                         val lighthouseShortId = lighthouse.optString("short_id", "")
-                        logToFile("Checking lighthouse $i with short_id: $lighthouseShortId")
                         
                         if (lighthouseShortId.equals(shortId, ignoreCase = true)) {
                             logToFile("Found matching lighthouse with short_id: $shortId")
@@ -1484,9 +1728,9 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                         }
                     }
                     
-                    logToFile("No lighthouse found with matching short_id in 'poses' array")
-                } else {
-                    logToFile("Response does not contain a 'poses' field")
+                    logToFile("No lighthouse found with matching short_id in array")
+                } catch (e: Exception) {
+                    logToFile("Response is not an array and does not contain a 'poses' field")
                 }
             }
             
@@ -1494,7 +1738,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             
         } catch (e: Exception) {
             Log.e(TAG, "Error parsing lighthouse data", e)
-            logToFile("Error parsing lighthouse data: ${e.message}")
+            logToFile("Error parsing lighthouse data")
             return null
         }
     }

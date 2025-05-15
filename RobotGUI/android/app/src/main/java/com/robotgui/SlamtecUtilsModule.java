@@ -856,9 +856,11 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
     public void savePersistentMap(Promise promise) {
         executorService.execute(() -> {
             try {
-                String url = BASE_URL + "/api/core/slam/v1/maps/persistent";
+                // Updated endpoint and method based on Python example
+                String url = BASE_URL + "/api/multi-floor/map/v1/stcm/:save";
                 HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-                connection.setRequestMethod("PUT");
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/octet-stream");
 
                 if (connection.getResponseCode() >= 200 && connection.getResponseCode() <= 204) {
                     mainHandler.post(() -> promise.resolve(true));
@@ -1348,9 +1350,11 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
     }
     
     private void savePersistentMapSync() throws Exception {
-        String url = BASE_URL + "/api/core/slam/v1/maps/persistent";
+        // Updated endpoint and method based on Python example
+        String url = BASE_URL + "/api/multi-floor/map/v1/stcm/:save";
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-        connection.setRequestMethod("PUT");
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Content-Type", "application/octet-stream");
         
         int responseCode = connection.getResponseCode();
         if (responseCode < 200 || responseCode > 204) {
