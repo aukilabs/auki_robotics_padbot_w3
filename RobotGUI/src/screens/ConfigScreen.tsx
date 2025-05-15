@@ -257,10 +257,7 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
                       `py = ${result.py.toFixed(4)}\n` +
                       `pz = ${result.pz.toFixed(4)}\n\n` +
                       `Rotation:\n` +
-                      `rx = ${result.rx.toFixed(4)}\n` +
-                      `ry = ${result.ry.toFixed(4)}\n` +
-                      `rz = ${result.rz.toFixed(4)}\n` +
-                      `rw = ${result.rw.toFixed(4)}`
+                      `yaw = ${result.yaw.toFixed(4)}`
                     );
                   } else {
                     Alert.alert(

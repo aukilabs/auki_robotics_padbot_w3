@@ -1341,14 +1341,42 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     putBoolean("found", matchingLighthouse != null)
                     
                     if (matchingLighthouse != null) {
-                        // Include the matched lighthouse data - extract position and rotation
-                        putDouble("px", matchingLighthouse.optDouble("px", 0.0))
-                        putDouble("py", matchingLighthouse.optDouble("py", 0.0))
-                        putDouble("pz", matchingLighthouse.optDouble("pz", 0.0))
-                        putDouble("rx", matchingLighthouse.optDouble("rx", 0.0))
-                        putDouble("ry", matchingLighthouse.optDouble("ry", 0.0))
-                        putDouble("rz", matchingLighthouse.optDouble("rz", 0.0))
-                        putDouble("rw", matchingLighthouse.optDouble("rw", 0.0))
+                        // Get original position values
+                        val px = matchingLighthouse.optDouble("px", 0.0)
+                        val py = matchingLighthouse.optDouble("py", 0.0)
+                        val pz = matchingLighthouse.optDouble("pz", 0.0)
+                        
+                        // Get original rotation values (quaternion)
+                        val rx = matchingLighthouse.optDouble("rx", 0.0)
+                        val ry = matchingLighthouse.optDouble("ry", 0.0)
+                        val rz = matchingLighthouse.optDouble("rz", 0.0)
+                        val rw = matchingLighthouse.optDouble("rw", 0.0)
+                        
+                        // Step 1 & 2: Swap py and pz, then invert the new py (which was pz)
+                        val transformedPy = -pz  // Swap and invert
+                        val transformedPz = py   // Just swap
+                        
+                        // Step 3: Convert quaternion to yaw
+                        val yaw = quaternionToYaw(rx, ry, rz, rw)
+                        
+                        // Log the transformation
+                        logToFile("Transforming coordinates: Original (px=$px, py=$py, pz=$pz) -> Transformed (px=$px, py=$transformedPy, pz=$transformedPz)")
+                        logToFile("Converting quaternion (rx=$rx, ry=$ry, rz=$rz, rw=$rw) -> yaw=$yaw")
+                        
+                        // Include the transformed lighthouse data
+                        putDouble("px", px)
+                        putDouble("py", transformedPy)
+                        putDouble("pz", transformedPz)
+                        putDouble("yaw", yaw)
+                        
+                        // Include original values for reference
+                        putDouble("original_px", px)
+                        putDouble("original_py", py)
+                        putDouble("original_pz", pz)
+                        putDouble("original_rx", rx)
+                        putDouble("original_ry", ry)
+                        putDouble("original_rz", rz)
+                        putDouble("original_rw", rw)
                         
                         // Include additional lighthouse information
                         putString("id", matchingLighthouse.optString("id", ""))
@@ -1358,10 +1386,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                         putDouble("px", 0.0)
                         putDouble("py", 0.0)
                         putDouble("pz", 0.0)
-                        putDouble("rx", 0.0)
-                        putDouble("ry", 0.0)
-                        putDouble("rz", 0.0)
-                        putDouble("rw", 0.0)
+                        putDouble("yaw", 0.0)
                     }
                     
                     // Include the QR ID we searched for
@@ -1374,10 +1399,8 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 // Log the filtered result
                 if (matchingLighthouse != null) {
                     logToFile("FILTERED RESULT: Found lighthouse data for short_id: $qrId")
-                    logToFile("Lighthouse details: px=${matchingLighthouse.optDouble("px", 0.0)}, py=${matchingLighthouse.optDouble("py", 0.0)}, " +
-                             "pz=${matchingLighthouse.optDouble("pz", 0.0)}, rx=${matchingLighthouse.optDouble("rx", 0.0)}, " +
-                             "ry=${matchingLighthouse.optDouble("ry", 0.0)}, rz=${matchingLighthouse.optDouble("rz", 0.0)}, " +
-                             "rw=${matchingLighthouse.optDouble("rw", 0.0)}")
+                    logToFile("Transformed lighthouse details: px=${result.getDouble("px")}, py=${result.getDouble("py")}, " +
+                             "pz=${result.getDouble("pz")}, yaw=${result.getDouble("yaw")}")
                 } else {
                     logToFile("FILTERED RESULT: No lighthouse data found for short_id: $qrId")
                 }
@@ -1390,6 +1413,30 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 promise.reject("GET_LIGHTHOUSE_ERROR", "Failed to get lighthouse data: ${e.message}")
             }
         }
+    }
+    
+    // Helper function to convert quaternion to yaw (-π to π)
+    private fun quaternionToYaw(x: Double, y: Double, z: Double, w: Double): Double {
+        // Calculate yaw (rotation around Y axis) from quaternion
+        // Formula: atan2(2 * (w*y + x*z), 1 - 2 * (y*y + x*x))
+        
+        var yaw = Math.atan2(2.0 * (w * y + x * z), 1.0 - 2.0 * (y * y + x * x))
+        
+        // Rotate 180 degrees (add π radians)
+        yaw += Math.PI
+        
+        // Round to 2 decimal places
+        yaw = Math.round(yaw * 100.0) / 100.0
+        
+        // Normalize to range [-π, π]
+        while (yaw > Math.PI) {
+            yaw -= 2 * Math.PI
+        }
+        while (yaw < -Math.PI) {
+            yaw += 2 * Math.PI
+        }
+        
+        return yaw
     }
     
     // Helper method to find a lighthouse by short_id in the JSON response
