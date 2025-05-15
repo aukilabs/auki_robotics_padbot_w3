@@ -225,6 +225,62 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
             />
 
             <TouchableOpacity 
+              style={[styles.button, styles.getPoseButton]}
+              onPress={async () => {
+                try {
+                  // Check if QR ID is entered
+                  if (!homedockQrId) {
+                    Alert.alert(
+                      'Missing QR ID',
+                      'Please enter a Homedock QR ID first to filter lighthouse data'
+                    );
+                    return;
+                  }
+                  
+                  // Show loading message
+                  Alert.alert(
+                    'Fetching Lighthouse Data',
+                    `Retrieving lighthouse data for QR ID: ${homedockQrId}...`
+                  );
+                  
+                  // Make the API call with the QR ID as a parameter
+                  const result = await NativeModules.DomainUtils.getPoseDataByQrId(homedockQrId);
+                  console.log('Lighthouse data:', result);
+                  
+                  // Show result from filtering
+                  if (result && result.found) {
+                    Alert.alert(
+                      'Lighthouse Data Retrieved',
+                      `Found lighthouse data for QR ID: ${homedockQrId}\n\n` +
+                      `Position:\n` +
+                      `px = ${result.px.toFixed(4)}\n` +
+                      `py = ${result.py.toFixed(4)}\n` +
+                      `pz = ${result.pz.toFixed(4)}\n\n` +
+                      `Rotation:\n` +
+                      `rx = ${result.rx.toFixed(4)}\n` +
+                      `ry = ${result.ry.toFixed(4)}\n` +
+                      `rz = ${result.rz.toFixed(4)}\n` +
+                      `rw = ${result.rw.toFixed(4)}`
+                    );
+                  } else {
+                    Alert.alert(
+                      'QR ID Not Found',
+                      `No lighthouse data found matching QR ID: ${homedockQrId}`
+                    );
+                  }
+                } catch (error: any) {
+                  console.error('Error fetching lighthouse data:', error);
+                  Alert.alert(
+                    'Error',
+                    'Failed to retrieve lighthouse data: ' + (error.message || 'Unknown error')
+                  );
+                }
+              }}
+            >
+              <Text style={styles.buttonText}>Get Pose</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
               style={[styles.button, styles.testButton]}
               onPress={handleTestAuth}
             >
@@ -431,6 +487,10 @@ const styles = StyleSheet.create({
   },
   mapButton: {
     backgroundColor: '#2196F3', // Blue color for map button
+    marginTop: 10,
+  },
+  getPoseButton: {
+    backgroundColor: '#2196F3', // Blue color for get pose button
     marginTop: 10,
   },
   buttonText: {

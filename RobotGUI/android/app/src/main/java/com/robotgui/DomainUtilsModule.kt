@@ -5,6 +5,7 @@ import android.util.Log
 import com.facebook.react.bridge.*
 import kotlinx.coroutines.*
 import org.json.JSONObject
+import org.json.JSONArray
 import java.net.HttpURLConnection
 import java.net.URL
 import android.graphics.Bitmap
@@ -1187,4 +1188,267 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
     }
 
     // Add more domain-specific methods here
+
+    @ReactMethod
+    fun getRobotPose(promise: Promise) {
+        scope.launch {
+            try {
+                // Get base URL and config for the robot
+                val slamIp = ConfigManager.getString("slam_ip", "127.0.0.1")
+                val slamPort = ConfigManager.getInt("slam_port", 1448)
+                val baseUrl = "http://$slamIp:$slamPort"
+                
+                logToFile("Fetching robot pose data from $baseUrl")
+                
+                // 1. Get robot pose information from SLAM API
+                val url = URL("$baseUrl/api/core/slam/v1/localization/pose")
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.setRequestProperty("Accept", "application/json")
+                
+                val responseCode = connection.responseCode
+                logToFile("Get robot pose response code: $responseCode")
+                
+                if (responseCode !in 200..299) {
+                    throw Exception("Failed to get robot pose, response code: $responseCode")
+                }
+                
+                val responseText = connection.inputStream.bufferedReader().readText()
+                logToFile("FULL RESPONSE: $responseText")
+                
+                // 2. Parse the response JSON
+                val responseJson = JSONObject(responseText)
+                
+                // 3. Extract home dock QR ID if available (this will depend on the actual API response format)
+                // For this example, we're assuming the QR ID is in a field called "qr_id" or similar
+                val homedockQrId = if (responseJson.has("qr_id")) {
+                    responseJson.getString("qr_id")
+                } else {
+                    // If the API doesn't directly provide QR ID, you may need to fetch it from a different endpoint
+                    // or derive it from other data. For this example, we'll use a placeholder approach
+                    
+                    // Attempt to get QR ID from home dock information
+                    val homedockUrl = URL("$baseUrl/api/core/slam/v1/homepose")
+                    val homedockConnection = homedockUrl.openConnection() as HttpURLConnection
+                    homedockConnection.requestMethod = "GET"
+                    homedockConnection.setRequestProperty("Accept", "application/json")
+                    
+                    val homedockResponseCode = homedockConnection.responseCode
+                    logToFile("Get homedock response code: $homedockResponseCode")
+                    
+                    if (homedockResponseCode in 200..299) {
+                        val homedockResponse = homedockConnection.inputStream.bufferedReader().readText()
+                        logToFile("FULL HOMEDOCK RESPONSE: $homedockResponse")
+                        
+                        val homedockJson = JSONObject(homedockResponse)
+                        if (homedockJson.has("qr_id")) {
+                            homedockJson.getString("qr_id")
+                        } else {
+                            // Generate a placeholder QR ID based on the home dock position
+                            // This is just for demo purposes - in a real implementation, you would
+                            // get this from the proper API or database
+                            val x = homedockJson.optDouble("x", 0.0).toString().replace(".", "")
+                            val y = homedockJson.optDouble("y", 0.0).toString().replace(".", "")
+                            "QR${x}${y}"
+                        }
+                    } else {
+                        // A fallback if we can't get the home dock info either
+                        val storedQrId = sharedPreferences.getString("homedock_qr_id", "")
+                        storedQrId ?: ""
+                    }
+                }
+                
+                // 4. Create the result object to return to React Native
+                val result = Arguments.createMap().apply {
+                    // Include the full pose data
+                    putDouble("x", responseJson.optDouble("x", 0.0))
+                    putDouble("y", responseJson.optDouble("y", 0.0))
+                    putDouble("z", responseJson.optDouble("z", 0.0))
+                    putDouble("yaw", responseJson.optDouble("yaw", 0.0))
+                    putDouble("pitch", responseJson.optDouble("pitch", 0.0))
+                    putDouble("roll", responseJson.optDouble("roll", 0.0))
+                    
+                    // Include the QR ID
+                    putString("qrId", homedockQrId)
+                    
+                    // Include the raw response data
+                    putString("rawData", responseText)
+                }
+                
+                // Log the filtered response with the QR ID
+                logToFile("FILTERED RESPONSE: QR ID = $homedockQrId, x=${responseJson.optDouble("x", 0.0)}, y=${responseJson.optDouble("y", 0.0)}, z=${responseJson.optDouble("z", 0.0)}")
+                
+                promise.resolve(result)
+                
+            } catch (e: Exception) {
+                Log.e(TAG, "Error getting robot pose", e)
+                logToFile("Error getting robot pose: ${e.message}")
+                promise.reject("GET_POSE_ERROR", "Failed to get robot pose: ${e.message}")
+            }
+        }
+    }
+
+    @ReactMethod
+    fun getPoseDataByQrId(qrId: String, promise: Promise) {
+        scope.launch {
+            try {
+                // Get the domain ID and domain server from stored credentials/auth
+                val domainId = sharedPreferences.getString("domain_id", "") ?: ""
+                if (domainId.isEmpty()) {
+                    throw Exception("Missing domain ID. Please authenticate first.")
+                }
+                
+                // Get domain info to extract the domain server URL
+                val domainInfoStr = domainInfo ?: throw Exception("No domain info available. Please authenticate first.")
+                val domainInfoObj = JSONObject(domainInfoStr)
+                val domainServerObj = domainInfoObj.getJSONObject("domain_server")
+                val domainServer = domainServerObj.getString("url")
+                val accessToken = domainInfoObj.getString("access_token")
+                
+                logToFile("Fetching lighthouse data for QR ID (short_id): $qrId from domain server: $domainServer")
+                
+                // Construct the lighthouses endpoint URL
+                val url = URL("$domainServer/api/v1/domains/$domainId/lighthouses")
+                logToFile("Lighthouses endpoint URL: $url")
+                
+                // Set up the connection
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.setRequestProperty("Accept", "application/json")
+                connection.setRequestProperty("Authorization", "Bearer $accessToken")
+                
+                val responseCode = connection.responseCode
+                logToFile("Get lighthouses response code: $responseCode")
+                
+                if (responseCode !in 200..299) {
+                    val errorMessage = if (responseCode == 404) {
+                        "Lighthouse data not found (404). Domain ID may be incorrect."
+                    } else {
+                        "Failed to get lighthouse data, response code: $responseCode"
+                    }
+                    throw Exception(errorMessage)
+                }
+                
+                // Read the full response
+                val responseText = connection.inputStream.bufferedReader().readText()
+                logToFile("FULL LIGHTHOUSE RESPONSE: $responseText")
+                
+                // Find the matching lighthouse by short_id
+                val matchingLighthouse = findLighthouseByShortId(responseText, qrId)
+                
+                // Create the result object
+                val result = Arguments.createMap().apply {
+                    putBoolean("found", matchingLighthouse != null)
+                    
+                    if (matchingLighthouse != null) {
+                        // Include the matched lighthouse data - extract position and rotation
+                        putDouble("px", matchingLighthouse.optDouble("px", 0.0))
+                        putDouble("py", matchingLighthouse.optDouble("py", 0.0))
+                        putDouble("pz", matchingLighthouse.optDouble("pz", 0.0))
+                        putDouble("rx", matchingLighthouse.optDouble("rx", 0.0))
+                        putDouble("ry", matchingLighthouse.optDouble("ry", 0.0))
+                        putDouble("rz", matchingLighthouse.optDouble("rz", 0.0))
+                        putDouble("rw", matchingLighthouse.optDouble("rw", 0.0))
+                        
+                        // Include additional lighthouse information
+                        putString("id", matchingLighthouse.optString("id", ""))
+                        putString("short_id", matchingLighthouse.optString("short_id", ""))
+                    } else {
+                        // Include default values if no match found
+                        putDouble("px", 0.0)
+                        putDouble("py", 0.0)
+                        putDouble("pz", 0.0)
+                        putDouble("rx", 0.0)
+                        putDouble("ry", 0.0)
+                        putDouble("rz", 0.0)
+                        putDouble("rw", 0.0)
+                    }
+                    
+                    // Include the QR ID we searched for
+                    putString("qrId", qrId)
+                    
+                    // Include the raw response data
+                    putString("rawData", responseText)
+                }
+                
+                // Log the filtered result
+                if (matchingLighthouse != null) {
+                    logToFile("FILTERED RESULT: Found lighthouse data for short_id: $qrId")
+                    logToFile("Lighthouse details: px=${matchingLighthouse.optDouble("px", 0.0)}, py=${matchingLighthouse.optDouble("py", 0.0)}, " +
+                             "pz=${matchingLighthouse.optDouble("pz", 0.0)}, rx=${matchingLighthouse.optDouble("rx", 0.0)}, " +
+                             "ry=${matchingLighthouse.optDouble("ry", 0.0)}, rz=${matchingLighthouse.optDouble("rz", 0.0)}, " +
+                             "rw=${matchingLighthouse.optDouble("rw", 0.0)}")
+                } else {
+                    logToFile("FILTERED RESULT: No lighthouse data found for short_id: $qrId")
+                }
+                
+                promise.resolve(result)
+                
+            } catch (e: Exception) {
+                Log.e(TAG, "Error getting lighthouse data by QR ID", e)
+                logToFile("Error getting lighthouse data by QR ID: ${e.message}")
+                promise.reject("GET_LIGHTHOUSE_ERROR", "Failed to get lighthouse data: ${e.message}")
+            }
+        }
+    }
+    
+    // Helper method to find a lighthouse by short_id in the JSON response
+    private fun findLighthouseByShortId(responseJson: String, shortId: String): JSONObject? {
+        try {
+            val responseObj = JSONObject(responseJson)
+            
+            // Try parsing as an array first
+            try {
+                val lighthousesArray = JSONArray(responseJson)
+                logToFile("Response contains an array of ${lighthousesArray.length()} lighthouses")
+                
+                // Iterate through all lighthouses to find matching short_id
+                for (i in 0 until lighthousesArray.length()) {
+                    val lighthouse = lighthousesArray.getJSONObject(i)
+                    val lighthouseShortId = lighthouse.optString("short_id", "")
+                    logToFile("Checking lighthouse $i with short_id: $lighthouseShortId")
+                    
+                    // Check if this lighthouse matches our short_id
+                    if (lighthouseShortId.equals(shortId, ignoreCase = true)) {
+                        logToFile("Found matching lighthouse with short_id: $shortId")
+                        return lighthouse
+                    }
+                }
+                
+                logToFile("No lighthouse found with matching short_id in array")
+                
+            } catch (e: Exception) {
+                // Not a valid JSONArray, try as JSONObject with nested array
+                logToFile("Response is not an array, trying to parse as object: ${e.message}")
+                
+                // Check if there's a 'poses' field in the response (not 'lighthouses')
+                if (responseObj.has("poses")) {
+                    val posesArray = responseObj.getJSONArray("poses")
+                    logToFile("Found 'poses' field with ${posesArray.length()} items")
+                    
+                    for (i in 0 until posesArray.length()) {
+                        val lighthouse = posesArray.getJSONObject(i)
+                        val lighthouseShortId = lighthouse.optString("short_id", "")
+                        logToFile("Checking lighthouse $i with short_id: $lighthouseShortId")
+                        
+                        if (lighthouseShortId.equals(shortId, ignoreCase = true)) {
+                            logToFile("Found matching lighthouse with short_id: $shortId")
+                            return lighthouse
+                        }
+                    }
+                    
+                    logToFile("No lighthouse found with matching short_id in 'poses' array")
+                } else {
+                    logToFile("Response does not contain a 'poses' field")
+                }
+            }
+            
+            return null
+            
+        } catch (e: Exception) {
+            Log.e(TAG, "Error parsing lighthouse data", e)
+            logToFile("Error parsing lighthouse data: ${e.message}")
+            return null
+        }
+    }
 } 
