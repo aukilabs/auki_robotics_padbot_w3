@@ -31,6 +31,7 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [domainId, setDomainId] = useState('');
+  const [homedockQrId, setHomedockQrId] = useState('');
   const [hasStoredPassword, setHasStoredPassword] = useState(false);
   const [domainServerUrl, setDomainServerUrl] = useState('');
 
@@ -82,6 +83,10 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
       if (credentials.domainId) {
         setDomainId(credentials.domainId);
         NativeModules.DomainUtils.saveDomainId(credentials.domainId);
+      }
+      if (credentials.homedockQrId) {
+        setHomedockQrId(credentials.homedockQrId);
+        NativeModules.DomainUtils.saveHomedockQrId(credentials.homedockQrId);
       }
     } catch (error) {
       console.error('Failed to load credentials:', error);
@@ -152,6 +157,13 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
     NativeModules.DomainUtils.saveDomainId(text);
   };
 
+  const handleHomedockQrIdChange = (text: string) => {
+    // Convert to uppercase and filter out non-alphanumeric characters
+    const formattedText = text.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    setHomedockQrId(formattedText);
+    NativeModules.DomainUtils.saveHomedockQrId(formattedText);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -201,6 +213,15 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
               value={domainId}
               onChangeText={handleDomainIdChange}
               autoCapitalize="none"
+            />
+
+            <TextInput
+              style={styles.input}
+              placeholder="Homedock QR ID"
+              value={homedockQrId}
+              onChangeText={handleHomedockQrIdChange}
+              autoCapitalize="characters"
+              keyboardType="default"
             />
 
             <TouchableOpacity 

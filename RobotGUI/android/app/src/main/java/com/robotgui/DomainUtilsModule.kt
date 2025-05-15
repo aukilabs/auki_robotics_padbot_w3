@@ -76,6 +76,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             putString("email", sharedPreferences.getString("email", ""))
             putString("password", sharedPreferences.getString("password", ""))
             putString("domainId", sharedPreferences.getString("domain_id", ""))
+            putString("homedockQrId", sharedPreferences.getString("homedock_qr_id", ""))
         }
         promise.resolve(credentials)
     }
@@ -95,6 +96,12 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
     @ReactMethod
     fun savePassword(password: String, promise: Promise) {
         sharedPreferences.edit().putString("password", password).apply()
+        promise.resolve(true)
+    }
+
+    @ReactMethod
+    fun saveHomedockQrId(homedockQrId: String, promise: Promise) {
+        sharedPreferences.edit().putString("homedock_qr_id", homedockQrId).apply()
         promise.resolve(true)
     }
 
