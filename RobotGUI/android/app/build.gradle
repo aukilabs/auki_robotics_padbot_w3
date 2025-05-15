@@ -105,15 +105,50 @@ android {
         }
     }
 
+    // Define product flavors for different apps
+    flavorDimensions "app"
+    productFlavors {
+        cactus {
+            dimension "app"
+            applicationId "com.robotgui.cactus"
+            versionNameSuffix ".cactus"
+            resValue "string", "app_name", "CactusAssistant"
+            buildConfigField "String", "APP_VARIANT", "\"cactus\""
+        }
+        gotu {
+            dimension "app"
+            applicationId "com.robotgui.gotu" 
+            versionNameSuffix ".gotu"
+            resValue "string", "app_name", "GoTu"
+            buildConfigField "String", "APP_VARIANT", "\"gotu\""
+        }
+    }
+
+    // Configure output file names based on variant
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "CactusAssistant.apk"
+            def appName = variant.productFlavors[0].name.capitalize()
+            outputFileName = "${appName}.apk"
         }
     }
 
     sourceSets {
         main {
             assets.srcDirs = ['src/main/assets']
+        }
+        cactus {
+            // Flavor-specific source folders
+            java.srcDirs = ['src/cactus/java']
+            res.srcDirs = ['src/cactus/res']
+            assets.srcDirs = ['src/cactus/assets']
+            // Any overridden resources for cactus
+        }
+        gotu {
+            // Flavor-specific source folders
+            java.srcDirs = ['src/gotu/java']
+            res.srcDirs = ['src/gotu/res']
+            assets.srcDirs = ['src/gotu/assets']
+            // Any overridden resources for gotu
         }
     }
 }

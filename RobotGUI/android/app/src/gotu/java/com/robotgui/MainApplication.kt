@@ -22,9 +22,10 @@ class MainApplication : Application(), ReactApplication {
             val packages = PackageList(this).packages.toMutableList()
             packages.add(SlamtecUtilsPackage())
             packages.add(DomainUtilsPackage())
-            packages.add(CactusPackage())
+            packages.add(GotuPackage())
             packages.add(FileUtilsPackage())
             packages.add(ConfigManagerPackage())
+            packages.add(AppInfoPackage())
             return packages
         }
 
@@ -45,4 +46,4 @@ class MainApplication : Application(), ReactApplication {
             load()
         }
     }
-}
+} 
