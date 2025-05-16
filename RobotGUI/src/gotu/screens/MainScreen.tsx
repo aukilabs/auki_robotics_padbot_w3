@@ -47,7 +47,7 @@ const RobotBaseErrorTypes = {
 };
 
 // Heartbeat check interval (30 seconds)
-const HEARTBEAT_CHECK_INTERVAL = 30000;
+const HEARTBEAT_CHECK_INTERVAL = 60000; // Changed to 1 minute
 
 // Maximum recovery attempts
 const MAX_RECOVERY_ATTEMPTS = 3;
@@ -460,41 +460,32 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           LogUtils.writeDebugToFile(`Navigation not starting: isMounted=${isMountedRef.current}, navigationCancelled=${navigationCancelledRef.current}`);
         }
       }, 500);
-    } else {
-      if (remountFromConfig) {
-        LogUtils.writeDebugToFile('Remounting after config screen, not starting promotion automatically');
-        // Reset the flag after we've checked it
-        remountFromConfig = false;
-      } else {
-        LogUtils.writeDebugToFile('No active promotion detected on mount');
-      }
     }
-    
-    // Clean up on unmount
+
     return () => {
-      promotionMounted = false;
       isMountedRef.current = false;
-      
-      // Set a flag to indicate we're coming from config screen if that's where we're going
-      if (navigatingToConfig) {
-        remountFromConfig = true;
-        navigatingToConfig = false;
-        LogUtils.writeDebugToFile('Setting remountFromConfig flag to true');
-      }
-      
-      LogUtils.writeDebugToFile('Component unmounted, waypoint sequence cancelled');
-      
-      // Clear inactivity timer on unmount
-      clearInactivityTimer();
-      
-      // Also clear pose polling interval
-      if (posePollingRef.current) {
-        clearInterval(posePollingRef.current);
-        posePollingRef.current = null;
-        LogUtils.writeDebugToFile('Robot pose polling stopped on component unmount');
-      }
+      promotionMounted = false;
     };
   }, []);
+
+  // Effect to handle automatic closing of ARRIVED screen
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    if (navigationStatus === NavigationStatus.ARRIVED) {
+      timeoutId = setTimeout(() => {
+        if (isMountedRef.current) {
+          handleReturnToList();
+        }
+      }, 5000); // 5 seconds
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [navigationStatus]);
   
   // Filter products when search text changes
   useEffect(() => {
@@ -1837,6 +1828,17 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       stopHeartbeatCheck();
     }
   };
+
+  // Effect to start heartbeat check when component mounts
+  useEffect(() => {
+    // Start heartbeat check immediately
+    startHeartbeatCheck();
+    
+    return () => {
+      // Clear heartbeat check on unmount
+      stopHeartbeatCheck();
+    };
+  }, []);
 
   return (
     <SafeAreaView 

@@ -95,6 +95,9 @@ const AuthState = {
   tokenValid: false,
 };
 
+// Heartbeat check interval (30 seconds)
+const HEARTBEAT_CHECK_INTERVAL = 60000; // Changed to 1 minute
+
 interface MainScreenProps {
   onClose: () => void;
   onConfigPress: () => void;
@@ -616,6 +619,17 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         tokenRefreshIntervalRef.current = null;
         LogUtils.writeDebugToFile('Cleared token refresh interval');
       }
+    };
+  }, []);
+
+  // Effect to start heartbeat check when component mounts
+  useEffect(() => {
+    // Start heartbeat check immediately
+    startHeartbeatCheck();
+    
+    return () => {
+      // Clear heartbeat check on unmount
+      stopHeartbeatCheck();
     };
   }, []);
 

@@ -1,5 +1,7 @@
 import { NativeModules } from 'react-native';
 
+// The FileUtils module will automatically handle app-specific directories
+// For Cactus, logs will be written to the "CactusAssistant" directory in Downloads
 const LOG_FILENAME = 'debug_log.txt';
 
 export const LogUtils = {

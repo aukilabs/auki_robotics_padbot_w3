@@ -1361,4 +1361,45 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
             throw new Exception("Failed to save persistent map: " + responseCode);
         }
     }
+
+    @ReactMethod
+    public void getDeviceInfo(Promise promise) {
+        executorService.execute(() -> {
+            try {
+                String url = BASE_URL + "/api/core/system/v1/robot/info";
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                connection.setConnectTimeout(TIMEOUT_MS);
+                connection.setReadTimeout(TIMEOUT_MS);
+                connection.setRequestMethod("GET");
+
+                try {
+                    WritableMap response = Arguments.createMap();
+                    connection.connect();
+                    
+                    if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                        StringBuilder result = new StringBuilder();
+                        try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                                new java.io.InputStreamReader(connection.getInputStream()))) {
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                result.append(line);
+                            }
+                        }
+                        
+                        JSONObject info = new JSONObject(result.toString());
+                        response.putString("deviceId", info.optString("device_id", ""));
+                        response.putString("macAddress", info.optString("mac_address", ""));
+                        mainHandler.post(() -> promise.resolve(response));
+                    } else {
+                        final int code = connection.getResponseCode();
+                        mainHandler.post(() -> promise.reject("DEVICE_INFO_ERROR", "Failed to get device info: " + code));
+                    }
+                } finally {
+                    connection.disconnect();
+                }
+            } catch (Exception e) {
+                mainHandler.post(() -> promise.reject("DEVICE_INFO_ERROR", "Error getting device info: " + e.getMessage()));
+            }
+        });
+    }
 } 

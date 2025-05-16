@@ -57,7 +57,19 @@ public class FileUtilsModule extends ReactContextBaseJavaModule {
                 return;
             }
 
-            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename);
+            // Get app variant and determine directory name
+            String appVariant = reactContext.getResources().getString(R.string.app_variant);
+            String appDirName = appVariant.equals("gotu") ? "GoTu" : "CactusAssistant";
+            
+            // Create app-specific directory
+            File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            File appDir = new File(downloadsDir, appDirName);
+            if (!appDir.exists()) {
+                appDir.mkdirs();
+            }
+
+            // Delete file from app-specific directory
+            File file = new File(appDir, filename);
             if (file.exists()) {
                 boolean deleted = file.delete();
                 if (deleted) {
