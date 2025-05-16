@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.io.FileWriter
 import java.util.concurrent.atomic.AtomicBoolean
+import okhttp3.MultipartBody
 
 class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
     private val TAG = "DomainUtilsModule"
@@ -1776,6 +1777,178 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             Log.e(TAG, "Error parsing lighthouse data", e)
             logToFile("Error parsing lighthouse data")
             return null
+        }
+    }
+
+    @ReactMethod
+    fun getRobotCall(promise: Promise) {
+        // Convenience method to fetch robot_call data
+        fetchDomainData("robot_call", "robot_pose_json", promise)
+    }
+
+    @ReactMethod
+    fun writeRobotCall(jsonData: String, method: String = "PUT", dataId: String? = null, promise: Promise) {
+        scope.launch {
+            try {
+                logToFile("Starting writeRobotCall with method: $method, dataId: $dataId")
+                val domainInfoStr = domainInfo ?: throw Exception("No domain info available")
+                val domainInfoObj = JSONObject(domainInfoStr)
+                val accessToken = domainInfoObj.getString("access_token")
+                val domainServerObj = domainInfoObj.getJSONObject("domain_server")
+                val domainServerUrl = domainServerObj.getString("url")
+                val domainId = domainInfoObj.getString("id")
+                
+                Log.d(TAG, "Writing robot call data with method: $method, data: $jsonData")
+                logToFile("Writing robot call data with method: $method, data: $jsonData")
+                
+                // Create the multipart form data with data_id if provided
+                val dataName = if (method == "PUT" && dataId != null) {
+                    dataId  // Use the provided dataId for PUT operations
+                } else {
+                    "robot_call"  // Default name
+                }
+                val dataType = "robot_pose_json"
+                
+                logToFile("Using name as dataName: $dataName")
+                
+                // Set up the multipart request body
+                val requestBody = MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart(dataName, null, 
+                        RequestBody.create("application/octet-stream".toMediaType(), jsonData))
+                    .build()
+                
+                // API endpoint URL
+                val url = "$domainServerUrl/api/v1/domains/$domainId/data?data_type=$dataType"
+                Log.d(TAG, "Sending $method request to: $url")
+                logToFile("Sending $method request to: $url")
+                
+                // Create and execute the request
+                val client = OkHttpClient()
+                val request = Request.Builder()
+                    .url(url)
+                    .method(method, requestBody)
+                    .addHeader("Authorization", "Bearer $accessToken")
+                    .build()
+                
+                val response = client.newCall(request).execute()
+                val responseCode = response.code
+                logToFile("Robot call write response code: $responseCode")
+                
+                if (!response.isSuccessful) {
+                    throw Exception("Failed to write robot call data: $responseCode")
+                }
+                
+                val responseBody = response.body?.string()
+                logToFile("Robot call write response: $responseBody")
+                
+                // Parse the response and create a map
+                val responseObj = JSONObject(responseBody ?: "{}")
+                val result = Arguments.createMap().apply {
+                    putString("id", responseObj.optString("id", null))
+                    putString("status", responseObj.optString("status", null))
+                    putString("timestamp", responseObj.optString("timestamp", null))
+                }
+                
+                promise.resolve(result)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in writeRobotCall: ${e.message}", e)
+                logToFile("Error in writeRobotCall: ${e.message}")
+                promise.reject("ROBOT_CALL_ERROR", "Error writing robot call data: ${e.message}")
+            }
+        }
+    }
+
+    @ReactMethod
+    fun clearDeviceId(promise: Promise) {
+        try {
+            logToFile("Clearing stored device ID")
+            sharedPreferences.edit().remove("unique_device_id").apply()
+            logToFile("Device ID cleared successfully")
+            promise.resolve(true)
+        } catch (e: Exception) {
+            logToFile("Error clearing device ID: ${e.message}")
+            promise.reject("CLEAR_ERROR", "Failed to clear device ID: ${e.message}")
+        }
+    }
+
+    @ReactMethod
+    fun getDomainInfo(promise: Promise) {
+        if (domainInfo.isNullOrEmpty()) {
+            promise.reject("DOMAIN_INFO_ERROR", "Domain info not available")
+            return
+        }
+        promise.resolve(domainInfo)
+    }
+
+    @ReactMethod
+    fun fetchDomainData(name: String, dataType: String, promise: Promise) {
+        scope.launch {
+            try {
+                val domainInfoStr = domainInfo ?: throw Exception("No domain info available")
+                val domainInfoObj = JSONObject(domainInfoStr)
+                val accessToken = domainInfoObj.getString("access_token")
+                val domainServerObj = domainInfoObj.getJSONObject("domain_server")
+                val domainServerUrl = domainServerObj.getString("url")
+                val domainId = domainInfoObj.getString("id")
+                
+                // Step 1: Get metadata
+                val metadataUrl = "$domainServerUrl/api/v1/domains/$domainId/data?name=$name&data_type=$dataType"
+                val client = OkHttpClient()
+                val metadataRequest = okhttp3.Request.Builder()
+                    .url(metadataUrl)
+                    .addHeader("Authorization", "Bearer $accessToken")
+                    .build()
+                val metadataResponse = client.newCall(metadataRequest).execute()
+                if (!metadataResponse.isSuccessful) {
+                    throw Exception("Failed to get metadata: ${metadataResponse.code}")
+                }
+                val metadataJson = JSONObject(metadataResponse.body?.string() ?: "")
+                val dataArray = metadataJson.optJSONArray("data")
+                if (dataArray == null || dataArray.length() == 0) {
+                    throw Exception("No data found with name=$name and type=$dataType")
+                }
+                val metadata = dataArray.getJSONObject(0)
+                val metadataId = metadata.getString("id")
+                // Step 2: Get actual data using metadata ID
+                val dataUrl = "$domainServerUrl/api/v1/domains/$domainId/data/$metadataId?raw=1"
+                val dataRequest = okhttp3.Request.Builder()
+                    .url(dataUrl)
+                    .addHeader("Authorization", "Bearer $accessToken")
+                    .addHeader("Accept", "multipart/form-data")
+                    .build()
+                val dataResponse = client.newCall(dataRequest).execute()
+                if (!dataResponse.isSuccessful) {
+                    throw Exception("Failed to get data: ${dataResponse.code}")
+                }
+                val rawData = dataResponse.body?.string() ?: ""
+                // Convert to React Native object
+                val result = Arguments.createMap()
+                val metadataMap = Arguments.createMap()
+                metadataMap.putString("id", metadata.optString("id", ""))
+                metadataMap.putString("name", metadata.optString("name", ""))
+                metadataMap.putString("data_type", metadata.optString("data_type", ""))
+                metadataMap.putString("created_at", metadata.optString("created_at", ""))
+                result.putMap("metadata", metadataMap)
+                result.putString("data", rawData)
+                promise.resolve(result)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error fetching domain data: ${e.message}", e)
+                promise.reject("FETCH_DATA_ERROR", "Failed to fetch domain data: ${e.message}")
+            }
+        }
+    }
+
+    @ReactMethod
+    fun getDeviceIdentifiers(promise: Promise) {
+        try {
+            val deviceId = sharedPreferences.getString("unique_device_id", "") ?: ""
+            val result = Arguments.createMap().apply {
+                putString("unique_device_id", deviceId)
+            }
+            promise.resolve(result)
+        } catch (e: Exception) {
+            promise.reject("DEVICE_ID_ERROR", "Failed to get device identifiers: ${e.message}")
         }
     }
 } 
