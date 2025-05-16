@@ -9,7 +9,7 @@ import {
   NativeModules,
 } from 'react-native';
 import { LogUtils } from '../utils/logging';
-import DeviceStorage from '../utils/deviceStorage';
+import DeviceStorage from '../../utils/deviceStorage';
 
 interface SplashScreenProps {
   onFinish: (products: any[]) => void;

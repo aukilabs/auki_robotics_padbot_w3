@@ -24,7 +24,7 @@ import {
   startInactivityTimer, 
   resetInactivityTimer 
 } from '../utils/inactivityTimer';
-import DeviceStorage from '../utils/deviceStorage';
+import DeviceStorage from '../../utils/deviceStorage';
 
 // Access the global object in a way that works in React Native
 const globalAny: any = global;

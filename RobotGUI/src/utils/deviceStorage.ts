@@ -44,4 +44,32 @@ class DeviceStorage {
   }
 }
 
-export default DeviceStorage.getInstance(); 
+export default DeviceStorage.getInstance();
+
+// Common DeviceStorage utility for both GoTu and Cactus variants
+
+let deviceId: string | null = null;
+let macAddress: string | null = null;
+let robotPoseDataId: string | null = null;
+
+export const setIdentifiers = (id: string, mac: string) => {
+  deviceId = id;
+  macAddress = mac;
+};
+
+export const getDeviceId = () => deviceId;
+export const getMacAddress = () => macAddress;
+
+export const setRobotPoseDataId = (id: string) => {
+  robotPoseDataId = id;
+};
+
+export const getRobotPoseDataId = () => robotPoseDataId;
+
+export default {
+  setIdentifiers,
+  getDeviceId,
+  getMacAddress,
+  setRobotPoseDataId,
+  getRobotPoseDataId,
+}; 

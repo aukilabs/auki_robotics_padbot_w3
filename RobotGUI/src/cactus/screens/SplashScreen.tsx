@@ -9,6 +9,7 @@ import {
   NativeModules,
 } from 'react-native';
 import { LogUtils } from '../utils/logging';
+import DeviceStorage from '../../utils/deviceStorage';
 
 interface SplashScreenProps {
   onFinish: (products: any[]) => void;
@@ -34,19 +35,45 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
           await LogUtils.writeDebugToFile('Attempting authentication...');
         }
         
+        // Use the regular authentication system, not gotu credentials
         let authSuccess = false;
-        try {
-          await NativeModules.DomainUtils.authenticate(null, null, null);
-          await LogUtils.writeDebugToFile('Authentication successful');
-          authSuccess = true;
-        } catch (authError: any) {
-          await LogUtils.writeDebugToFile(`Authentication error: ${authError.message}`);
+        let authAttempts = 0;
+        const maxAuthAttempts = 3;
+        
+        while (!authSuccess && authAttempts < maxAuthAttempts) {
+          try {
+            authAttempts++;
+            await LogUtils.writeDebugToFile(`Authentication attempt ${authAttempts}/${maxAuthAttempts}`);
+            
+            // This uses the existing authentication system with stored credentials
+            await NativeModules.DomainUtils.authenticate(null, null, null);
+            await LogUtils.writeDebugToFile('Authentication successful');
+            authSuccess = true;
+          } catch (authError: any) {
+            await LogUtils.writeDebugToFile(`Authentication error on attempt ${authAttempts}: ${authError.message}`);
+            
+            // Log more detailed error information
+            if (authError.code) {
+              await LogUtils.writeDebugToFile(`Error code: ${authError.code}`);
+            }
+            
+            // Implement exponential backoff between retries
+            if (authAttempts < maxAuthAttempts) {
+              const backoffDelay = Math.pow(2, authAttempts - 1) * 1000; // 1s, 2s, 4s
+              await LogUtils.writeDebugToFile(`Retrying authentication in ${backoffDelay}ms...`);
+              await new Promise(resolve => setTimeout(resolve, backoffDelay));
+            }
+          }
+        }
+        
+        if (!authSuccess) {
+          await LogUtils.writeDebugToFile('All authentication attempts failed, proceeding with limited functionality');
           if (isMounted) {
             setLoadingText('Authentication failed. Some features may be limited.');
             await new Promise(resolve => setTimeout(resolve, 2000));
           }
         }
-        
+
         // Update map
         try {
           if (isMounted) {
