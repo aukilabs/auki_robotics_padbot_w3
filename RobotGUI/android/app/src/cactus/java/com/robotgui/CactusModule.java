@@ -56,24 +56,23 @@ public class CactusModule extends ReactContextBaseJavaModule {
     public void writeLogToFile(String message, Promise promise) {
         executorService.execute(() -> {
             try {
-                File downloadsDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);
-                File logFile = new File(downloadsDir, "debug_log.txt");
-                
-                // Create timestamp
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
-                String timestamp = dateFormat.format(new Date());
-                
-                // Format log message
-                String logLine = timestamp + " [CactusModule] " + message + "\n";
-                
-                // Append to file
-                FileWriter writer = new FileWriter(logFile, true);
-                writer.append(logLine);
-                writer.close();
-                
-                Log.d(TAG, "Wrote to log file: " + message);
-                mainHandler.post(() -> promise.resolve(true));
-            } catch (IOException e) {
+                ReactApplicationContext context = getReactApplicationContext();
+                if (context != null) {
+                    FileUtilsModule fileUtils = new FileUtilsModule(context);
+                    
+                    // Create timestamp
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
+                    String timestamp = dateFormat.format(new Date());
+                    
+                    // Format log message
+                    String logLine = timestamp + " [CactusModule] " + message;
+                    
+                    // Use FileUtilsModule to append to file
+                    fileUtils.appendToFile(DEBUG_LOG_FILENAME, logLine, promise);
+                } else {
+                    mainHandler.post(() -> promise.reject("CONTEXT_ERROR", "React context is null"));
+                }
+            } catch (Exception e) {
                 Log.e(TAG, "Error writing to log file: " + e.getMessage());
                 mainHandler.post(() -> promise.reject("LOG_ERROR", "Failed to write to log file: " + e.getMessage()));
             }

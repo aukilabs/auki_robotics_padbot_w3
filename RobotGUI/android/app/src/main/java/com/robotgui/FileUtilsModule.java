@@ -81,7 +81,19 @@ public class FileUtilsModule extends ReactContextBaseJavaModule {
                 return;
             }
 
-            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename);
+            // Get app variant and determine directory name
+            String appVariant = reactContext.getResources().getString(R.string.app_variant);
+            String appDirName = appVariant.equals("gotu") ? "GoTu" : "CactusAssistant";
+            
+            // Create app-specific directory
+            File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            File appDir = new File(downloadsDir, appDirName);
+            if (!appDir.exists()) {
+                appDir.mkdirs();
+            }
+
+            // Write to file in app-specific directory
+            File file = new File(appDir, filename);
             FileWriter writer = new FileWriter(file, true);
             writer.append(content);
             writer.append("\n");

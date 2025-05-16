@@ -651,15 +651,16 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     throw Exception("Failed to extract STCM data from response")
                 }
 
-                // Save the STCM file to Downloads/CactusAssistant directory
+                // Save the STCM file to Downloads directory based on app variant
                 val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                val cactusDir = File(downloadsDir, "CactusAssistant")
-                if (!cactusDir.exists()) {
-                    cactusDir.mkdirs()
+                val appDirName = if (reactApplicationContext.resources.getString(R.string.app_variant) == "gotu") "GoTu" else "CactusAssistant"
+                val appDir = File(downloadsDir, appDirName)
+                if (!appDir.exists()) {
+                    appDir.mkdirs()
                 }
 
                 // Use a simple filename without timestamp
-                val stcmFile = File(cactusDir, "map.stcm")
+                val stcmFile = File(appDir, "map.stcm")
                 stcmFile.writeBytes(stcmData)
 
                 Log.d(TAG, "STCM map saved to: ${stcmFile.absolutePath}")
@@ -828,17 +829,18 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 throw Exception(errorMsg)
             }
 
-            // Save the STCM file to Downloads/CactusAssistant directory
+            // Save the STCM file to Downloads directory based on app variant
             val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            val cactusDir = File(downloadsDir, "CactusAssistant")
-            if (!cactusDir.exists()) {
-                cactusDir.mkdirs()
-                Log.d(TAG, "Created CactusAssistant directory in Downloads folder")
-                logToFile("Created CactusAssistant directory in Downloads folder")
+            val appDirName = if (reactApplicationContext.resources.getString(R.string.app_variant) == "gotu") "GoTu" else "CactusAssistant"
+            val appDir = File(downloadsDir, appDirName)
+            if (!appDir.exists()) {
+                appDir.mkdirs()
+                Log.d(TAG, "Created $appDirName directory in Downloads folder")
+                logToFile("Created $appDirName directory in Downloads folder")
             }
 
             // Use a simple filename without timestamp
-            val stcmFile = File(cactusDir, "map.stcm")
+            val stcmFile = File(appDir, "map.stcm")
             stcmFile.writeBytes(stcmData)
             Log.d(TAG, "STCM map saved to: ${stcmFile.absolutePath}")
             logToFile("STCM map saved to: ${stcmFile.absolutePath}")
@@ -1462,7 +1464,12 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
     private fun logToFile(message: String) {
         try {
             val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            val logFile = File(downloadsDir, "debug_log.txt")
+            val appDirName = if (reactApplicationContext.resources.getString(R.string.app_variant) == "gotu") "GoTu" else "CactusAssistant"
+            val appDir = File(downloadsDir, appDirName)
+            if (!appDir.exists()) {
+                appDir.mkdirs()
+            }
+            val logFile = File(appDir, "debug_log.txt")
             val timestamp = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(java.util.Date())
             val logMessage = "[$timestamp] $message\n"
             
