@@ -30,6 +30,9 @@ import java.util.Date
 import java.io.FileWriter
 import java.util.concurrent.atomic.AtomicBoolean
 import okhttp3.MultipartBody
+import android.net.wifi.WifiManager
+import java.net.NetworkInterface
+import java.util.UUID
 
 class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
     private val TAG = "DomainUtilsModule"
@@ -1939,16 +1942,275 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
         }
     }
 
+    private fun getUniqueDeviceId(): String {
+        // First check if we already have a stored ID
+        val storedId = sharedPreferences.getString("unique_device_id", null)
+        if (storedId != null) {
+            logToFile("Using existing stored device ID: $storedId")
+            return storedId
+        }
+
+        logToFile("No existing device ID found, generating new ID")
+        
+        // Try to get MAC address
+        var deviceId: String? = null
+        
+        try {
+            // Check for permission
+            if (reactApplicationContext.checkSelfPermission(android.Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED) {
+                val wifiManager = reactApplicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+                val wifiInfo = wifiManager.connectionInfo
+                val macAddress = wifiInfo.macAddress
+                
+                if (macAddress != null && macAddress != "02:00:00:00:00:00") {
+                    deviceId = "padbot-${macAddress.replace(":", "")}"
+                }
+            } else {
+                logToFile("ACCESS_WIFI_STATE permission not granted - requesting permission")
+                // Request permission
+                val activity = currentActivity
+                if (activity != null) {
+                    ActivityCompat.requestPermissions(
+                        activity,
+                        arrayOf(android.Manifest.permission.ACCESS_WIFI_STATE),
+                        1001
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            logToFile("Exception getting MAC address, using UUID: ${e.message}")
+        }
+        
+        // If MAC address failed, try network interfaces
+        if (deviceId == null) {
+            try {
+                val networkInterfaces = NetworkInterface.getNetworkInterfaces()
+                while (networkInterfaces.hasMoreElements()) {
+                    val networkInterface = networkInterfaces.nextElement()
+                    val macBytes = networkInterface.hardwareAddress
+                    if (macBytes != null && macBytes.isNotEmpty()) {
+                        val macAddress = macBytes.joinToString("") { "%02x".format(it) }
+                        deviceId = "padbot-$macAddress"
+                        break
+                    }
+                }
+            } catch (e: Exception) {
+                logToFile("Exception getting MAC from network interfaces: ${e.message}")
+            }
+        }
+        
+        // If all else fails, generate a UUID
+        if (deviceId == null) {
+            val uuid = UUID.randomUUID().toString()
+            val truncatedUuid = uuid.substring(0, 8)
+            deviceId = "padbot-$truncatedUuid"
+            logToFile("Generated truncated UUID: $deviceId (from $uuid)")
+        }
+        
+        // Store the ID for future use
+        deviceId = deviceId ?: "padbot-default-${System.currentTimeMillis().toString().substring(0, 8)}"
+        sharedPreferences.edit().putString("unique_device_id", deviceId).apply()
+        logToFile("Generated and saved new device ID: $deviceId")
+        
+        return deviceId
+    }
+
     @ReactMethod
     fun getDeviceIdentifiers(promise: Promise) {
-        try {
-            val deviceId = sharedPreferences.getString("unique_device_id", "") ?: ""
-            val result = Arguments.createMap().apply {
-                putString("unique_device_id", deviceId)
+        scope.launch {
+            try {
+                val deviceId = getUniqueDeviceId()
+                
+                // Extract MAC address from device ID if possible
+                var macAddress = ""
+                if (deviceId.startsWith("padbot-")) {
+                    macAddress = deviceId.substring(7) // Remove "padbot-" prefix
+                }
+                
+                val result = Arguments.createMap().apply {
+                    putString("deviceId", deviceId)
+                    putString("macAddress", macAddress)
+                }
+                
+                logToFile("Device identifiers retrieved: deviceId=$deviceId, macAddress=$macAddress")
+                
+                // Return on main thread
+                withContext(Dispatchers.Main) {
+                    promise.resolve(result)
+                }
+            } catch (e: Exception) {
+                logToFile("Error getting device identifiers: ${e.message}")
+                withContext(Dispatchers.Main) {
+                    promise.reject("DEVICE_ID_ERROR", "Failed to get device identifiers: ${e.message}")
+                }
             }
-            promise.resolve(result)
-        } catch (e: Exception) {
-            promise.reject("DEVICE_ID_ERROR", "Failed to get device identifiers: ${e.message}")
+        }
+    }
+
+    @ReactMethod
+    fun getRobotPoseDataId(promise: Promise) {
+        scope.launch {
+            try {
+                logToFile("Getting robot pose data ID")
+                val domainInfoStr = domainInfo ?: throw Exception("No domain info available")
+                val domainInfoObj = JSONObject(domainInfoStr)
+                val accessToken = domainInfoObj.getString("access_token")
+                val domainServerObj = domainInfoObj.getJSONObject("domain_server")
+                val domainServerUrl = domainServerObj.getString("url")
+                val domainId = domainInfoObj.getString("id")
+                
+                // Get device ID to search for data
+                val deviceId = getUniqueDeviceId()
+                val dataType = "reported_pose_json"
+                
+                logToFile("Checking for existing pose data with deviceId: $deviceId")
+                
+                // Get data list to find existing entries
+                val url = "$domainServerUrl/api/v1/domains/$domainId/data?name=$deviceId&data_type=$dataType"
+                logToFile("Fetching data from: $url")
+                
+                val client = OkHttpClient()
+                val request = Request.Builder()
+                    .url(url)
+                    .addHeader("Authorization", "Bearer $accessToken")
+                    .get()
+                    .build()
+                
+                val response = client.newCall(request).execute()
+                
+                if (!response.isSuccessful) {
+                    val errorMsg = "Failed to get pose data: ${response.code}"
+                    logToFile(errorMsg)
+                    throw Exception(errorMsg)
+                }
+                
+                val responseBody = response.body?.string() ?: ""
+                logToFile("Get response: $responseBody")
+                
+                // Parse response to find data_id
+                val responseJson = JSONObject(responseBody)
+                val dataArray = responseJson.optJSONArray("data")
+                
+                val result = Arguments.createMap()
+                
+                if (dataArray != null && dataArray.length() > 0) {
+                    // Found existing data
+                    val dataObj = dataArray.getJSONObject(0)
+                    val dataId = dataObj.getString("id")
+                    
+                    logToFile("Found existing pose data with ID: $dataId")
+                    
+                    result.putBoolean("exists", true)
+                    result.putString("dataId", dataId)
+                    result.putString("deviceId", deviceId)
+                } else {
+                    // No existing data found
+                    logToFile("No existing pose data found for device ID: $deviceId")
+                    
+                    result.putBoolean("exists", false)
+                    result.putString("deviceId", deviceId)
+                }
+                
+                promise.resolve(result)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error getting robot pose data ID: ${e.message}", e)
+                logToFile("Error getting robot pose data ID: ${e.message}")
+                promise.reject("GET_DATA_ID_ERROR", "Failed to get robot pose data ID: ${e.message}")
+            }
+        }
+    }
+
+    @ReactMethod
+    fun writeRobotPose(jsonData: String, method: String = "PUT", dataId: String? = null, promise: Promise) {
+        scope.launch {
+            try {
+                logToFile("Starting writeRobotPose with method: $method, dataId: $dataId")
+                val domainInfoStr = domainInfo ?: throw Exception("No domain info available")
+                val domainInfoObj = JSONObject(domainInfoStr)
+                val accessToken = domainInfoObj.getString("access_token")
+                val domainServerObj = domainInfoObj.getJSONObject("domain_server")
+                val domainServerUrl = domainServerObj.getString("url")
+                val domainId = domainInfoObj.getString("id")
+                
+                Log.d(TAG, "Writing robot pose data with method: $method, data: $jsonData")
+                logToFile("Writing robot pose data with method: $method, data: $jsonData")
+                
+                // Create the multipart form data with unique device ID or data ID
+                val dataName = if (method == "PUT" && dataId != null) {
+                    dataId
+                } else {
+                    getUniqueDeviceId()
+                }
+                val dataType = "reported_pose_json"
+                
+                logToFile("Using name as dataName: $dataName")
+                
+                // Set up the multipart request body
+                val requestBody = MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart(dataName, null, 
+                        RequestBody.create("application/octet-stream".toMediaType(), jsonData))
+                    .build()
+                
+                // API endpoint URL
+                val url = "$domainServerUrl/api/v1/domains/$domainId/data?data_type=$dataType"
+                Log.d(TAG, "Sending $method request to: $url")
+                logToFile("Sending $method request to: $url")
+                
+                // Create and execute the request
+                val client = OkHttpClient()
+                val request = Request.Builder()
+                    .url(url)
+                    .method(method, requestBody)
+                    .addHeader("Authorization", "Bearer $accessToken")
+                    .build()
+                
+                val response = client.newCall(request).execute()
+                logToFile("Write response code: ${response.code}")
+                
+                if (!response.isSuccessful) {
+                    val errorMsg = "Failed to write robot pose data: ${response.code}"
+                    logToFile(errorMsg)
+                    throw Exception(errorMsg)
+                }
+                
+                val responseBody = response.body?.string() ?: ""
+                Log.d(TAG, "Write response: $responseBody")
+                logToFile("Write response: $responseBody")
+                
+                // Return success result
+                val result = Arguments.createMap()
+                result.putString("method", method)
+                result.putString("formFieldName", dataName)
+                result.putString("response", responseBody)
+                
+                // If this was a POST, try to extract the data_id from the response
+                if (method == "POST") {
+                    try {
+                        val responseJson = JSONObject(responseBody)
+                        if (responseJson.has("data")) {
+                            val dataArray = responseJson.getJSONArray("data")
+                            if (dataArray.length() > 0) {
+                                val dataObj = dataArray.getJSONObject(0)
+                                if (dataObj.has("id")) {
+                                    val newDataId = dataObj.getString("id")
+                                    result.putString("dataId", newDataId)
+                                    logToFile("New data_id created: $newDataId")
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        logToFile("Could not parse data_id from response: ${e.message}")
+                    }
+                }
+                
+                logToFile("writeRobotPose completed successfully")
+                promise.resolve(result)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error writing robot pose data: ${e.message}", e)
+                logToFile("Error writing robot pose data: ${e.message}")
+                promise.reject("WRITE_POSE_ERROR", "Failed to write robot pose data: ${e.message}")
+            }
         }
     }
 } 
