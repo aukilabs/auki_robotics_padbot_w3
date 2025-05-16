@@ -124,7 +124,14 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
           
           // Only try to update map if authentication was successful
           if (authSuccess) {
-            await NativeModules.DomainUtils.downloadAndProcessMap();
+            // Check if map is already being downloaded from authenticate
+            // The authenticate method already triggers map download, so we'll just wait here
+            await LogUtils.writeDebugToFile('Authentication successful - map download was triggered during authentication');
+            
+            // Wait a reasonable amount of time for the map download to progress
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            
+            // No need to explicitly call downloadAndProcessMap() here as it was initiated during authentication
             await LogUtils.writeDebugToFile('Map update complete');
           } else {
             await LogUtils.writeDebugToFile('Skipping map update due to authentication failure');
