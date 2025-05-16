@@ -31,6 +31,7 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [domainId, setDomainId] = useState('');
+  const [homedockQrId, setHomedockQrId] = useState('');
   const [hasStoredPassword, setHasStoredPassword] = useState(false);
   const [domainServerUrl, setDomainServerUrl] = useState('');
 
@@ -82,6 +83,10 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
       if (credentials.domainId) {
         setDomainId(credentials.domainId);
         NativeModules.DomainUtils.saveDomainId(credentials.domainId);
+      }
+      if (credentials.homedockQrId) {
+        setHomedockQrId(credentials.homedockQrId);
+        NativeModules.DomainUtils.saveHomedockQrId(credentials.homedockQrId);
       }
     } catch (error) {
       console.error('Failed to load credentials:', error);
@@ -152,6 +157,13 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
     NativeModules.DomainUtils.saveDomainId(text);
   };
 
+  const handleHomedockQrIdChange = (text: string) => {
+    // Convert to uppercase and filter out non-alphanumeric characters
+    const formattedText = text.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    setHomedockQrId(formattedText);
+    NativeModules.DomainUtils.saveHomedockQrId(formattedText);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -201,6 +213,15 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
               value={domainId}
               onChangeText={handleDomainIdChange}
               autoCapitalize="none"
+            />
+
+            <TextInput
+              style={styles.input}
+              placeholder="Homedock QR ID"
+              value={homedockQrId}
+              onChangeText={handleHomedockQrIdChange}
+              autoCapitalize="characters"
+              keyboardType="default"
             />
 
             <TouchableOpacity 
@@ -486,6 +507,63 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
               <Text style={styles.buttonText}>Clear Device ID</Text>
             </TouchableOpacity>
           </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Lighthouse Data</Text>
+            
+            <TouchableOpacity 
+              style={[styles.button, styles.getPoseButton]}
+              onPress={async () => {
+                try {
+                  // Check if QR ID is entered
+                  if (!homedockQrId) {
+                    Alert.alert(
+                      'Missing QR ID',
+                      'Please enter a Homedock QR ID first to filter lighthouse data'
+                    );
+                    return;
+                  }
+                  
+                  // Show loading message
+                  Alert.alert(
+                    'Fetching Lighthouse Data',
+                    `Retrieving lighthouse data for QR ID: ${homedockQrId}...`
+                  );
+                  
+                  // Make the API call with the QR ID as a parameter
+                  const result = await NativeModules.DomainUtils.getPoseDataByQrId(homedockQrId);
+                  console.log('Lighthouse data:', result);
+                  
+                  // Show result from filtering
+                  if (result && result.found) {
+                    Alert.alert(
+                      'Lighthouse Data Retrieved',
+                      `Found lighthouse data for QR ID: ${homedockQrId}\n\n` +
+                      `Position:\n` +
+                      `px = ${result.px.toFixed(4)}\n` +
+                      `py = ${result.py.toFixed(4)}\n` +
+                      `pz = ${result.pz.toFixed(4)}\n\n` +
+                      `Rotation:\n` +
+                      `yaw = ${result.yaw.toFixed(4)}`
+                    );
+                  } else {
+                    Alert.alert(
+                      'QR ID Not Found',
+                      `No lighthouse data found matching QR ID: ${homedockQrId}`
+                    );
+                  }
+                } catch (error: any) {
+                  console.error('Error getting lighthouse data:', error);
+                  Alert.alert(
+                    'Error',
+                    'Failed to get lighthouse data: ' + (error.message || 'Unknown error')
+                  );
+                }
+              }}
+            >
+              <Text style={styles.buttonText}>Get Lighthouse Data</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -590,6 +668,10 @@ const styles = StyleSheet.create({
   },
   dangerButton: {
     backgroundColor: '#F44336', // Red color for danger button
+  },
+  getPoseButton: {
+    backgroundColor: '#2196F3', // Blue color for get pose button
+    marginTop: 10,
   },
 });
 
