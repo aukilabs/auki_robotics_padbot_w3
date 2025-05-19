@@ -99,41 +99,51 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getCurrentPose(Promise promise) {
         executorService.execute(() -> {
+            HttpURLConnection connection = null;
             try {
                 String url = BASE_URL + "/api/core/slam/v1/localization/pose";
-                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                connection = (HttpURLConnection) new URL(url).openConnection();
                 connection.setConnectTimeout(TIMEOUT_MS);
                 connection.setReadTimeout(TIMEOUT_MS);
                 connection.setRequestMethod("GET");
 
-                try {
-                    WritableMap response = Arguments.createMap();
-                    connection.connect();
-                    
-                    if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                        StringBuilder result = new StringBuilder();
-                        try (java.io.BufferedReader reader = new java.io.BufferedReader(
-                                new java.io.InputStreamReader(connection.getInputStream()))) {
-                            String line;
-                            while ((line = reader.readLine()) != null) {
-                                result.append(line);
-                            }
+                WritableMap response = Arguments.createMap();
+                connection.connect();
+                
+                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    StringBuilder result = new StringBuilder();
+                    try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                            new java.io.InputStreamReader(connection.getInputStream()))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            result.append(line);
                         }
-                        
-                        JSONObject pose = new JSONObject(result.toString());
-                        response.putDouble("x", pose.optDouble("x", 0.0));
-                        response.putDouble("y", pose.optDouble("y", 0.0));
-                        response.putDouble("yaw", pose.optDouble("yaw", 0.0));
-                        mainHandler.post(() -> promise.resolve(response));
-                    } else {
-                        final int code = connection.getResponseCode();
-                        mainHandler.post(() -> promise.reject("POSE_ERROR", "Failed to get pose: " + code));
                     }
-                } finally {
-                    connection.disconnect();
+                    
+                    JSONObject pose = new JSONObject(result.toString());
+                    response.putDouble("x", pose.optDouble("x", 0.0));
+                    response.putDouble("y", pose.optDouble("y", 0.0));
+                    response.putDouble("yaw", pose.optDouble("yaw", 0.0));
+                    mainHandler.post(() -> promise.resolve(response));
+                } else {
+                    final int code = connection.getResponseCode();
+                    mainHandler.post(() -> promise.reject("POSE_ERROR", "Failed to get pose: " + code));
                 }
             } catch (Exception e) {
-                mainHandler.post(() -> promise.reject("POSE_ERROR", "Error getting pose: " + e.getMessage()));
+                String errorMessage = e.getMessage();
+                if (errorMessage != null && errorMessage.contains("Too many open files")) {
+                    mainHandler.post(() -> promise.reject("POSE_ERROR", "System resource limit reached. Please try again in a moment."));
+                } else {
+                    mainHandler.post(() -> promise.reject("POSE_ERROR", "Error getting pose: " + errorMessage));
+                }
+            } finally {
+                if (connection != null) {
+                    try {
+                        connection.disconnect();
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error disconnecting: " + e.getMessage());
+                    }
+                }
             }
         });
     }
@@ -923,37 +933,77 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
         executorService.execute(() -> {
             try {
                 String url = BASE_URL + "/api/core/motion/v1/actions/" + actionId;
+                long startTime = System.currentTimeMillis();
+                final long TIMEOUT_MS = 300000; // 5 minutes timeout
+                int retryCount = 0;
+                final int MAX_RETRIES = 3;
                 
                 while (true) {
-                    HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-                    connection.setRequestMethod("GET");
-                    connection.setRequestProperty("Content-Type", "application/json");
+                    // Check for timeout
+                    if (System.currentTimeMillis() - startTime > TIMEOUT_MS) {
+                        Log.e(TAG, "Action monitoring timed out after " + TIMEOUT_MS/1000 + " seconds");
+                        mainHandler.post(() -> promise.reject("ACTION_ERROR", "Action monitoring timed out"));
+                        break;
+                    }
 
-                    if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                        StringBuilder result = new StringBuilder();
-                        try (java.io.BufferedReader reader = new java.io.BufferedReader(
-                                new java.io.InputStreamReader(connection.getInputStream()))) {
-                            String line;
-                            while ((line = reader.readLine()) != null) {
-                                result.append(line);
+                    HttpURLConnection connection = null;
+                    try {
+                        connection = (HttpURLConnection) new URL(url).openConnection();
+                        connection.setRequestMethod("GET");
+                        connection.setRequestProperty("Content-Type", "application/json");
+                        connection.setConnectTimeout(5000); // 5 second connection timeout
+                        connection.setReadTimeout(5000);    // 5 second read timeout
+
+                        int responseCode = connection.getResponseCode();
+                        if (responseCode == HttpURLConnection.HTTP_OK) {
+                            StringBuilder result = new StringBuilder();
+                            try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                                    new java.io.InputStreamReader(connection.getInputStream()))) {
+                                String line;
+                                while ((line = reader.readLine()) != null) {
+                                    result.append(line);
+                                }
                             }
-                        }
-                        
-                        JSONObject response = new JSONObject(result.toString());
-                        if (!response.has("action_name")) {
-                            mainHandler.post(() -> promise.resolve(true));
+                            
+                            JSONObject response = new JSONObject(result.toString());
+                            if (!response.has("action_name")) {
+                                Log.d(TAG, "Action completed successfully");
+                                mainHandler.post(() -> promise.resolve(true));
+                                break;
+                            }
+                            retryCount = 0; // Reset retry count on successful response
+                        } else {
+                            Log.e(TAG, "Action monitoring failed with response code: " + responseCode);
+                            if (retryCount < MAX_RETRIES) {
+                                retryCount++;
+                                Log.d(TAG, "Retrying action monitoring (attempt " + retryCount + "/" + MAX_RETRIES + ")");
+                                Thread.sleep(1000); // Wait 1 second before retry
+                                continue;
+                            }
+                            mainHandler.post(() -> promise.reject("ACTION_ERROR", "Action monitoring failed: " + responseCode));
                             break;
                         }
-                    } else {
-                        final int responseCode = connection.getResponseCode();
-                        mainHandler.post(() -> promise.reject("ACTION_ERROR", "Action monitoring failed: " + responseCode));
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error during action monitoring: " + e.getMessage());
+                        if (retryCount < MAX_RETRIES) {
+                            retryCount++;
+                            Log.d(TAG, "Retrying action monitoring after error (attempt " + retryCount + "/" + MAX_RETRIES + ")");
+                            Thread.sleep(1000); // Wait 1 second before retry
+                            continue;
+                        }
+                        mainHandler.post(() -> promise.reject("ACTION_ERROR", "Error monitoring action: " + e.getMessage()));
                         break;
+                    } finally {
+                        if (connection != null) {
+                            connection.disconnect();
+                        }
                     }
 
                     Thread.sleep(500); // Wait 500ms before next check
                 }
             } catch (Exception e) {
-                mainHandler.post(() -> promise.reject("ACTION_ERROR", "Error monitoring action: " + e.getMessage()));
+                Log.e(TAG, "Fatal error in action monitoring: " + e.getMessage());
+                mainHandler.post(() -> promise.reject("ACTION_ERROR", "Fatal error monitoring action: " + e.getMessage()));
             }
         });
     }

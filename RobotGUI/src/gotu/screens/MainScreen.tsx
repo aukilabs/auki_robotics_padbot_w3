@@ -777,6 +777,14 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
             // Default to not starting promotion if we can't check the config
             await LogUtils.writeDebugToFile('Error checking auto-promotion config, defaulting to not starting timer');
           }
+          
+          // Add a small delay to ensure state updates are processed
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
+          if (!navigationCancelledRef.current) {
+            await LogUtils.writeDebugToFile('Navigation completed, showing arrival screen');
+            setNavigationStatus(NavigationStatus.ARRIVED);
+          }
         } catch (error: any) {
           // Check if navigation was cancelled
           if (navigationCancelledRef.current) {
@@ -991,30 +999,64 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     }
     
     try {
-      // Directly call goHome without showing a confirmation dialog
+      // Validate token before attempting navigation
+      if (!await validateToken()) {
+        await LogUtils.writeDebugToFile('Token validation failed before going home, attempting refresh');
+        
+        if (!await refreshToken()) {
+          // If token refresh fails, show error dialog
+          await LogUtils.writeDebugToFile('Token refresh failed, cannot proceed with navigation');
+          
+          Alert.alert(
+            'Authentication Error',
+            'Your session has expired and automatic renewal failed. Please try again or restart the application.',
+            [
+              { 
+                text: 'Return to List', 
+                onPress: () => {
+                  setNavigationStatus(NavigationStatus.ERROR);
+                  setNavigationError('Session expired. Please try again.');
+                }
+              }
+            ]
+          );
+          return;
+        }
+      }
+      
+      // Start pose polling for this navigation
+      await startPosePolling();
+      
+      // Call the native module to go home
       await LogUtils.writeDebugToFile('Starting navigation to home');
       await NativeModules.SlamtecUtils.goHome();
       
       // Only update state if navigation wasn't cancelled
       if (!navigationCancelledRef.current) {
-        // Stop heartbeat checks on successful arrival
-        // stopHeartbeatCheck();
+        await LogUtils.writeDebugToFile('Navigation to home completed');
+        setNavigationStatus(NavigationStatus.ARRIVED);
         
-        // When going home, we skip ARRIVED state and go directly to IDLE
-        // This ensures no "We have arrived" dialog is shown
-        await LogUtils.writeDebugToFile('Robot arrived home, transitioning directly to IDLE state');
-        
-        // Go directly to IDLE state (not ARRIVED) to close any dialogs
-        setNavigationStatus(NavigationStatus.IDLE);
+        // Only start inactivity timer if auto-promotion is enabled
+        try {
+          const autoPromotionEnabled = await NativeModules.ConfigManagerModule.getAutoPromotionEnabled();
+          if (autoPromotionEnabled) {
+            await LogUtils.writeDebugToFile('Auto-promotion enabled, starting inactivity timer after arriving home');
+            startInactivityTimer();
+          } else {
+            await LogUtils.writeDebugToFile('Auto-promotion disabled, not starting inactivity timer');
+          }
+        } catch (error) {
+          // Default to not starting promotion if we can't check the config
+          await LogUtils.writeDebugToFile('Error checking auto-promotion config, defaulting to not starting timer');
+        }
       }
     } catch (error: any) {
       // Only update error state if navigation wasn't cancelled
       if (!navigationCancelledRef.current) {
-        // Classify error type
-        const errorType = classifyErrorType(error.message || 'Unknown error');
-        
-        // Handle robot base error with automatic recovery
-        await handleRobotBaseError(error.message || 'Navigation to home failed', errorType);
+        const errorMsg = error.message || 'Navigation to home failed. Please try again.';
+        await LogUtils.writeDebugToFile(`Go Home error: ${errorMsg}`);
+        setNavigationStatus(NavigationStatus.ERROR);
+        setNavigationError(errorMsg);
       }
     }
   };
@@ -1442,26 +1484,16 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         try {
           // Always use PUT when a data ID exists, otherwise use POST to create one
           const robotPoseDataId = DeviceStorage.getIdentifiers().robotPoseDataId;
-          
           if (robotPoseDataId) {
-            // If we have a stored data ID, use PUT
-            await LogUtils.writeDebugToFile(`Using PUT with existing data ID: ${robotPoseDataId}`);
-            const result = await NativeModules.DomainUtils.writeRobotPose(JSON.stringify(poseData), "PUT", robotPoseDataId);
-            await LogUtils.writeDebugToFile(`Pose data sent successfully with PUT: ${JSON.stringify(result)}`);
+            await NativeModules.DomainUtils.putRobotPoseData(robotPoseDataId, poseData);
           } else {
-            // If no data ID yet, use POST to create one
-            await LogUtils.writeDebugToFile(`Using POST to create new robot pose data`);
-            const result = await NativeModules.DomainUtils.writeRobotPose(JSON.stringify(poseData), "POST", null);
-            await LogUtils.writeDebugToFile(`Pose data sent successfully with POST: ${JSON.stringify(result)}`);
-            
-            // If this was a POST and we got a data ID back, store it for future updates
-            if (result.dataId) {
-              DeviceStorage.setRobotPoseDataId(result.dataId);
-              await LogUtils.writeDebugToFile(`Stored new robot pose data ID: ${result.dataId}`);
+            const newDataId = await NativeModules.DomainUtils.postRobotPoseData(poseData);
+            if (newDataId) {
+              DeviceStorage.setRobotPoseDataId(newDataId);
             }
           }
         } catch (error: any) {
-          await LogUtils.writeDebugToFile(`Error sending pose data: ${error.message}`);
+          await LogUtils.writeDebugToFile(`Error sending pose data to domain: ${error.message}`);
         }
       }
     } catch (error: any) {
@@ -1559,28 +1591,19 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   // Function to check robot base health
   const checkRobotBaseHealth = async (): Promise<boolean> => {
     try {
-      // Update the last heartbeat time
-      // lastHeartbeatTimeRef.current = Date.now();
-      
-      // Use checkConnection instead of getRobotStatus
       if (NativeModules.SlamtecUtils && typeof NativeModules.SlamtecUtils.checkConnection === 'function') {
-        // Get robot status using the existing checkConnection method
         const details = await NativeModules.SlamtecUtils.checkConnection();
-        await LogUtils.writeDebugToFile(`Heartbeat check - Robot status: ${JSON.stringify(details)}`);
+        await LogUtils.writeDebugToFile(`Health check - Robot status: ${JSON.stringify(details)}`);
         
-        // Update the robot base status based on the connection details
         setRobotBaseStatus(details.status || 'unknown');
-        
-        // Return true if the SLAM API is available
         return details.slamApiAvailable === true;
       } else {
-        // If the method doesn't exist, log it and assume the robot is healthy
-        await LogUtils.writeDebugToFile(`Heartbeat check skipped - checkConnection method not available`);
+        await LogUtils.writeDebugToFile(`Health check skipped - checkConnection method not available`);
         setRobotBaseStatus('unknown');
-        return true; // Assume healthy to avoid false errors
+        return true;
       }
     } catch (error: any) {
-      await LogUtils.writeDebugToFile(`Heartbeat check failed: ${error.message}`);
+      await LogUtils.writeDebugToFile(`Health check failed: ${error.message}`);
       setRobotBaseStatus('error');
       return false;
     }
@@ -1854,6 +1877,41 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         clearTimeout(inactivityTimerRef.current);
       }
     };
+  }, []);
+
+  // Add new ref for cancellation state
+  const isCancellingRef = useRef(false);
+
+  // Update initialization effect
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        // Perform health check first
+        LogUtils.writeDebugToFile('Performing initial health check in MainScreen...');
+        const healthCheck = await NativeModules.SlamtecUtils.checkConnection();
+        LogUtils.writeDebugToFile('Initial health check response: ' + JSON.stringify(healthCheck, null, 2));
+
+        if (!healthCheck.slamApiAvailable) {
+          throw new Error('Robot not ready');
+        }
+
+        // Only proceed with token validation if health check passes
+        await validateToken();
+
+        // Then proceed with map operations
+        LogUtils.writeDebugToFile('Initial health check successful');
+      } catch (error) {
+        LogUtils.writeDebugToFile('Initial health check failed: ' + (error instanceof Error ? error.message : String(error)));
+        
+        Alert.alert(
+          'Connection Error',
+          'Please wait for the robot to be ready before proceeding.',
+          [{ text: 'OK' }]
+        );
+      }
+    };
+
+    initializeApp();
   }, []);
 
   return (

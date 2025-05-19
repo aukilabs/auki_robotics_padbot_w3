@@ -5,7 +5,7 @@
     },
     "build_instructions": {
         "android": {
-            "command": "cd RobotGUI/android && ./gradlew assembleRelease",
+            "command": "cd RobotGUI/android && ./gradlew clean && ./gradlew assembleRelease",
             "output_paths": {
                 "cactus": "RobotGUI/android/app/build/outputs/apk/cactus/release/Cactus.apk",
                 "gotu": "RobotGUI/android/app/build/outputs/apk/gotu/release/GoTu.apk"
