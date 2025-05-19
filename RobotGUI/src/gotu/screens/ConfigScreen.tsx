@@ -9,6 +9,7 @@ import {
   ScrollView,
   NativeModules,
 } from 'react-native';
+import { LogUtils } from '../utils/LogUtils';
 
 // Access the global object in a way that works in React Native
 const globalAny: any = global;
@@ -55,16 +56,50 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
 
   const checkConnection = async () => {
     try {
+      // Log that we're starting the health check
+      const timestamp = new Date().toISOString();
+      await LogUtils.writeDebugToFile(`[${timestamp}] Starting health check...`);
+      
       const details = await NativeModules.SlamtecUtils.checkConnection();
+      
+      // Log the raw response immediately
+      await LogUtils.writeDebugToFile(`[${timestamp}] Raw health check response: ${JSON.stringify(details, null, 2)}`);
+      
       setConnectionStatus({
         isConnected: details.slamApiAvailable,
         message: details.status,
       });
+      
+      // Log the connection status
+      await LogUtils.writeDebugToFile(`[${timestamp}] Connection status: ${details.slamApiAvailable ? 'Connected' : 'Disconnected'}, Message: ${details.status}`);
+      
+      // If there's an error in the response, log it separately
+      if (details.error) {
+        await LogUtils.writeDebugToFile(`[${timestamp}] Health check error: ${details.error}`);
+      }
+      
+      // If there's a response field, parse and log it
+      if (details.response) {
+        try {
+          const responseObj = JSON.parse(details.response);
+          await LogUtils.writeDebugToFile(`[${timestamp}] Parsed health check response: ${JSON.stringify(responseObj, null, 2)}`);
+        } catch (e) {
+          await LogUtils.writeDebugToFile(`[${timestamp}] Failed to parse health check response: ${details.response}`);
+        }
+      } else {
+        await LogUtils.writeDebugToFile(`[${timestamp}] No response field in health check details`);
+      }
     } catch (error) {
       setConnectionStatus({
         isConnected: false,
         message: 'Connection error',
       });
+      // Log the error with more detail
+      const timestamp = new Date().toISOString();
+      await LogUtils.writeDebugToFile(`[${timestamp}] Health check error: ${error instanceof Error ? error.message : String(error)}`);
+      if (error instanceof Error && error.stack) {
+        await LogUtils.writeDebugToFile(`[${timestamp}] Error stack: ${error.stack}`);
+      }
     }
   };
 
