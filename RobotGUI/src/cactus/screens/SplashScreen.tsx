@@ -7,6 +7,7 @@ import {
   Animated,
   Easing,
   NativeModules,
+  Modal,
 } from 'react-native';
 import { LogUtils } from '../utils/logging';
 import DeviceStorage from '../../utils/deviceStorage';
@@ -18,10 +19,48 @@ interface SplashScreenProps {
 const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
   const [opacity] = useState(new Animated.Value(1));
   const [loadingText, setLoadingText] = useState('Initializing...');
+  const [showDockDialog, setShowDockDialog] = useState(false);
+  const [isDocked, setIsDocked] = useState(false);
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
+    let pollInterval: NodeJS.Timeout;
     let isMounted = true;
+
+    const checkDockStatus = async () => {
+      try {
+        const powerStatus = await NativeModules.SlamtecUtils.getPowerStatus();
+        if (powerStatus.dockingStatus !== 'on_dock') {
+          setShowDockDialog(true);
+          setIsDocked(false);
+          return false;
+        } else {
+          setShowDockDialog(false);
+          setIsDocked(true);
+          return true;
+        }
+      } catch (e) {
+        setShowDockDialog(true);
+        setIsDocked(false);
+        return false;
+      }
+    };
+
+    const waitForDock = async () => {
+      setLoadingText('Checking docking status...');
+      let docked = await checkDockStatus();
+      if (!docked) {
+        pollInterval = setInterval(async () => {
+          docked = await checkDockStatus();
+          if (docked) {
+            clearInterval(pollInterval);
+            initialize();
+          }
+        }, 5000);
+      } else {
+        initialize();
+      }
+    };
 
     const initialize = async () => {
       try {
@@ -226,13 +265,10 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
       }
     };
 
-    // Start initialization
-    initialize();
+    waitForDock();
 
-    // Set 30 second timeout
     timeoutId = setTimeout(() => {
       if (isMounted) {
-        LogUtils.writeDebugToFile('Loading timeout reached');
         setLoadingText('Loading timeout reached');
         Animated.timing(opacity, {
           toValue: 0,
@@ -248,6 +284,7 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
     return () => {
       isMounted = false;
       clearTimeout(timeoutId);
+      if (pollInterval) clearInterval(pollInterval);
     };
   }, [opacity, onFinish]);
 
@@ -268,6 +305,17 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
           <Text style={styles.loadingText}>{loadingText}</Text>
         </View>
       </Animated.View>
+      <Modal
+        visible={showDockDialog}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => {}}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Please return the robot to its docking station.</Text>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -307,6 +355,23 @@ const styles = StyleSheet.create({
   loadingText: {
     color: 'rgb(0, 215, 68)',
     fontSize: 24,
+    textAlign: 'center',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 30,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 22,
+    color: '#101010',
     textAlign: 'center',
   },
 });

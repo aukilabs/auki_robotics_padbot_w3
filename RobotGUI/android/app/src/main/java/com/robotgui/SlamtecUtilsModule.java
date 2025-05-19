@@ -1452,4 +1452,52 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
             }
         });
     }
+
+    @ReactMethod
+    public void getPowerStatus(Promise promise) {
+        executorService.execute(() -> {
+            HttpURLConnection connection = null;
+            try {
+                String url = BASE_URL + "/api/core/system/v1/power/status";
+                connection = (HttpURLConnection) new URL(url).openConnection();
+                connection.setConnectTimeout(TIMEOUT_MS);
+                connection.setReadTimeout(TIMEOUT_MS);
+                connection.setRequestMethod("GET");
+
+                connection.connect();
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    StringBuilder result = new StringBuilder();
+                    try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                            new java.io.InputStreamReader(connection.getInputStream()))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            result.append(line);
+                        }
+                    }
+                    JSONObject powerStatus = new JSONObject(result.toString());
+                    WritableMap response = Arguments.createMap();
+                    response.putInt("batteryPercentage", powerStatus.optInt("batteryPercentage", -1));
+                    response.putString("dockingStatus", powerStatus.optString("dockingStatus", ""));
+                    response.putBoolean("isCharging", powerStatus.optBoolean("isCharging", false));
+                    response.putBoolean("isDCConnected", powerStatus.optBoolean("isDCConnected", false));
+                    response.putString("powerStage", powerStatus.optString("powerStage", ""));
+                    response.putString("sleepMode", powerStatus.optString("sleepMode", ""));
+                    mainHandler.post(() -> promise.resolve(response));
+                } else {
+                    mainHandler.post(() -> promise.reject("POWER_STATUS_ERROR", "Failed to get power status: " + responseCode));
+                }
+            } catch (Exception e) {
+                mainHandler.post(() -> promise.reject("POWER_STATUS_ERROR", "Error getting power status: " + e.getMessage()));
+            } finally {
+                if (connection != null) {
+                    try {
+                        connection.disconnect();
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error disconnecting: " + e.getMessage());
+                    }
+                }
+            }
+        });
+    }
 } 
