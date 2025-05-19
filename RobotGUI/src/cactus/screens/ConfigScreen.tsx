@@ -9,6 +9,7 @@ import {
   ScrollView,
   NativeModules,
 } from 'react-native';
+import { LogUtils } from '../utils/logging';
 
 // Access the global object in a way that works in React Native
 const globalAny: any = global;
@@ -34,6 +35,7 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
   const [homedockQrId, setHomedockQrId] = useState('');
   const [hasStoredPassword, setHasStoredPassword] = useState(false);
   const [domainServerUrl, setDomainServerUrl] = useState('');
+  const [lastHealthCheckResponse, setLastHealthCheckResponse] = useState(null);
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -55,15 +57,108 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
 
   const checkConnection = async () => {
     try {
-      const details = await NativeModules.SlamtecUtils.checkConnection();
-      setConnectionStatus({
-        isConnected: details.slamApiAvailable,
-        message: details.status,
-      });
+      LogUtils.writeDebugToFile('Starting health check...');
+      const response = await NativeModules.SlamtecUtils.checkConnection();
+      LogUtils.writeDebugToFile('Health check response: ' + JSON.stringify(response, null, 2));
+      setLastHealthCheckResponse(response);
+
+      // Parse the response string if it exists
+      let parsedResponse;
+      if (response.response) {
+        try {
+          parsedResponse = JSON.parse(response.response);
+          LogUtils.writeDebugToFile('Parsed health check response: ' + JSON.stringify(parsedResponse, null, 2));
+        } catch (parseError) {
+          LogUtils.writeDebugToFile('Failed to parse health check response: ' + parseError.message);
+          throw new Error('Invalid health check response format');
+        }
+      }
+
+      // Build detailed status message
+      let statusMessage = '';
+      let isConnected = true;
+
+      // Check base connection status
+      if (response.status) {
+        statusMessage += `Base Status: ${response.status}\n`;
+      }
+
+      // Check SLAM API availability
+      if (response.slamApiAvailable !== undefined) {
+        statusMessage += `SLAM API: ${response.slamApiAvailable ? 'Available' : 'Not Available'}\n`;
+        isConnected = isConnected && response.slamApiAvailable;
+      }
+
+      // Check for specific error conditions
+      if (response.hasError) {
+        statusMessage += 'Error: General error detected\n';
+        isConnected = false;
+      }
+      if (response.hasFatal) {
+        statusMessage += 'Error: Fatal error detected\n';
+        isConnected = false;
+      }
+      if (response.hasSystemEmergencyStop) {
+        statusMessage += 'Error: System emergency stop active\n';
+        isConnected = false;
+      }
+      if (response.hasLidarDisconnected) {
+        statusMessage += 'Error: LiDAR disconnected\n';
+        isConnected = false;
+      }
+      if (response.hasDepthCameraDisconnected) {
+        statusMessage += 'Error: Depth camera disconnected\n';
+        isConnected = false;
+      }
+      if (response.hasSdpDisconnected) {
+        statusMessage += 'Error: SDP disconnected\n';
+        isConnected = false;
+      }
+
+      // Check parsed response for additional errors
+      if (parsedResponse) {
+        if (parsedResponse.hasFatal) {
+          statusMessage += 'Error: Fatal error in parsed response\n';
+          isConnected = false;
+        }
+        if (parsedResponse.hasError) {
+          statusMessage += 'Error: Error in parsed response\n';
+          isConnected = false;
+        }
+        if (parsedResponse.baseError && parsedResponse.baseError.length > 0) {
+          // Check for specific magnetic sensor errors
+          const magneticErrors = parsedResponse.baseError.filter((error: number) => 
+            error === 67372544 || error === 67372545
+          );
+          
+          if (magneticErrors.length > 0) {
+            statusMessage += 'FATAL: Magnetic sensor communication error\n';
+            statusMessage += 'Recommended actions:\n';
+            statusMessage += '1. Check if the connection cable is reliably connected\n';
+            statusMessage += '2. Check if the sensor is damaged\n';
+            statusMessage += '3. Manually clear the error\n';
+            statusMessage += '4. Restart the chassis if necessary\n';
+          } else {
+            statusMessage += `Base Errors: ${parsedResponse.baseError.join(', ')}\n`;
+          }
+          isConnected = false;
+        }
+      }
+
+      // If no specific issues were found, add a success message
+      if (isConnected) {
+        statusMessage = 'Health Check OK';
+      } else {
+        statusMessage = 'Health Check Failed';
+      }
+
+      LogUtils.writeDebugToFile('Connection status: ' + (isConnected ? 'Health Check OK' : 'Health Check Failed') + ', Message: ' + statusMessage);
+      setConnectionStatus({ isConnected, message: statusMessage });
     } catch (error) {
-      setConnectionStatus({
-        isConnected: false,
-        message: 'Connection error',
+      LogUtils.writeDebugToFile('Connection error: ' + (error instanceof Error ? error.message : String(error)));
+      setConnectionStatus({ 
+        isConnected: false, 
+        message: 'Health Check Failed'
       });
     }
   };
@@ -164,6 +259,18 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
     NativeModules.DomainUtils.saveHomedockQrId(formattedText);
   };
 
+  const showHealthCheckDetails = () => {
+    if (lastHealthCheckResponse) {
+      Alert.alert(
+        'Health Check Details',
+        JSON.stringify(lastHealthCheckResponse, null, 2),
+        [{ text: 'OK' }]
+      );
+    } else {
+      Alert.alert('No Data', 'No health check data available');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -179,11 +286,14 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
         <View style={styles.content}>
           <View style={styles.statusContainer}>
             <Text style={styles.statusText}>Connection Status</Text>
-            <View style={[
-              styles.statusIndicator,
-              { backgroundColor: connectionStatus.isConnected ? '#4CAF50' : '#F44336' }
-            ]} />
+            <View style={[styles.statusIndicator, { backgroundColor: connectionStatus.isConnected ? '#4CAF50' : '#F44336' }]} />
             <Text style={styles.statusMessage}>{connectionStatus.message}</Text>
+            <TouchableOpacity 
+              style={styles.detailsButton} 
+              onPress={showHealthCheckDetails}
+            >
+              <Text style={styles.detailsButtonText}>Details</Text>
+            </TouchableOpacity>
           </View>
 
           <View style={styles.section}>
@@ -494,6 +604,17 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  detailsButton: {
+    backgroundColor: '#2196F3',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 4,
+    marginLeft: 8,
+  },
+  detailsButtonText: {
+    color: 'white',
+    fontSize: 12,
   },
 });
 

@@ -95,8 +95,8 @@ const AuthState = {
   tokenValid: false,
 };
 
-// Heartbeat check interval (30 seconds)
-const HEARTBEAT_CHECK_INTERVAL = 60000; // Changed to 1 minute
+// Remove heartbeat check interval
+// const HEARTBEAT_CHECK_INTERVAL = 60000; // Changed to 1 minute
 
 interface MainScreenProps {
   onClose: () => void;
@@ -624,13 +624,70 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
 
   // Effect to start heartbeat check when component mounts
   useEffect(() => {
-    // Start heartbeat check immediately
-    startHeartbeatCheck();
+    // Remove heartbeat check
+    // startHeartbeatCheck();
     
     return () => {
-      // Clear heartbeat check on unmount
-      stopHeartbeatCheck();
+      // Remove heartbeat check cleanup
+      // stopHeartbeatCheck();
     };
+  }, []);
+
+  useEffect(() => {
+    const performInitialHealthCheck = async () => {
+      try {
+        LogUtils.writeDebugToFile('Performing initial health check in MainScreen...');
+        const response = await NativeModules.SlamtecUtils.checkConnection();
+        LogUtils.writeDebugToFile('Initial health check response: ' + JSON.stringify(response, null, 2));
+
+        // Parse the response string if it exists
+        let parsedResponse;
+        if (response.response) {
+          try {
+            parsedResponse = JSON.parse(response.response);
+            LogUtils.writeDebugToFile('Parsed health check response: ' + JSON.stringify(parsedResponse, null, 2));
+          } catch (parseError) {
+            LogUtils.writeDebugToFile('Failed to parse health check response: ' + parseError.message);
+            throw new Error('Invalid health check response format');
+          }
+        }
+
+        // Check for health check failures
+        if (response.hasError || response.hasFatal || response.hasSystemEmergencyStop || 
+            response.hasLidarDisconnected || response.hasDepthCameraDisconnected || response.hasSdpDisconnected ||
+            (parsedResponse && (parsedResponse.hasFatal || parsedResponse.hasError || 
+             (parsedResponse.baseError && parsedResponse.baseError.length > 0)))) {
+          throw new Error('Health check failed: ' + JSON.stringify(response));
+        }
+
+        LogUtils.writeDebugToFile('Initial health check successful');
+      } catch (error) {
+        LogUtils.writeDebugToFile('Initial health check failed: ' + (error instanceof Error ? error.message : String(error)));
+        
+        // Show error dialog with more detailed information
+        Alert.alert(
+          'Connection Error',
+          'There was an issue detected, please restart the app. If the error persists please reboot the robot.',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                LogUtils.writeDebugToFile('User dismissed base error alert');
+              },
+            },
+          ],
+          { 
+            cancelable: true,
+            onDismiss: () => {
+              LogUtils.writeDebugToFile('User dismissed base error alert by tapping outside');
+            }
+          }
+        );
+      }
+    };
+
+    // Perform the initial health check
+    performInitialHealthCheck();
   }, []);
 
   const handleProductSelect = async (product: Product) => {
