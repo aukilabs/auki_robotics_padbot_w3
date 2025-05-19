@@ -46,9 +46,6 @@ const RobotBaseErrorTypes = {
   UNKNOWN_ERROR: 'unknown_error'
 };
 
-// Heartbeat check interval (30 seconds)
-const HEARTBEAT_CHECK_INTERVAL = 60000; // Changed to 1 minute
-
 // Maximum recovery attempts
 const MAX_RECOVERY_ATTEMPTS = 3;
 
@@ -233,8 +230,6 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   // Add new state variables for error handling
   const [robotBaseStatus, setRobotBaseStatus] = useState<string>('ok');
   const [recoveryAttempts, setRecoveryAttempts] = useState<number>(0);
-  const heartbeatIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const lastHeartbeatTimeRef = useRef<number>(0);
   
   // Function to clear the inactivity timer
   const clearInactivityTimer = () => {
@@ -682,9 +677,6 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     setSelectedProduct(product);
     setNavigationStatus(NavigationStatus.NAVIGATING);
     
-    // Start heartbeat check when beginning navigation
-    startHeartbeatCheck();
-    
     // Set robot speed to product search speed (faster)
     try {
       await NativeModules.SlamtecUtils.setMaxLineSpeed(SPEEDS.productSearch.toString());
@@ -770,11 +762,6 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           
           await LogUtils.writeDebugToFile('Navigation command completed');
           await LogUtils.writeDebugToFile('Setting navigation status to ARRIVED');
-          
-          // Stop heartbeat checks on successful arrival
-          stopHeartbeatCheck();
-          
-          setNavigationStatus(NavigationStatus.ARRIVED);
           
           // Only start the inactivity timer if auto-promotion is enabled in the configuration
           // This prevents promotion from automatically starting after a user-initiated navigation
@@ -915,7 +902,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       promotionActive = false;
       
       // Stop heartbeat checks
-      stopHeartbeatCheck();
+      // stopHeartbeatCheck();
       
       // Reset recovery attempts counter
       setRecoveryAttempts(0);
@@ -995,9 +982,6 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     setNavigationStatus(NavigationStatus.NAVIGATING);
     setSelectedProduct(null);
     
-    // Start heartbeat check
-    startHeartbeatCheck();
-    
     // Reset robot speed to default
     try {
       await NativeModules.SlamtecUtils.setMaxLineSpeed(SPEEDS.default.toString());
@@ -1014,7 +998,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       // Only update state if navigation wasn't cancelled
       if (!navigationCancelledRef.current) {
         // Stop heartbeat checks on successful arrival
-        stopHeartbeatCheck();
+        // stopHeartbeatCheck();
         
         // When going home, we skip ARRIVED state and go directly to IDLE
         // This ensures no "We have arrived" dialog is shown
@@ -1576,7 +1560,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   const checkRobotBaseHealth = async (): Promise<boolean> => {
     try {
       // Update the last heartbeat time
-      lastHeartbeatTimeRef.current = Date.now();
+      // lastHeartbeatTimeRef.current = Date.now();
       
       // Use checkConnection instead of getRobotStatus
       if (NativeModules.SlamtecUtils && typeof NativeModules.SlamtecUtils.checkConnection === 'function') {
@@ -1602,27 +1586,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     }
   };
   
-  // Function to start heartbeat check
-  const startHeartbeatCheck = () => {
-    if (heartbeatIntervalRef.current === null) {
-      lastHeartbeatTimeRef.current = Date.now();
-      heartbeatIntervalRef.current = setInterval(async () => {
-        await handleHeartbeatCheck();
-      }, HEARTBEAT_CHECK_INTERVAL);
-      LogUtils.writeDebugToFile(`Started heartbeat monitoring every ${HEARTBEAT_CHECK_INTERVAL/1000} seconds`);
-    }
-  };
-  
-  // Function to stop heartbeat check
-  const stopHeartbeatCheck = () => {
-    if (heartbeatIntervalRef.current !== null) {
-      clearInterval(heartbeatIntervalRef.current);
-      heartbeatIntervalRef.current = null;
-      LogUtils.writeDebugToFile('Stopped heartbeat monitoring');
-    }
-  };
-  
-  // Handle robot base errors with automatic recovery
+  // Function to handle robot base errors with automatic recovery
   const handleRobotBaseError = async (errorMessage: string, errorType: string = RobotBaseErrorTypes.UNKNOWN_ERROR) => {
     // Log detailed information about the error state
     await LogUtils.writeDebugToFile(`Robot base error: ${errorMessage} (Type: ${errorType})`);
@@ -1754,42 +1718,11 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   useEffect(() => {
     return () => {
       // Clear heartbeat check
-      stopHeartbeatCheck();
+      // stopHeartbeatCheck();
       
       // ... existing cleanup code ...
     };
   }, []);
-
-  // Function to perform a heartbeat check
-  const handleHeartbeatCheck = async () => {
-    const isHealthy = await checkRobotBaseHealth();
-    
-    if (!isHealthy) {
-      await LogUtils.writeDebugToFile(`Heartbeat check failed - Robot is not healthy`);
-      
-      // If we're navigating and the robot is unhealthy, handle it as an error
-      if (currentNavigationStatusRef.current === NavigationStatus.NAVIGATING || 
-          currentNavigationStatusRef.current === NavigationStatus.PATROL) {
-        
-        // Get connection details for more specific error message
-        let errorMessage = 'Connection to robot lost';
-        
-        try {
-          const details = await NativeModules.SlamtecUtils.checkConnection();
-          if (details && details.status) {
-            errorMessage = `Robot error: ${details.status}`;
-          }
-        } catch (e) {
-          // If we can't even get details, connection is definitely lost
-          errorMessage = 'Connection to robot base completely lost';
-        }
-        
-        await handleRobotBaseError(RobotBaseErrorTypes.COMMUNICATION_ERROR, errorMessage);
-      }
-    } else {
-      await LogUtils.writeDebugToFile(`Heartbeat check passed - Robot is healthy`);
-    }
-  };
 
   const navigateToProduct = async (product: Product) => {
     try {
@@ -1802,7 +1735,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       await LogUtils.writeDebugToFile(`Navigation status set to NAVIGATING`);
       
       // Start heartbeat monitoring
-      startHeartbeatCheck();
+      // startHeartbeatCheck();
       
       // Start pose polling for this navigation
       await startPosePolling();
@@ -1825,18 +1758,101 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       setNavigationError(`Failed to navigate to ${product.name}`);
       
       // Stop heartbeat monitoring on error
-      stopHeartbeatCheck();
+      // stopHeartbeatCheck();
     }
   };
 
   // Effect to start heartbeat check when component mounts
   useEffect(() => {
     // Start heartbeat check immediately
-    startHeartbeatCheck();
+    // startHeartbeatCheck();
     
     return () => {
       // Clear heartbeat check on unmount
-      stopHeartbeatCheck();
+      // stopHeartbeatCheck();
+    };
+  }, []);
+
+  // Initial health check
+  useEffect(() => {
+    const performInitialHealthCheck = async () => {
+      try {
+        LogUtils.writeDebugToFile('Performing initial health check in MainScreen...');
+        const response = await NativeModules.SlamtecUtils.checkConnection();
+        LogUtils.writeDebugToFile('Initial health check response: ' + JSON.stringify(response, null, 2));
+
+        // Parse the response string if it exists
+        let parsedResponse;
+        if (response.response) {
+          try {
+            parsedResponse = JSON.parse(response.response);
+            LogUtils.writeDebugToFile('Parsed health check response: ' + JSON.stringify(parsedResponse, null, 2));
+          } catch (parseError) {
+            LogUtils.writeDebugToFile('Failed to parse health check response: ' + parseError.message);
+            throw new Error('Invalid health check response format');
+          }
+        }
+
+        // Check for health check failures
+        if (response.hasError || response.hasFatal || response.hasSystemEmergencyStop || 
+            response.hasLidarDisconnected || response.hasDepthCameraDisconnected || response.hasSdpDisconnected ||
+            (parsedResponse && (parsedResponse.hasFatal || parsedResponse.hasError || 
+             (parsedResponse.baseError && parsedResponse.baseError.length > 0)))) {
+          throw new Error('Health check failed: ' + JSON.stringify(response));
+        }
+
+        LogUtils.writeDebugToFile('Initial health check successful');
+      } catch (error) {
+        LogUtils.writeDebugToFile('Initial health check failed: ' + (error instanceof Error ? error.message : String(error)));
+        
+        // Show error dialog with more detailed information
+        Alert.alert(
+          'Connection Error',
+          'There was an issue detected, please restart the app. If the error persists please reboot the robot.',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                LogUtils.writeDebugToFile('User dismissed base error alert');
+              },
+            },
+          ],
+          { 
+            cancelable: true,
+            onDismiss: () => {
+              LogUtils.writeDebugToFile('User dismissed base error alert by tapping outside');
+            }
+          }
+        );
+      }
+    };
+
+    // Perform the initial health check
+    performInitialHealthCheck();
+  }, []);
+
+  useEffect(() => {
+    // Set up app state change listener
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+    // Start pose polling
+    startPosePolling();
+
+    // Set up token refresh interval
+    const tokenRefreshInterval = setInterval(refreshToken, TOKEN_REFRESH_INTERVAL);
+
+    // Set up token validation interval
+    const tokenValidationInterval = setInterval(() => validateToken(false), TOKEN_VALIDATION_INTERVAL);
+
+    // Clean up function
+    return () => {
+      subscription.remove();
+      stopPosePolling();
+      clearInterval(tokenRefreshInterval);
+      clearInterval(tokenValidationInterval);
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+      }
     };
   }, []);
 
