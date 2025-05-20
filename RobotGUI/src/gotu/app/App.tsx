@@ -31,7 +31,11 @@ const App = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>(AppScreen.SPLASH);
   const [products, setProducts] = useState<Product[]>([]);
 
-  const handleSplashFinish = (loadedProducts: Product[]) => {
+  const handleSplashFinish = (loadedProducts: Product[], options?: { goToConfig?: boolean }) => {
+    if (options && options.goToConfig) {
+      setCurrentScreen(AppScreen.CONFIG);
+      return;
+    }
     setProducts(loadedProducts);
     setCurrentScreen(AppScreen.MAIN);
   };

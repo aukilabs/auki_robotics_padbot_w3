@@ -13,7 +13,7 @@ import { LogUtils } from '../utils/logging';
 import DeviceStorage from '../../utils/deviceStorage';
 
 interface SplashScreenProps {
-  onFinish: (products: any[]) => void;
+  onFinish: (products: any[], options?: { goToConfig?: boolean }) => void;
 }
 
 const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
@@ -46,6 +46,22 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
       }
     };
 
+    const checkCredentials = async () => {
+      try {
+        const creds = await NativeModules.DomainUtils.getStoredCredentials();
+        const hasCreds = creds && creds.email && creds.password && creds.domainId && creds.email.length > 0 && creds.password.length > 0 && creds.domainId.length > 0;
+        if (!hasCreds) {
+          // Skip initialization and go to ConfigScreen
+          onFinish([], { goToConfig: true });
+          return false;
+        }
+        return true;
+      } catch (e) {
+        onFinish([], { goToConfig: true });
+        return false;
+      }
+    };
+
     const waitForDock = async () => {
       setLoadingText('Checking docking status...');
       let docked = await checkDockStatus();
@@ -54,11 +70,15 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
           docked = await checkDockStatus();
           if (docked) {
             clearInterval(pollInterval);
-            initialize();
+            // After docked, check credentials
+            const credsOk = await checkCredentials();
+            if (credsOk) initialize();
           }
         }, 5000);
       } else {
-        initialize();
+        // After docked, check credentials
+        const credsOk = await checkCredentials();
+        if (credsOk) initialize();
       }
     };
 
@@ -257,7 +277,7 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
                 easing: Easing.out(Easing.cubic),
                 useNativeDriver: true,
               }).start(() => {
-                onFinish([]);
+                onFinish([], { goToConfig: true });
               });
             }
           }, 2000);
@@ -276,7 +296,7 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
           easing: Easing.out(Easing.cubic),
           useNativeDriver: true,
         }).start(() => {
-          onFinish([]);
+          onFinish([], { goToConfig: true });
         });
       }
     }, 30000);
