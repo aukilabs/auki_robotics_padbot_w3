@@ -17,6 +17,7 @@ import {
   Platform,
   AppState,
   AppStateStatus,
+  Keyboard,
 } from 'react-native';
 import { LogUtils } from '../utils/logging';
 import { 
@@ -1252,6 +1253,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
               placeholderTextColor="#999"
               value={searchText}
               onChangeText={setSearchText}
+              onFocus={() => setIsInputFocused(true)}
+              onBlur={() => setIsInputFocused(false)}
             />
             
             {isLoading ? (
@@ -1266,14 +1269,16 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
                   contentContainerStyle={[styles.productListContent, { paddingBottom: 100 }]}
                   keyboardShouldPersistTaps="handled"
                 />
-                <View style={styles.homeButtonContainer}>
-                  <TouchableOpacity
-                    style={styles.homeButton}
-                    onPress={handleGoHome}
-                  >
-                    <Text style={styles.homeButtonText}>Go Home</Text>
-                  </TouchableOpacity>
-                </View>
+                {!isInputFocused && (
+                  <View style={styles.homeButtonContainer}>
+                    <TouchableOpacity
+                      style={styles.homeButton}
+                      onPress={handleGoHome}
+                    >
+                      <Text style={styles.homeButtonText}>Go Home</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
               </>
             )}
           </View>
@@ -1913,6 +1918,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
 
     initializeApp();
   }, []);
+
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   return (
     <SafeAreaView 

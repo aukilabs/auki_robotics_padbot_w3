@@ -17,6 +17,7 @@ import {
   SafeAreaView,
   BackHandler,
   ActivityIndicator,
+  Keyboard,
 } from 'react-native';
 import { LogUtils } from '../utils/logging';
 import { 
@@ -197,6 +198,9 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   
   // Add ref to track app state
   const appStateRef = useRef<string>(AppState.currentState);
+  
+  // Add state to track if keyboard is visible
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   
   // Function to clear the inactivity timer
   const clearInactivityTimer = () => {
@@ -1049,12 +1053,16 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
                   style={styles.productList}
                   contentContainerStyle={styles.productListContent}
                 />
-                <TouchableOpacity 
-                  style={styles.homeButton}
-                  onPress={handleGoHome}
-                >
-                  <Text style={styles.homeButtonText}>Go Home</Text>
-                </TouchableOpacity>
+                {!isKeyboardVisible && (
+                  <View style={styles.homeButtonContainer}>
+                    <TouchableOpacity
+                      style={styles.homeButton}
+                      onPress={handleGoHome}
+                    >
+                      <Text style={styles.homeButtonText}>Go Home</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
               </>
             )}
           </View>
@@ -1155,6 +1163,16 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       await LogUtils.writeDebugToFile('Error checking auto-promotion config, defaulting to not starting timer after reset');
     }
   };
+
+  // Effect to handle keyboard visibility
+  useEffect(() => {
+    const showSub = Keyboard.addListener('keyboardDidShow', () => setIsKeyboardVisible(true));
+    const hideSub = Keyboard.addListener('keyboardDidHide', () => setIsKeyboardVisible(false));
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   return (
     <SafeAreaView 
@@ -1275,14 +1293,16 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
   },
+  homeButtonContainer: {
+    marginTop: 20,
+    marginHorizontal: 20,
+  },
   homeButton: {
     backgroundColor: 'rgb(0, 215, 68)',
     padding: 15,
     borderRadius: 5,
     alignItems: 'center',
-    marginTop: 20,
     minHeight: 50,
-    marginHorizontal: 20,
   },
   homeButtonText: {
     color: '#404040',
