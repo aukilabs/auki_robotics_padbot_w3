@@ -24,6 +24,11 @@ interface Product {
   };
 }
 
+interface ConfigScreenProps {
+  onClose: () => void;
+  restartApp: () => void;
+}
+
 const App = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>(AppScreen.SPLASH);
   const [products, setProducts] = useState<Product[]>([]);
@@ -45,6 +50,10 @@ const App = () => {
     setCurrentScreen(AppScreen.MAIN);
   };
 
+  const restartApp = () => {
+    setCurrentScreen(AppScreen.SPLASH);
+  };
+
   const renderScreen = () => {
     switch (currentScreen) {
       case AppScreen.SPLASH:
@@ -52,7 +61,7 @@ const App = () => {
       case AppScreen.MAIN:
         return <MainScreen onClose={handleClose} onConfigPress={handleConfigPress} initialProducts={products} />;
       case AppScreen.CONFIG:
-        return <ConfigScreen onClose={handleClose} />;
+        return <ConfigScreen onClose={handleClose} restartApp={restartApp} />;
     }
   };
 

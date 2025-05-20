@@ -16,6 +16,7 @@ const globalAny: any = global;
 
 interface ConfigScreenProps {
   onClose: () => void;
+  restartApp: () => void;
 }
 
 interface ConnectionStatus {
@@ -23,7 +24,7 @@ interface ConnectionStatus {
   message: string;
 }
 
-function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
+function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Element {
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({
     isConnected: false,
     message: 'Checking connection...',
@@ -36,6 +37,7 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
   const [homedockQrId, setHomedockQrId] = useState('');
   const [hasStoredPassword, setHasStoredPassword] = useState(false);
   const [domainServerUrl, setDomainServerUrl] = useState('');
+  const [restartEnabled, setRestartEnabled] = useState(false);
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -343,12 +345,27 @@ function ConfigScreen({ onClose }: ConfigScreenProps): React.JSX.Element {
               keyboardType="default"
             />
 
-            <TouchableOpacity 
-              style={[styles.button, styles.testButton]}
-              onPress={handleTestAuth}
-            >
-              <Text style={styles.buttonText}>Test Connection</Text>
-            </TouchableOpacity>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
+              <TouchableOpacity
+                style={[styles.button, styles.testButton, { flex: 1, marginRight: 5 }]}
+                onPress={async () => {
+                  await handleTestAuth();
+                  setRestartEnabled(true);
+                }}
+              >
+                <Text style={styles.buttonText}>Test Connection</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, { flex: 1, marginLeft: 5, backgroundColor: restartEnabled ? '#FF9800' : '#BDBDBD' }]}
+                disabled={!restartEnabled}
+                onPress={() => {
+                  setRestartEnabled(false);
+                  restartApp();
+                }}
+              >
+                <Text style={styles.buttonText}>Restart App</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View style={styles.section}>
