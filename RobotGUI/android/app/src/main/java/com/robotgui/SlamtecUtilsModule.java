@@ -280,6 +280,64 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void seriesNavigate(ReadableArray targets, double yaw, Promise promise) {
+        executorService.execute(() -> {
+            try {
+                String url = BASE_URL + "/api/core/motion/v1/actions";
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+
+                // Build the targets JSONArray, always set z = 0
+                org.json.JSONArray targetsArray = new org.json.JSONArray();
+                for (int i = 0; i < targets.size(); i++) {
+                    ReadableMap target = targets.getMap(i);
+                    org.json.JSONObject targetObj = new org.json.JSONObject();
+                    targetObj.put("x", target.getDouble("x"));
+                    targetObj.put("y", target.getDouble("y"));
+                    targetObj.put("z", 0); // Always set z = 0
+                    targetsArray.put(targetObj);
+                }
+
+                org.json.JSONObject actionOptions = new org.json.JSONObject()
+                    .put("action_name", "slamtec.agent.actions.SeriesMoveToAction")
+                    .put("options", new org.json.JSONObject()
+                        .put("targets", targetsArray)
+                        .put("move_options", new org.json.JSONObject()
+                            .put("mode", 0)
+                            //.put("flags", new org.json.JSONArray().put("with_yaw"))
+                            //.put("yaw", yaw)
+                            .put("acceptable_precision", 10)
+                            .put("fail_retry_count", 0)));
+
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setDoOutput(true);
+                try (java.io.OutputStream os = connection.getOutputStream()) {
+                    byte[] input = actionOptions.toString().getBytes("utf-8");
+                    os.write(input, 0, input.length);
+                }
+
+                if (connection.getResponseCode() >= 200 && connection.getResponseCode() <= 204) {
+                    StringBuilder result = new StringBuilder();
+                    try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                            new java.io.InputStreamReader(connection.getInputStream()))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            result.append(line);
+                        }
+                    }
+                    org.json.JSONObject response = new org.json.JSONObject(result.toString());
+                    monitorAction(response.getString("action_id"), promise);
+                } else {
+                    final int responseCode = connection.getResponseCode();
+                    mainHandler.post(() -> promise.reject("SERIES_NAVIGATION_ERROR", "Series navigation failed: " + responseCode));
+                }
+            } catch (Exception e) {
+                mainHandler.post(() -> promise.reject("SERIES_NAVIGATION_ERROR", "Error during series navigation: " + e.getMessage()));
+            }
+        });
+    }
+
     private void createPOI(double x, double y, double yaw, String displayName, Promise promise) {
         try {
             String url = BASE_URL + "/api/core/artifact/v1/pois";

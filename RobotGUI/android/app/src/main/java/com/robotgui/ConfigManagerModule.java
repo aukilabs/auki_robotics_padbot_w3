@@ -122,4 +122,33 @@ public class ConfigManagerModule extends ReactContextBaseJavaModule {
             promise.resolve(false);
         }
     }
+
+    @ReactMethod
+    public void getSeriesMoveTo(Promise promise) {
+        try {
+            // Get the array from config using the new public method
+            Object value = configManager.getClass().getMethod("getNestedList", String.class).invoke(configManager, "series_move_to");
+            com.facebook.react.bridge.WritableArray result = Arguments.createArray();
+            if (value instanceof java.util.List) {
+                java.util.List<?> list = (java.util.List<?>) value;
+                for (Object item : list) {
+                    if (item instanceof java.util.List) {
+                        java.util.List<?> triple = (java.util.List<?>) item;
+                        com.facebook.react.bridge.WritableArray tripleArr = Arguments.createArray();
+                        for (Object v : triple) {
+                            if (v instanceof Number) {
+                                tripleArr.pushDouble(((Number) v).doubleValue());
+                            } else {
+                                tripleArr.pushNull();
+                            }
+                        }
+                        result.pushArray(tripleArr);
+                    }
+                }
+            }
+            promise.resolve(result);
+        } catch (Exception e) {
+            promise.reject("CONFIG_ERROR", "Failed to get series_move_to: " + e.getMessage());
+        }
+    }
 } 

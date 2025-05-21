@@ -279,6 +279,25 @@ function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Ele
     }
   };
 
+  const handleTestSeries = async () => {
+    try {
+      // Fetch the series_move_to array from native
+      const series = await NativeModules.ConfigManagerModule.getSeriesMoveTo();
+      if (!Array.isArray(series) || series.length === 0) {
+        Alert.alert('Error', 'No series_move_to found in config.');
+        return;
+      }
+      // Build targets: {x, y, z: 0} for each, yaw from last
+      const targets = series.map(([x, y]) => ({ x, y, z: 0 }));
+      const last = series[series.length - 1];
+      const yaw = last[2] || 0;
+      await NativeModules.SlamtecUtils.seriesNavigate(targets, yaw);
+      Alert.alert('Success', 'Series navigation started.');
+    } catch (e) {
+      Alert.alert('Error', e.message || 'Failed to start series navigation.');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -698,6 +717,13 @@ function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Ele
               }}
             >
               <Text style={styles.buttonText}>Get Lighthouse Data</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Test Series</Text>
+            <TouchableOpacity style={styles.button} onPress={handleTestSeries}>
+              <Text style={styles.buttonText}>Test Series</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -50,5 +50,10 @@ object ConfigManager {
         return current
     }
 
+    @JvmStatic
+    fun getNestedList(path: String): List<Any>? {
+        return getNestedValue(path) as? List<Any>
+    }
+
     // Add more getters as needed
 } 
