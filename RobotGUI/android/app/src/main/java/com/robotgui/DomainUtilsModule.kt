@@ -149,6 +149,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     requestMethod = "POST"
                     setRequestProperty("Content-Type", "application/json")
                     setRequestProperty("Accept", "application/json")
+                    setRequestProperty("posemesh-client-id", getUniqueDeviceId())
                     doOutput = true
                     outputStream.write(body1.toString().toByteArray())
                 }
@@ -180,6 +181,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     requestMethod = "POST"
                     setRequestProperty("Accept", "application/json")
                     setRequestProperty("Authorization", "Bearer $posemeshToken")
+                    setRequestProperty("posemesh-client-id", getUniqueDeviceId())
                 }
 
                 val responseCode2 = connection2.responseCode
@@ -209,6 +211,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     requestMethod = "POST"
                     setRequestProperty("Accept", "application/json")
                     setRequestProperty("Authorization", "Bearer $ddsToken")
+                    setRequestProperty("posemesh-client-id", getUniqueDeviceId())
                 }
 
                 val responseCode3 = connection3.responseCode
@@ -277,6 +280,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     requestMethod = "POST"
                     setRequestProperty("Content-Type", "application/json")
                     setRequestProperty("Accept", "application/json")
+                    setRequestProperty("posemesh-client-id", getUniqueDeviceId())
                     doOutput = true
                     outputStream.write(body1.toString().toByteArray())
                 }
@@ -308,6 +312,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     requestMethod = "POST"
                     setRequestProperty("Accept", "application/json")
                     setRequestProperty("Authorization", "Bearer $posemeshToken")
+                    setRequestProperty("posemesh-client-id", getUniqueDeviceId())
                 }
 
                 val responseCode2 = connection2.responseCode
@@ -337,6 +342,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     requestMethod = "POST"
                     setRequestProperty("Accept", "application/json")
                     setRequestProperty("Authorization", "Bearer $ddsToken")
+                    setRequestProperty("posemesh-client-id", getUniqueDeviceId())
                 }
 
                 val responseCode3 = connection3.responseCode
@@ -416,6 +422,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     requestMethod = "POST"
                     setRequestProperty("Accept", "application/json")
                     setRequestProperty("Authorization", "Bearer $posemeshToken")
+                    setRequestProperty("posemesh-client-id", getUniqueDeviceId())
                 }
 
                 if (connection2.responseCode !in 200..299) {
@@ -1322,6 +1329,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 requestMethod = "POST"
                 setRequestProperty("Accept", "application/json")
                 setRequestProperty("Authorization", "Bearer $posemeshToken")
+                setRequestProperty("posemesh-client-id", getUniqueDeviceId())
             }
 
             if (connection2.responseCode !in 200..299) {

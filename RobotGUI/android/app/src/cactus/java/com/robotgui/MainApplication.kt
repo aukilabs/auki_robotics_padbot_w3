@@ -26,6 +26,7 @@ class MainApplication : Application(), ReactApplication {
             packages.add(FileUtilsPackage())
             packages.add(ConfigManagerPackage())
             packages.add(AppInfoPackage())
+            packages.add(BatteryMonitorPackage()) // Add battery monitoring
             return packages
         }
 

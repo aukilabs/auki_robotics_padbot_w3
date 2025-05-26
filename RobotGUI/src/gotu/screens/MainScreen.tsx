@@ -1903,6 +1903,9 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         // Only proceed with token validation if health check passes
         await validateToken();
 
+        // Start battery monitoring
+        startBatteryMonitoring();
+
         // Then proceed with map operations
         LogUtils.writeDebugToFile('Initial health check successful');
       } catch (error) {
@@ -1917,9 +1920,90 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     };
 
     initializeApp();
+
+    // Cleanup function
+    return () => {
+      stopBatteryMonitoring();
+    };
   }, []);
 
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const [batteryLevel, setBatteryLevel] = useState<number>(100);
+  const [isLowBatteryAlertShown, setIsLowBatteryAlertShown] = useState(false);
+  const batteryEventSubscription = useRef<any>(null);
+
+  // Function to handle battery status updates
+  const handleBatteryStatusUpdate = (event: any) => {
+    const { batteryPercentage, dockingStatus, isCharging } = event;
+    setBatteryLevel(batteryPercentage);
+
+    // If not docked and battery is low
+    if (dockingStatus !== 'on_dock' && batteryPercentage <= 20 && !isLowBatteryAlertShown) {
+      setIsLowBatteryAlertShown(true);
+      Alert.alert(
+        'Battery Level Low',
+        'Battery level is critically low. The robot will return to the charging dock.',
+        [
+          {
+            text: 'Cancel',
+            onPress: () => {
+              setIsLowBatteryAlertShown(false);
+            },
+            style: 'cancel'
+          }
+        ],
+        { cancelable: true }
+      );
+
+      // Return home regardless of current mode
+      try {
+        NativeModules.SlamtecUtils.goHome();
+        LogUtils.writeDebugToFile('Returning home due to low battery');
+      } catch (error) {
+        LogUtils.writeDebugToFile(`Failed to return home due to low battery: ${error}`);
+      }
+    }
+
+    // If charging and battery is above 80%, clear the alert
+    if (isCharging && batteryPercentage >= 80 && isLowBatteryAlertShown) {
+      setIsLowBatteryAlertShown(false);
+    }
+  };
+
+  // Start battery monitoring
+  const startBatteryMonitoring = () => {
+    try {
+      // Subscribe to battery status events
+      const eventEmitter = new NativeEventEmitter(NativeModules.BatteryMonitor);
+      batteryEventSubscription.current = eventEmitter.addListener(
+        'BatteryStatusUpdate',
+        handleBatteryStatusUpdate
+      );
+
+      // Start the native monitoring
+      NativeModules.BatteryMonitor.startMonitoring();
+      LogUtils.writeDebugToFile('Started battery monitoring');
+    } catch (error) {
+      LogUtils.writeDebugToFile(`Error starting battery monitoring: ${error}`);
+    }
+  };
+
+  // Stop battery monitoring
+  const stopBatteryMonitoring = () => {
+    try {
+      // Remove event listener
+      if (batteryEventSubscription.current) {
+        batteryEventSubscription.current.remove();
+        batteryEventSubscription.current = null;
+      }
+
+      // Stop the native monitoring
+      NativeModules.BatteryMonitor.stopMonitoring();
+      LogUtils.writeDebugToFile('Stopped battery monitoring');
+    } catch (error) {
+      LogUtils.writeDebugToFile(`Error stopping battery monitoring: ${error}`);
+    }
+  };
 
   return (
     <SafeAreaView 
