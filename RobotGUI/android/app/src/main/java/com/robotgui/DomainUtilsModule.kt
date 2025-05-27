@@ -39,7 +39,8 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
     private val scope = CoroutineScope(Dispatchers.IO + Job())
     private val sharedPreferences = reactContext.getSharedPreferences("DomainAuth", Context.MODE_PRIVATE)
     private val STORAGE_PERMISSION_CODE = 1001
-    private val baseUrl = "https://dds.posemesh.org/api/v1/domains"
+    //private val baseUrl = "https://dds.posemesh.org/api/v1/domains"
+    private val baseUrl = "https://dds.auki.network/api/v1/domains"
     // Flag to prevent concurrent map downloads
     private val isDownloadingMap = AtomicBoolean(false)
 
@@ -135,7 +136,8 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 // Perform full re-authentication flow (same as testTokenValidity and authenticate)
                 
                 // 1. Authenticate with Posemesh
-                val url1 = URL("https://api.posemesh.org/user/login")
+                //val url1 = URL("https://api.posemesh.org/user/login")
+                val url1 = URL("https://api.auki.network/user/login")
                 logToFile("Posemesh user login URL: $url1")
                 
                 val connection1 = url1.openConnection() as HttpURLConnection
@@ -149,7 +151,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     requestMethod = "POST"
                     setRequestProperty("Content-Type", "application/json")
                     setRequestProperty("Accept", "application/json")
-                    setRequestProperty("posemesh-client-id", getUniqueDeviceId())
+                    //setRequestProperty("posemesh-client-id", getUniqueDeviceId())
                     doOutput = true
                     outputStream.write(body1.toString().toByteArray())
                 }
@@ -172,7 +174,8 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 logToFile("Posemesh token received (first 10 chars): ${posemeshTokenValue.take(10)}...")
 
                 // 2. Auth DDS
-                val url2 = URL("https://api.posemesh.org/service/domains-access-token")
+                //val url2 = URL("https://api.posemesh.org/service/domains-access-token")
+                val url2 = URL("https://api.auki.network/service/domains-access-token")
                 logToFile("DDS authentication URL: $url2")
                 
                 val connection2 = url2.openConnection() as HttpURLConnection
@@ -181,7 +184,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     requestMethod = "POST"
                     setRequestProperty("Accept", "application/json")
                     setRequestProperty("Authorization", "Bearer $posemeshToken")
-                    setRequestProperty("posemesh-client-id", getUniqueDeviceId())
+                    //setRequestProperty("posemesh-client-id", getUniqueDeviceId())
                 }
 
                 val responseCode2 = connection2.responseCode
@@ -202,7 +205,8 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 logToFile("DDS token received (first 10 chars): ${ddsTokenValue.take(10)}...")
 
                 // 3. Auth Domain
-                val url3 = URL("https://dds.posemesh.org/api/v1/domains/$domainId/auth")
+                //val url3 = URL("https://dds.posemesh.org/api/v1/domains/$domainId/auth")
+                val url3 = URL("https://dds.auki.network/api/v1/domains/$domainId/auth")
                 logToFile("Domain authentication URL: $url3")
                 
                 val connection3 = url3.openConnection() as HttpURLConnection
@@ -211,7 +215,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     requestMethod = "POST"
                     setRequestProperty("Accept", "application/json")
                     setRequestProperty("Authorization", "Bearer $ddsToken")
-                    setRequestProperty("posemesh-client-id", getUniqueDeviceId())
+                    //setRequestProperty("posemesh-client-id", getUniqueDeviceId())
                 }
 
                 val responseCode3 = connection3.responseCode
@@ -266,7 +270,8 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 }
                 
                 // 1. Re-authenticate with Posemesh
-                val url1 = URL("https://api.posemesh.org/user/login")
+                //val url1 = URL("https://api.posemesh.org/user/login")
+                val url1 = URL("https://api.auki.network/user/login")
                 logToFile("Posemesh user login URL: $url1")
                 
                 val connection1 = url1.openConnection() as HttpURLConnection
@@ -280,7 +285,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     requestMethod = "POST"
                     setRequestProperty("Content-Type", "application/json")
                     setRequestProperty("Accept", "application/json")
-                    setRequestProperty("posemesh-client-id", getUniqueDeviceId())
+                    //setRequestProperty("posemesh-client-id", getUniqueDeviceId())
                     doOutput = true
                     outputStream.write(body1.toString().toByteArray())
                 }
@@ -303,7 +308,8 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 logToFile("Posemesh token received (first 10 chars): ${posemeshTokenValue.take(10)}...")
 
                 // 2. Auth DDS
-                val url2 = URL("https://api.posemesh.org/service/domains-access-token")
+                //val url2 = URL("https://api.posemesh.org/service/domains-access-token")
+                val url2 = URL("https://api.auki.network/service/domains-access-token")
                 logToFile("DDS authentication URL: $url2")
                 
                 val connection2 = url2.openConnection() as HttpURLConnection
@@ -312,7 +318,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     requestMethod = "POST"
                     setRequestProperty("Accept", "application/json")
                     setRequestProperty("Authorization", "Bearer $posemeshToken")
-                    setRequestProperty("posemesh-client-id", getUniqueDeviceId())
+                    //setRequestProperty("posemesh-client-id", getUniqueDeviceId())
                 }
 
                 val responseCode2 = connection2.responseCode
@@ -333,7 +339,8 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 logToFile("DDS token received (first 10 chars): ${ddsTokenValue.take(10)}...")
 
                 // 3. Auth Domain
-                val url3 = URL("https://dds.posemesh.org/api/v1/domains/$domainId/auth")
+                //val url3 = URL("https://dds.posemesh.org/api/v1/domains/$domainId/auth")
+                val url3 = URL("https://dds.auki.network/api/v1/domains/$domainId/auth")
                 logToFile("Domain authentication URL: $url3")
                 
                 val connection3 = url3.openConnection() as HttpURLConnection
@@ -342,7 +349,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     requestMethod = "POST"
                     setRequestProperty("Accept", "application/json")
                     setRequestProperty("Authorization", "Bearer $ddsToken")
-                    setRequestProperty("posemesh-client-id", getUniqueDeviceId())
+                    //setRequestProperty("posemesh-client-id", getUniqueDeviceId())
                 }
 
                 val responseCode3 = connection3.responseCode
@@ -389,7 +396,8 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 }
 
                 // 1. Auth User Posemesh
-                val url1 = URL("https://api.posemesh.org/user/login")
+                //val url1 = URL("https://api.posemesh.org/user/login")
+                val url1 = URL("https://api.auki.network/user/login")
                 val connection1 = url1.openConnection() as HttpURLConnection
                 
                 val body1 = JSONObject().apply {
@@ -401,6 +409,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     requestMethod = "POST"
                     setRequestProperty("Content-Type", "application/json")
                     setRequestProperty("Accept", "application/json")
+                    //setRequestProperty("posemesh-client-id", getUniqueDeviceId())
                     doOutput = true
                     outputStream.write(body1.toString().toByteArray())
                 }
@@ -415,14 +424,15 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 posemeshToken = repJson1.getString("access_token")
 
                 // 2. Auth DDS
-                val url2 = URL("https://api.posemesh.org/service/domains-access-token")
+                //val url2 = URL("https://api.posemesh.org/service/domains-access-token")
+                val url2 = URL("https://api.auki.network/service/domains-access-token")
                 val connection2 = url2.openConnection() as HttpURLConnection
                 
                 connection2.apply {
                     requestMethod = "POST"
                     setRequestProperty("Accept", "application/json")
                     setRequestProperty("Authorization", "Bearer $posemeshToken")
-                    setRequestProperty("posemesh-client-id", getUniqueDeviceId())
+                    //setRequestProperty("posemesh-client-id", getUniqueDeviceId())
                 }
 
                 if (connection2.responseCode !in 200..299) {
@@ -435,14 +445,15 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 ddsToken = repJson2.getString("access_token")
 
                 // 3. Auth Domain
-                val url3 = URL("https://dds.posemesh.org/api/v1/domains/$finalDomainId/auth")
+                //val url3 = URL("https://dds.posemesh.org/api/v1/domains/$finalDomainId/auth")
+                val url3 = URL("https://dds.auki.network/api/v1/domains/$finalDomainId/auth")
                 val connection3 = url3.openConnection() as HttpURLConnection
                 
                 connection3.apply {
                     requestMethod = "POST"
                     setRequestProperty("Accept", "application/json")
                     setRequestProperty("Authorization", "Bearer $ddsToken")
-                    setRequestProperty("posemesh-client-id", getUniqueDeviceId())
+                    //setRequestProperty("posemesh-client-id", getUniqueDeviceId())
                 }
 
                 if (connection3.responseCode !in 200..299) {
@@ -1297,7 +1308,8 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             }
 
             // 1. Auth User Posemesh
-            val url1 = URL("https://api.posemesh.org/user/login")
+            //val url1 = URL("https://api.posemesh.org/user/login")
+            val url1 = URL("https://api.auki.network/user/login")
             val connection1 = url1.openConnection() as HttpURLConnection
             
             val body1 = JSONObject().apply {
@@ -1309,7 +1321,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 requestMethod = "POST"
                 setRequestProperty("Content-Type", "application/json")
                 setRequestProperty("Accept", "application/json")
-                setRequestProperty("posemesh-client-id", getUniqueDeviceId())
+                //setRequestProperty("posemesh-client-id", getUniqueDeviceId())
                 doOutput = true
                 outputStream.write(body1.toString().toByteArray())
             }
@@ -1324,14 +1336,15 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             val posemeshToken = repJson1.getString("access_token")
 
             // 2. Auth DDS
-            val url2 = URL("https://api.posemesh.org/service/domains-access-token")
+            //val url2 = URL("https://api.posemesh.org/service/domains-access-token")
+            val url2 = URL("https://api.auki.network/service/domains-access-token")
             val connection2 = url2.openConnection() as HttpURLConnection
             
             connection2.apply {
                 requestMethod = "POST"
                 setRequestProperty("Accept", "application/json")
                 setRequestProperty("Authorization", "Bearer $posemeshToken")
-                setRequestProperty("posemesh-client-id", getUniqueDeviceId())
+                //setRequestProperty("posemesh-client-id", getUniqueDeviceId())
             }
 
             if (connection2.responseCode !in 200..299) {
@@ -1344,14 +1357,15 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
             val ddsToken = repJson2.getString("access_token")
 
             // 3. Auth Domain
-            val url3 = URL("https://dds.posemesh.org/api/v1/domains/$domainId/auth")
+            //val url3 = URL("https://dds.posemesh.org/api/v1/domains/$domainId/auth")
+            val url3 = URL("https://dds.auki.network/api/v1/domains/$domainId/auth")
             val connection3 = url3.openConnection() as HttpURLConnection
             
             connection3.apply {
                 requestMethod = "POST"
                 setRequestProperty("Accept", "application/json")
                 setRequestProperty("Authorization", "Bearer $ddsToken")
-                setRequestProperty("posemesh-client-id", getUniqueDeviceId())
+                //setRequestProperty("posemesh-client-id", getUniqueDeviceId())
             }
 
             if (connection3.responseCode !in 200..299) {

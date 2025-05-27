@@ -1115,6 +1115,30 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     };
   }, []);
 
+  useEffect(() => {
+    // Initialize promotion state
+    const initPromotion = async () => {
+      try {
+        // Only initialize if not remounting from config
+        if (!globalAny.remountFromConfig) {
+          const isPromotionActive = await globalAny.isPromotionActive();
+          console.log('Initial promotion state:', isPromotionActive);
+          setIsPromotionActive(isPromotionActive);
+          
+          // If promotion is active, start it
+          if (isPromotionActive) {
+            console.log('Starting promotion from mount');
+            await startPromotion();
+          }
+        }
+      } catch (error) {
+        console.error('Error initializing promotion:', error);
+      }
+    };
+
+    initPromotion();
+  }, []);
+
   return (
     <SafeAreaView 
       style={styles.container}
