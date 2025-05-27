@@ -442,6 +442,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     requestMethod = "POST"
                     setRequestProperty("Accept", "application/json")
                     setRequestProperty("Authorization", "Bearer $ddsToken")
+                    setRequestProperty("posemesh-client-id", getUniqueDeviceId())
                 }
 
                 if (connection3.responseCode !in 200..299) {
@@ -1308,6 +1309,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 requestMethod = "POST"
                 setRequestProperty("Content-Type", "application/json")
                 setRequestProperty("Accept", "application/json")
+                setRequestProperty("posemesh-client-id", getUniqueDeviceId())
                 doOutput = true
                 outputStream.write(body1.toString().toByteArray())
             }
@@ -1349,6 +1351,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 requestMethod = "POST"
                 setRequestProperty("Accept", "application/json")
                 setRequestProperty("Authorization", "Bearer $ddsToken")
+                setRequestProperty("posemesh-client-id", getUniqueDeviceId())
             }
 
             if (connection3.responseCode !in 200..299) {

@@ -892,53 +892,6 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     await attemptNavigation();
   };
   
-  const handleGoHome = async () => {
-    try {
-      // Cancel any ongoing patrol and reset speed
-      if (isPatrolling) {
-        await cancelPatrol();
-      }
-      setRobotSpeed(defaultSpeed);
-
-      // Reset navigation status
-      setNavigationStatus('IDLE');
-      setNavigationError(null);
-
-      // Validate token before proceeding
-      const isValid = await validateToken();
-      if (!isValid) {
-        try {
-          await refreshToken();
-        } catch (error) {
-          console.error('Failed to refresh token:', error);
-          setNavigationError('Authentication failed. Please try again.');
-          return;
-        }
-      }
-
-      // Start pose polling and navigate home
-      startPosePolling();
-      setNavigationStatus('NAVIGATING');
-      
-      try {
-        await SlamtecUtils.goHome();
-        // Skip ARRIVED state and go directly to IDLE
-        setNavigationStatus('IDLE');
-        stopPosePolling();
-      } catch (error) {
-        console.error('Navigation error:', error);
-        setNavigationError('Failed to navigate home. Please try again.');
-        setNavigationStatus('IDLE');
-        stopPosePolling();
-      }
-    } catch (error) {
-      console.error('Error in handleGoHome:', error);
-      setNavigationError('An unexpected error occurred. Please try again.');
-      setNavigationStatus('IDLE');
-      stopPosePolling();
-    }
-  };
-  
   const handleClose = () => {
     Alert.alert(
       'Exit App',
@@ -1045,25 +998,13 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
             {isLoading ? (
               <ActivityIndicator size="large" color="rgb(0, 215, 68)" />
             ) : (
-              <>
-                <FlatList
-                  data={filteredProducts}
-                  renderItem={renderProductItem}
-                  keyExtractor={item => item.eslCode}
-                  style={styles.productList}
-                  contentContainerStyle={styles.productListContent}
-                />
-                {!isKeyboardVisible && (
-                  <View style={styles.homeButtonContainer}>
-                    <TouchableOpacity
-                      style={styles.homeButton}
-                      onPress={handleGoHome}
-                    >
-                      <Text style={styles.homeButtonText}>Go Home</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </>
+              <FlatList
+                data={filteredProducts}
+                renderItem={renderProductItem}
+                keyExtractor={item => item.eslCode}
+                style={styles.productList}
+                contentContainerStyle={styles.productListContent}
+              />
             )}
           </View>
         );
@@ -1292,22 +1233,6 @@ const styles = StyleSheet.create({
   productText: {
     color: 'white',
     fontSize: 18,
-  },
-  homeButtonContainer: {
-    marginTop: 20,
-    marginHorizontal: 20,
-  },
-  homeButton: {
-    backgroundColor: 'rgb(0, 215, 68)',
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-    minHeight: 50,
-  },
-  homeButtonText: {
-    color: '#404040',
-    fontSize: 18,
-    fontWeight: 'bold',
   },
   navigationContainer: {
     position: 'absolute',
