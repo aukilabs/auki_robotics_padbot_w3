@@ -75,7 +75,7 @@ loadSpeeds();
 const INACTIVITY_TIMEOUT = 20000;
 
 // Global variables to track promotion state across component lifecycles
-let promotionActive = false;
+globalAny.promotionActive = false;
 let promotionMounted = false;
 let promotionCancelled = false;
 let currentPointIndex = 0;
@@ -149,7 +149,7 @@ globalAny.startPromotion = async () => {
   // Set the promotion state
   promotionCancelled = false;
   currentPointIndex = 0;
-  promotionActive = true;
+  globalAny.promotionActive = true;
   
   // Reset the remountFromConfig flag to ensure promotion starts even when coming from config screen
   remountFromConfig = false;
@@ -272,7 +272,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         // Use the same logic as the global startPromotion function
         promotionCancelled = false;
         currentPointIndex = 0;
-        promotionActive = true;
+        globalAny.promotionActive = true;
         
         // Set patrol state to active
         setIsPatrolling(true);
@@ -423,11 +423,11 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     promotionMounted = true;
     
     // Log the current promotion state
-    LogUtils.writeDebugToFile(`MainScreen mounted. Promotion state: active=${promotionActive}, cancelled=${promotionCancelled}, currentPointIndex=${currentPointIndex}, remountFromConfig=${remountFromConfig}`);
+    LogUtils.writeDebugToFile(`MainScreen mounted. Promotion state: active=${globalAny.promotionActive}, cancelled=${promotionCancelled}, currentPointIndex=${currentPointIndex}, remountFromConfig=${remountFromConfig}`);
     
     // Only start promotion if it was explicitly activated via the global startPromotion function
     // and not cancelled, and we're not remounting after config screen
-    if (promotionActive && !promotionCancelled) {
+    if (globalAny.promotionActive && !promotionCancelled) {
       LogUtils.writeDebugToFile('Active promotion detected on mount, starting navigation to first waypoint');
       
       // Set patrol state to active
@@ -667,7 +667,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     
     // Cancel any ongoing patrol
     setIsPatrolling(false);
-    promotionActive = false;
+    globalAny.promotionActive = false;
     promotionCancelled = true;
     await LogUtils.writeDebugToFile('Waypoint sequence cancelled due to product selection');
     
@@ -908,7 +908,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       // Mark navigation as cancelled
       navigationCancelledRef.current = true;
       promotionCancelled = true;
-      promotionActive = false;
+      globalAny.promotionActive = false;
       
       // Stop heartbeat checks
       // stopHeartbeatCheck();
@@ -952,7 +952,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       // Even if stopping fails, still cancel patrol and return to list
       navigationCancelledRef.current = true;
       promotionCancelled = true;
-      promotionActive = false;
+      globalAny.promotionActive = false;
       setIsPatrolling(false);
       isPatrollingRef.current = false;
       setSelectedProduct(null);
@@ -977,7 +977,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   const handleGoHome = async () => {
     // Cancel any ongoing patrol unless it's the final step of patrol
     setIsPatrolling(false);
-    promotionActive = false;
+    globalAny.promotionActive = false;
     promotionCancelled = true;
     await LogUtils.writeDebugToFile('Waypoint sequence cancelled due to manual Go Home');
     

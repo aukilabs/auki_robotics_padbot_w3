@@ -1,61 +1,61 @@
-2025-05-27T08:46:36.286Z: === New Debug Session Started ===
-2025-05-27T08:46:36.290Z: App Version: unknown
-2025-05-27T08:46:36.296Z: Starting app initialization...
-2025-05-27T08:46:36.308Z: Attempting authentication...
-2025-05-27T08:46:36.317Z: Authentication attempt 1/3
-2025-05-27T08:46:38.883Z: Authentication successful
-2025-05-27T08:46:38.890Z: Updating map...
-[2025-05-27 16:46:38.906] Authentication successful, initiating map download...
-2025-05-27T08:46:38.917Z: Authentication successful - map download was triggered during authentication
-[2025-05-27 16:46:38.948] Starting downloadMapAfterAuth process
-[2025-05-27 16:46:38.957] Using map endpoint: https://dsc.dev.aukiverse.com/spatial/crosssection
-[2025-05-27 16:46:38.968] Sending map request: {"domainId":"8093f9bf-c374-4162-ab74-ab61949627f1","domainServerUrl":"https:\/\/domain-server-us-east-1.aukiverse.com","height":0.1,"fileType":"stcm","pixelsPerMeter":20}
-[2025-05-27 16:46:38.978] Executing map download request
-[2025-05-27 16:46:41.169] Response content type: multipart/form-data; boundary=----0093306844035253192789568244
-[2025-05-27 16:46:41.490] Processing multipart/form-data response
-[2025-05-27 16:46:41.498] Found boundary: ------0093306844035253192789568244
-[2025-05-27 16:46:41.518] Split response into 4 parts
-[2025-05-27 16:46:41.536] Found img part in multipart response
-[2025-05-27 16:46:41.552] Extracted base64 data of length: 662060
-[2025-05-27 16:46:41.589] Successfully decoded 662060 bytes of base64 data to 496544 bytes of binary STCM data
-[2025-05-27 16:46:41.596] STCM map saved to: /storage/emulated/0/Download/CactusAssistant/map.stcm
-[2025-05-27 16:46:41.600] Using SLAM API base URL: http://127.0.0.1:1448
-[2025-05-27 16:46:41.604] Clearing old POIs and map data
-[2025-05-27 16:46:41.617] Clear POIs response code: 200
-[2025-05-27 16:46:41.844] Clear map response code: 200
-[2025-05-27 16:46:41.849] Uploading new map: /storage/emulated/0/Download/CactusAssistant/map.stcm
-[2025-05-27 16:46:41.864] Uploaded 496544 bytes
-2025-05-27T08:46:41.928Z: Map update complete
-2025-05-27T08:46:41.938Z: Loading products...
+2025-05-27T09:28:49.326Z: === New Debug Session Started ===
+2025-05-27T09:28:49.337Z: App Version: unknown
+2025-05-27T09:28:49.345Z: Starting app initialization...
+2025-05-27T09:28:49.352Z: Attempting authentication...
+2025-05-27T09:28:49.368Z: Authentication attempt 1/3
+2025-05-27T09:28:51.490Z: Authentication successful
+[2025-05-27 17:28:51.495] Authentication successful, initiating map download...
+[2025-05-27 17:28:51.504] Starting downloadMapAfterAuth process
+2025-05-27T09:28:51.497Z: Updating map...
+[2025-05-27 17:28:51.509] Using map endpoint: https://dsc.dev.aukiverse.com/spatial/crosssection
+2025-05-27T09:28:51.509Z: Authentication successful - map download was triggered during authentication
+[2025-05-27 17:28:51.516] Sending map request: {"domainId":"8093f9bf-c374-4162-ab74-ab61949627f1","domainServerUrl":"https:\/\/domain-server-us-east-1.aukiverse.com","height":0.1,"fileType":"stcm","pixelsPerMeter":20}
+[2025-05-27 17:28:51.522] Executing map download request
+[2025-05-27 17:28:53.689] Response content type: multipart/form-data; boundary=----5631337609107568595160713176
+[2025-05-27 17:28:53.960] Processing multipart/form-data response
+[2025-05-27 17:28:53.969] Found boundary: ------5631337609107568595160713176
+[2025-05-27 17:28:53.982] Split response into 4 parts
+[2025-05-27 17:28:53.987] Found img part in multipart response
+[2025-05-27 17:28:53.999] Extracted base64 data of length: 662060
+[2025-05-27 17:28:54.022] Successfully decoded 662060 bytes of base64 data to 496544 bytes of binary STCM data
+[2025-05-27 17:28:54.028] STCM map saved to: /storage/emulated/0/Download/CactusAssistant/map.stcm
+[2025-05-27 17:28:54.032] Using SLAM API base URL: http://127.0.0.1:1448
+[2025-05-27 17:28:54.037] Clearing old POIs and map data
+[2025-05-27 17:28:54.047] Clear POIs response code: 200
+[2025-05-27 17:28:54.226] Clear map response code: 200
+[2025-05-27 17:28:54.234] Uploading new map: /storage/emulated/0/Download/CactusAssistant/map.stcm
+[2025-05-27 17:28:54.254] Uploaded 496544 bytes
+2025-05-27T09:28:54.530Z: Map update complete
+2025-05-27T09:28:54.535Z: Loading products...
 [CactusModule] getProducts called
 [CactusModule] Initializing CactusModule
 [CactusModule] Config loaded - Backend URL: set, Identity: set, Password: set, Domain ID: set
 [CactusModule] Attempting authentication
 [CactusModule] Authenticating with URL: https://cactus-backend-0.prod.lookingglassprotocol.com/api/collections/users/auth-with-password
-[2025-05-27 16:46:42.587] Upload map response code: 200
-[2025-05-27 16:46:42.591] Found homedock_qr_id: 2ZWHV5L6I04, getting pose data
-[2025-05-27 16:46:42.598] Getting pose data for QR ID: 2ZWHV5L6I04
-[2025-05-27 16:46:42.606] Fetching lighthouse data for QR ID: 2ZWHV5L6I04 from domain server: https://domain-server-us-east-1.aukiverse.com
+[2025-05-27 17:28:55.310] Upload map response code: 200
+[2025-05-27 17:28:55.313] Found homedock_qr_id: 2ZWHV5L6I04, getting pose data
+[2025-05-27 17:28:55.316] Getting pose data for QR ID: 2ZWHV5L6I04
+[2025-05-27 17:28:55.321] Fetching lighthouse data for QR ID: 2ZWHV5L6I04 from domain server: https://domain-server-us-east-1.aukiverse.com
 [CactusModule] Authentication successful
 [CactusModule] Authentication successful, got token
 [CactusModule] Getting domain collection ID from URL: https://cactus-backend-0.prod.lookingglassprotocol.com/api/collections/Domains/records?filter=(DomainID='8093f9bf-c374-4162-ab74-ab61949627f1')
-[2025-05-27 16:46:43.606] Get lighthouses response code: 200
 [CactusModule] Found domain collection ID: cgne5h3ujx1g8q2
+[2025-05-27 17:28:56.353] Get lighthouses response code: 200
 [CactusModule] Got domain collection ID: cgne5h3ujx1g8q2
 [CactusModule] Getting ESL data from URL: https://cactus-backend-0.prod.lookingglassprotocol.com/api/collections/ESLDomainData/records?filter=(domain='cgne5h3ujx1g8q2')&perPage=100000
-[2025-05-27 16:46:43.722] Found 'poses' field with 64 items
-[2025-05-27 16:46:43.726] Found matching lighthouse with short_id: 2ZWHV5L6I04
-[2025-05-27 16:46:43.730] Transformed coordinates: Original (px=0.12365669757127762, py=0.0, pz=-1.9286682605743408) -> Transformed (px=0.12365669757127762, py=1.9286682605743408, pz=0.0)
-[2025-05-27 16:46:43.732] Converted quaternion (rx=-0.7070834125222052, ry=0.005742730586745238, rz=0.0057427317661111555, rw=0.7070835097873683) -> yaw=3.14
-[2025-05-27 16:46:43.735] Saved homedock data to preferences: x=0.12365669757127762, y=1.9286682605743408, z=0.0, yaw=3.14
-[2025-05-27 16:46:43.740] Setting home dock from QR data: x=0.12365669757127762, y=1.9286682605743408, z=0.0, yaw=3.14
-[2025-05-27 16:46:43.748] Clear home docks response code: 200
-[2025-05-27 16:46:43.760] Set home dock response code: 200
-[2025-05-27 16:46:43.764] Setting robot pose from QR data: x=-0.07634304877423029, y=1.9286682605743408, z=3.185305832973657E-4, yaw=3.14
-[2025-05-27 16:46:43.772] Set pose response code: 200
-[2025-05-27 16:46:43.776] Saving persistent map
-[2025-05-27 16:46:43.808] Save persistent map response code: 200
-[2025-05-27 16:46:43.813] Map processing completed successfully
+[2025-05-27 17:28:56.446] Found 'poses' field with 64 items
+[2025-05-27 17:28:56.452] Found matching lighthouse with short_id: 2ZWHV5L6I04
+[2025-05-27 17:28:56.455] Transformed coordinates: Original (px=0.12365669757127762, py=0.0, pz=-1.9286682605743408) -> Transformed (px=0.12365669757127762, py=1.9286682605743408, pz=0.0)
+[2025-05-27 17:28:56.458] Converted quaternion (rx=-0.7070834125222052, ry=0.005742730586745238, rz=0.0057427317661111555, rw=0.7070835097873683) -> yaw=3.14
+[2025-05-27 17:28:56.462] Saved homedock data to preferences: x=0.12365669757127762, y=1.9286682605743408, z=0.0, yaw=3.14
+[2025-05-27 17:28:56.467] Setting home dock from QR data: x=0.12365669757127762, y=1.9286682605743408, z=0.0, yaw=3.14
+[2025-05-27 17:28:56.479] Clear home docks response code: 200
+[2025-05-27 17:28:56.490] Set home dock response code: 200
+[2025-05-27 17:28:56.495] Setting robot pose from QR data: x=-0.07634304877423029, y=1.9286682605743408, z=3.185305832973657E-4, yaw=3.14
+[2025-05-27 17:28:56.510] Set pose response code: 200
+[2025-05-27 17:28:56.512] Saving persistent map
+[2025-05-27 17:28:56.558] Save persistent map response code: 200
+[2025-05-27 17:28:56.563] Map processing completed successfully
 [CactusModule] Retrieved 282 ESL items
 [CactusModule] Got ESL data, count: 282
 [CactusModule] Getting CSV info from DomainBarcodeNames
@@ -102,33 +102,33 @@
 [CactusModule] Missing product name for ESL code: 044600009384
 [CactusModule] (additional missing products not logged)
 [CactusModule] Successfully matched 272 products, 10 missing
-2025-05-27T08:46:47.940Z: Loaded 282 products
-2025-05-27T08:46:47.944Z: Validating waypoints...
-2025-05-27T08:46:47.954Z: Config waypoints: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"Patrol Point 1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"Patrol Point 2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"Patrol Point 3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"Patrol Point 4"}]
-2025-05-27T08:46:47.973Z: Initial POIs fetch: []
-2025-05-27T08:46:47.981Z: No POIs found, waiting for initialization...
-2025-05-27T08:46:50.023Z: POIs after initialization: []
-2025-05-27T08:46:50.032Z: Found POI names: []
-2025-05-27T08:46:50.043Z: Valid POI names: []
-2025-05-27T08:46:50.056Z: POI validation error: Missing waypoints: Patrol Point 1, Patrol Point 2, Patrol Point 3, Patrol Point 4
-2025-05-27T08:46:50.063Z: Clearing and reinitializing POIs...
-2025-05-27T08:46:50.124Z: POIs have been reset and reinitialized
-2025-05-27T08:46:50.138Z: POIs after reset: [{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"Patrol Point 4"},"id":"0b05b7bf-b158-4a3d-8412-4d673068ee8f"},{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"Patrol Point 2"},"id":"7a3b51e1-17d7-4ad6-8e1a-45362b2935a5"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"Patrol Point 3"},"id":"a1a33dd3-39e3-4e6e-8433-1b8e80989ebe"},{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"Patrol Point 1"},"id":"a7b66bf4-3873-48de-9bd1-eac635cfc9a8"}]
-2025-05-27T08:46:51.160Z: Initialization complete, transitioning to main screen...
-2025-05-27T08:46:51.840Z: Patrol state changed to: inactive
-2025-05-27T08:46:51.841Z: MainScreen mounted. Promotion state: active=false, cancelled=false, currentPointIndex=0, remountFromConfig=false
-2025-05-27T08:46:51.841Z: No active promotion detected on mount
-2025-05-27T08:46:52.113Z: Performing initial token validation
-2025-05-27T08:46:52.115Z: Performing initial health check in MainScreen...
-2025-05-27T08:46:52.227Z: Proactively validating authentication token
-2025-05-27T08:46:52.228Z: Initial health check response: {
+2025-05-27T09:28:59.854Z: Loaded 282 products
+2025-05-27T09:28:59.862Z: Validating waypoints...
+2025-05-27T09:28:59.874Z: Config waypoints: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"Patrol Point 1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"Patrol Point 2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"Patrol Point 3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"Patrol Point 4"}]
+2025-05-27T09:28:59.900Z: Initial POIs fetch: []
+2025-05-27T09:28:59.906Z: No POIs found, waiting for initialization...
+2025-05-27T09:29:01.935Z: POIs after initialization: []
+2025-05-27T09:29:01.942Z: Found POI names: []
+2025-05-27T09:29:01.951Z: Valid POI names: []
+2025-05-27T09:29:01.960Z: POI validation error: Missing waypoints: Patrol Point 1, Patrol Point 2, Patrol Point 3, Patrol Point 4
+2025-05-27T09:29:01.968Z: Clearing and reinitializing POIs...
+2025-05-27T09:29:02.039Z: POIs have been reset and reinitialized
+2025-05-27T09:29:02.063Z: POIs after reset: [{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"Patrol Point 1"},"id":"21993d55-4ee8-4e81-987d-326317a6d6ac"},{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"Patrol Point 2"},"id":"222d8199-9942-4fb6-bcf6-d9c92fe080a2"},{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"Patrol Point 4"},"id":"2ca684fa-0bfc-487b-82ae-4c3971abfd81"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"Patrol Point 3"},"id":"4599775c-362b-4a02-b928-054af97beb15"}]
+2025-05-27T09:29:03.081Z: Initialization complete, transitioning to main screen...
+2025-05-27T09:29:03.852Z: Patrol state changed to: inactive
+2025-05-27T09:29:03.853Z: MainScreen mounted. Promotion state: active=false, cancelled=false, currentPointIndex=0, remountFromConfig=false
+2025-05-27T09:29:03.853Z: No active promotion detected on mount
+2025-05-27T09:29:04.155Z: Performing initial token validation
+2025-05-27T09:29:04.156Z: Performing initial health check in MainScreen...
+2025-05-27T09:29:04.161Z: Proactively validating authentication token
+2025-05-27T09:29:04.277Z: Initial health check response: {
   "deviceFound": true,
   "status": "Robot health check successful",
   "slamApiAvailable": true,
   "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
   "responseCode": 200
 }
-2025-05-27T08:46:52.228Z: Parsed health check response: {
+2025-05-27T09:29:04.277Z: Parsed health check response: {
   "baseError": [],
   "hasDepthCameraDisconnected": false,
   "hasError": false,
@@ -138,40 +138,40 @@
   "hasSystemEmergencyStop": false,
   "hasWarning": false
 }
-2025-05-27T08:46:52.229Z: Initial health check successful
-[2025-05-27 16:46:52.261] Starting token validation...
-[2025-05-27 16:46:52.264] Domain info from storage: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","created_at":"2024-02-02T00:35:47.24977Z","updated_at":"2025-05-02T06:00:55.444308Z","claimed_by_kazm_id":null,"owner_wallet_address":"","access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsiZG9tYWluOnJ3Il0sImRvbWFpbl9pZCI6IjgwOTNmOWJmLWMzNzQtNDE2Mi1hYjc0LWFiNjE5NDk2MjdmMSIsIm9yZyI6ImNiYWM0MGVmLTc0NTItNDA4ZS04MTdiLWFmZDRlOTEzYWQwYyIsInR5cGUiOiJ1c2VyLWFjY2VzcyIsImlzcyI6ImRkcyIsInN1YiI6IjNlMDNlMjk4LWY0NzEtNDk4Ni05YjEwLTgzOTlmMzUzMDYyMCIsImF1ZCI6WyJkZHMiLCJodHRwczovL2RvbWFpbi1zZXJ2ZXItdXMtZWFzdC0xLmF1a2l2ZXJzZS5jb20iXSwiZXhwIjoxNzQ4MzM5MTk4LCJpYXQiOjE3NDgzMzU1OTh9.PZTl7dbhNsON28peVsz6D6fKY8tkjQCI-S2qGtLyd0Lwr__J15WZ2_AsVPlOokvCjvF5-2DL8bFU18AuBDeFqQ","domain_server":{"id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","organization_id":"00000000-0000-0000-0000-000000000001","name":"node-c1349ff69a9f4d46a6b","url":"https://domain-server-us-east-1.aukiverse.com","version":"v0.5.37","status":"online","created_at":"2024-01-18T09:08:31.358792Z","updated_at":"2025-05-26T09:17:22.865415Z","redirect_url":null,"mode":"public","variants":["auki"],"description":"","staking_status":"Staked","ip":"52.45.94.183","latitude":37.751,"longitude":-97.822,"asn":16509,"h3_cell_index":"8226e7fffffffff","cloud_region":""}}
-[2025-05-27 16:46:52.268] Re-authenticating with email: phil+aukilabs@aukilabs.com, domainId: 8093f9bf-c374-4162-ab74-ab61949627f1
-[2025-05-27 16:46:52.273] Posemesh user login URL: https://api.auki.network/user/login
-2025-05-27T08:46:52.662Z: Auto-promotion disabled, not starting inactivity timer after reset
-2025-05-27T08:46:52.679Z: Touch detected, reset inactivity timer processed
-[2025-05-27 16:46:53.209] Posemesh user login response code: 200
-[2025-05-27 16:46:53.220] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDgzMzkyMTIsImlhdC...
-[2025-05-27 16:46:53.227] Posemesh token received (first 10 chars): eyJhbGciOi...
-[2025-05-27 16:46:53.234] DDS authentication URL: https://api.auki.network/service/domains-access-token
-[2025-05-27 16:46:53.873] DDS authentication response code: 200
-[2025-05-27 16:46:53.881] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4MzM5MjEzLCJpYXQiOjE3NDgzMzU2MTMsImp0aSI6ImIyNzAwN2I4LWYyYzEtNDQ2OC1hYTk0LTdiOTI2YTFkYWZlNCJ9.hw5_pL67eSLullNOCFhmo8i3mgBPTzH2mZric6gwE7TX1dlWbgFY0BL5wwwTRzTR0Lm2iW6vek6b-hZNcjEkmw"}
-[2025-05-27 16:46:53.894] DDS token received (first 10 chars): eyJhbGciOi...
-[2025-05-27 16:46:53.901] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
-[2025-05-27 16:46:54.698] Domain authentication response code: 200
-[2025-05-27 16:46:54.709] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
-[2025-05-27 16:46:54.715] Updated domain info after token validation
-[2025-05-27 16:46:54.721] Token validation successful via re-authentication
-2025-05-27T08:46:54.725Z: Token validation successful: {"message":"Token is valid","valid":true}
-2025-05-27T08:46:55.662Z: Config screen opened, cleared inactivity timer
-2025-05-27T08:46:55.870Z: Setting remountFromConfig flag to true
-2025-05-27T08:46:55.871Z: Component unmounted, waypoint sequence cancelled
-2025-05-27T08:46:55.872Z: Cleared token validation interval
-2025-05-27T08:46:55.873Z: Cleared token refresh interval
-2025-05-27T08:46:55.876Z: Starting health check...
-2025-05-27T08:46:56.111Z: Health check response: {
+2025-05-27T09:29:04.277Z: Initial health check successful
+[2025-05-27 17:29:04.298] Starting token validation...
+[2025-05-27 17:29:04.303] Domain info from storage: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","created_at":"2024-02-02T00:35:47.24977Z","updated_at":"2025-05-02T06:00:55.444308Z","claimed_by_kazm_id":null,"owner_wallet_address":"","access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsiZG9tYWluOnJ3Il0sImRvbWFpbl9pZCI6IjgwOTNmOWJmLWMzNzQtNDE2Mi1hYjc0LWFiNjE5NDk2MjdmMSIsIm9yZyI6ImNiYWM0MGVmLTc0NTItNDA4ZS04MTdiLWFmZDRlOTEzYWQwYyIsInR5cGUiOiJ1c2VyLWFjY2VzcyIsImlzcyI6ImRkcyIsInN1YiI6IjNlMDNlMjk4LWY0NzEtNDk4Ni05YjEwLTgzOTlmMzUzMDYyMCIsImF1ZCI6WyJkZHMiLCJodHRwczovL2RvbWFpbi1zZXJ2ZXItdXMtZWFzdC0xLmF1a2l2ZXJzZS5jb20iXSwiZXhwIjoxNzQ4MzQxNzMxLCJpYXQiOjE3NDgzMzgxMzF9.5x2pSkWXICPCxLer7SZTStiXhcXZJWHa-sZKY406YcPgfsuZde3c1m67gy4W1GJQiRldh5x9SGmDXiEek7LDFQ","domain_server":{"id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","organization_id":"00000000-0000-0000-0000-000000000001","name":"node-c1349ff69a9f4d46a6b","url":"https://domain-server-us-east-1.aukiverse.com","version":"v0.5.37","status":"online","created_at":"2024-01-18T09:08:31.358792Z","updated_at":"2025-05-26T09:17:22.865415Z","redirect_url":null,"mode":"public","variants":["auki"],"description":"","staking_status":"Staked","ip":"52.45.94.183","latitude":37.751,"longitude":-97.822,"asn":16509,"h3_cell_index":"8226e7fffffffff","cloud_region":""}}
+[2025-05-27 17:29:04.308] Re-authenticating with email: phil+aukilabs@aukilabs.com, domainId: 8093f9bf-c374-4162-ab74-ab61949627f1
+[2025-05-27 17:29:04.311] Posemesh user login URL: https://api.auki.network/user/login
+[2025-05-27 17:29:05.252] Posemesh user login response code: 200
+[2025-05-27 17:29:05.260] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDgzNDE3NDUsImlhdC...
+[2025-05-27 17:29:05.270] Posemesh token received (first 10 chars): eyJhbGciOi...
+[2025-05-27 17:29:05.275] DDS authentication URL: https://api.auki.network/service/domains-access-token
+2025-05-27T09:29:05.857Z: Auto-promotion disabled, not starting inactivity timer after reset
+2025-05-27T09:29:05.864Z: Touch detected, reset inactivity timer processed
+[2025-05-27 17:29:05.952] DDS authentication response code: 200
+[2025-05-27 17:29:05.958] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4MzQxNzQ1LCJpYXQiOjE3NDgzMzgxNDUsImp0aSI6IjA4MGQ1OTJlLWExODYtNGI1NS1hY2JiLWNmY2ZmNzEzYWY2ZiJ9.0DGcG3tfg1RkczLG0ap5uBw18g2-CtC7-x5SZE9kAysTNCFifse2XteTzOMjE3Kim0xYdNC4JlHn-2u7quJnJw"}
+[2025-05-27 17:29:05.964] DDS token received (first 10 chars): eyJhbGciOi...
+[2025-05-27 17:29:05.970] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
+[2025-05-27 17:29:06.680] Domain authentication response code: 200
+[2025-05-27 17:29:06.689] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
+[2025-05-27 17:29:06.693] Updated domain info after token validation
+[2025-05-27 17:29:06.699] Token validation successful via re-authentication
+2025-05-27T09:29:06.701Z: Token validation successful: {"message":"Token is valid","valid":true}
+2025-05-27T09:29:08.865Z: Config screen opened, cleared inactivity timer
+2025-05-27T09:29:09.048Z: Setting remountFromConfig flag to true
+2025-05-27T09:29:09.049Z: Component unmounted, waypoint sequence cancelled
+2025-05-27T09:29:09.049Z: Cleared token validation interval
+2025-05-27T09:29:09.050Z: Cleared token refresh interval
+2025-05-27T09:29:09.053Z: Starting health check...
+2025-05-27T09:29:09.362Z: Health check response: {
   "deviceFound": true,
   "status": "Robot health check successful",
   "slamApiAvailable": true,
   "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
   "responseCode": 200
 }
-2025-05-27T08:46:56.114Z: Parsed health check response: {
+2025-05-27T09:29:09.363Z: Parsed health check response: {
   "baseError": [],
   "hasDepthCameraDisconnected": false,
   "hasError": false,
@@ -181,24 +181,24 @@
   "hasSystemEmergencyStop": false,
   "hasWarning": false
 }
-2025-05-27T08:46:56.115Z: Connection status: Health Check OK, Message: Health Check OK
-2025-05-27T08:46:58.328Z: Promotion activated globally
-2025-05-27T08:46:58.351Z: Set robot speed to patrol mode: 0.25 m/s
-2025-05-27T08:46:58.364Z: MainScreen not mounted, promotion will start when it mounts
-2025-05-27T08:46:58.494Z: Patrol state changed to: inactive
-2025-05-27T08:46:58.495Z: MainScreen mounted. Promotion state: active=false, cancelled=false, currentPointIndex=0, remountFromConfig=true
-2025-05-27T08:46:58.496Z: Remounting after config screen, not starting promotion automatically
-2025-05-27T08:46:58.770Z: Performing initial token validation
-2025-05-27T08:46:58.771Z: Performing initial health check in MainScreen...
-2025-05-27T08:46:58.777Z: Proactively validating authentication token
-2025-05-27T08:46:58.815Z: Initial health check response: {
+2025-05-27T09:29:09.369Z: Connection status: Health Check OK, Message: Health Check OK
+2025-05-27T09:29:11.639Z: Promotion activated globally
+2025-05-27T09:29:11.655Z: Set robot speed to patrol mode: 0.25 m/s
+2025-05-27T09:29:11.660Z: MainScreen not mounted, promotion will start when it mounts
+2025-05-27T09:29:11.733Z: Patrol state changed to: inactive
+2025-05-27T09:29:11.734Z: MainScreen mounted. Promotion state: active=false, cancelled=false, currentPointIndex=0, remountFromConfig=true
+2025-05-27T09:29:11.734Z: Remounting after config screen, not starting promotion automatically
+2025-05-27T09:29:12.003Z: Performing initial token validation
+2025-05-27T09:29:12.004Z: Performing initial health check in MainScreen...
+2025-05-27T09:29:12.014Z: Proactively validating authentication token
+2025-05-27T09:29:12.097Z: Initial health check response: {
   "deviceFound": true,
   "status": "Robot health check successful",
   "slamApiAvailable": true,
   "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
   "responseCode": 200
 }
-2025-05-27T08:46:58.817Z: Parsed health check response: {
+2025-05-27T09:29:12.098Z: Parsed health check response: {
   "baseError": [],
   "hasDepthCameraDisconnected": false,
   "hasError": false,
@@ -208,25 +208,25 @@
   "hasSystemEmergencyStop": false,
   "hasWarning": false
 }
-2025-05-27T08:46:58.817Z: Initial health check successful
-[2025-05-27 16:46:58.839] Starting token validation...
-[2025-05-27 16:46:58.852] Domain info from storage: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","created_at":"2024-02-02T00:35:47.24977Z","updated_at":"2025-05-02T06:00:55.444308Z","claimed_by_kazm_id":null,"owner_wallet_address":"","access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsiZG9tYWluOnJ3Il0sImRvbWFpbl9pZCI6IjgwOTNmOWJmLWMzNzQtNDE2Mi1hYjc0LWFiNjE5NDk2MjdmMSIsIm9yZyI6ImNiYWM0MGVmLTc0NTItNDA4ZS04MTdiLWFmZDRlOTEzYWQwYyIsInR5cGUiOiJ1c2VyLWFjY2VzcyIsImlzcyI6ImRkcyIsInN1YiI6IjNlMDNlMjk4LWY0NzEtNDk4Ni05YjEwLTgzOTlmMzUzMDYyMCIsImF1ZCI6WyJkZHMiLCJodHRwczovL2RvbWFpbi1zZXJ2ZXItdXMtZWFzdC0xLmF1a2l2ZXJzZS5jb20iXSwiZXhwIjoxNzQ4MzM5MjE0LCJpYXQiOjE3NDgzMzU2MTR9.4NQfGo9mOdWenFEm4tpurbvi5zLJLeQbq0Mzbk0g0rbRnFJpzNemJkK5MbjdomDsOqO-mFExbOW9TMKbGxXehg","domain_server":{"id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","organization_id":"00000000-0000-0000-0000-000000000001","name":"node-c1349ff69a9f4d46a6b","url":"https://domain-server-us-east-1.aukiverse.com","version":"v0.5.37","status":"online","created_at":"2024-01-18T09:08:31.358792Z","updated_at":"2025-05-26T09:17:22.865415Z","redirect_url":null,"mode":"public","variants":["auki"],"description":"","staking_status":"Staked","ip":"52.45.94.183","latitude":37.751,"longitude":-97.822,"asn":16509,"h3_cell_index":"8226e7fffffffff","cloud_region":""}}
-[2025-05-27 16:46:58.857] Re-authenticating with email: phil+aukilabs@aukilabs.com, domainId: 8093f9bf-c374-4162-ab74-ab61949627f1
-[2025-05-27 16:46:58.862] Posemesh user login URL: https://api.auki.network/user/login
-[2025-05-27 16:46:59.649] Posemesh user login response code: 200
-[2025-05-27 16:46:59.655] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDgzMzkyMTksImlhdC...
-[2025-05-27 16:46:59.661] Posemesh token received (first 10 chars): eyJhbGciOi...
-[2025-05-27 16:46:59.666] DDS authentication URL: https://api.auki.network/service/domains-access-token
-[2025-05-27 16:46:59.892] DDS authentication response code: 200
-[2025-05-27 16:46:59.898] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4MzM5MjE5LCJpYXQiOjE3NDgzMzU2MTksImp0aSI6IjE5Mjk4Mzg2LTQ2MWEtNDFiNS1iMjM0LTJiNDlhZDYwNDVkZiJ9.iaexphQU1AomLHd05wluXV0FN9SH6ezOcXVJWoc39eeqjS1tKnpEknS54-HcZIrpUhMMRNhLDDUfS3r0OCafBw"}
-[2025-05-27 16:46:59.903] DDS token received (first 10 chars): eyJhbGciOi...
-[2025-05-27 16:46:59.907] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
-[2025-05-27 16:47:00.159] Domain authentication response code: 200
-[2025-05-27 16:47:00.175] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
-[2025-05-27 16:47:00.184] Updated domain info after token validation
-[2025-05-27 16:47:00.190] Token validation successful via re-authentication
-2025-05-27T08:47:00.195Z: Token validation successful: {"message":"Token is valid","valid":true}
-2025-05-27T08:47:03.020Z: Auto-promotion disabled, not starting inactivity timer after reset
-2025-05-27T08:47:03.026Z: Touch detected, reset inactivity timer processed
-2025-05-27T08:47:07.673Z: User confirmed app exit
-2025-05-27T08:47:07.733Z: App state changed from active to background
+2025-05-27T09:29:12.099Z: Initial health check successful
+[2025-05-27 17:29:12.121] Starting token validation...
+[2025-05-27 17:29:12.132] Domain info from storage: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","created_at":"2024-02-02T00:35:47.24977Z","updated_at":"2025-05-02T06:00:55.444308Z","claimed_by_kazm_id":null,"owner_wallet_address":"","access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsiZG9tYWluOnJ3Il0sImRvbWFpbl9pZCI6IjgwOTNmOWJmLWMzNzQtNDE2Mi1hYjc0LWFiNjE5NDk2MjdmMSIsIm9yZyI6ImNiYWM0MGVmLTc0NTItNDA4ZS04MTdiLWFmZDRlOTEzYWQwYyIsInR5cGUiOiJ1c2VyLWFjY2VzcyIsImlzcyI6ImRkcyIsInN1YiI6IjNlMDNlMjk4LWY0NzEtNDk4Ni05YjEwLTgzOTlmMzUzMDYyMCIsImF1ZCI6WyJkZHMiLCJodHRwczovL2RvbWFpbi1zZXJ2ZXItdXMtZWFzdC0xLmF1a2l2ZXJzZS5jb20iXSwiZXhwIjoxNzQ4MzQxNzQ2LCJpYXQiOjE3NDgzMzgxNDZ9.3nG6qb_S6zPu0XDjJmKeEginjE8Tl0ghSQepC2vx46NUMH1GuwXN9PaG3m9w0Y0pnSW1zg8Es85NH2eIi6sA2g","domain_server":{"id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","organization_id":"00000000-0000-0000-0000-000000000001","name":"node-c1349ff69a9f4d46a6b","url":"https://domain-server-us-east-1.aukiverse.com","version":"v0.5.37","status":"online","created_at":"2024-01-18T09:08:31.358792Z","updated_at":"2025-05-26T09:17:22.865415Z","redirect_url":null,"mode":"public","variants":["auki"],"description":"","staking_status":"Staked","ip":"52.45.94.183","latitude":37.751,"longitude":-97.822,"asn":16509,"h3_cell_index":"8226e7fffffffff","cloud_region":""}}
+[2025-05-27 17:29:12.147] Re-authenticating with email: phil+aukilabs@aukilabs.com, domainId: 8093f9bf-c374-4162-ab74-ab61949627f1
+[2025-05-27 17:29:12.153] Posemesh user login URL: https://api.auki.network/user/login
+[2025-05-27 17:29:13.034] Posemesh user login response code: 200
+[2025-05-27 17:29:13.042] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDgzNDE3NTIsImlhdC...
+[2025-05-27 17:29:13.052] Posemesh token received (first 10 chars): eyJhbGciOi...
+[2025-05-27 17:29:13.067] DDS authentication URL: https://api.auki.network/service/domains-access-token
+[2025-05-27 17:29:13.341] DDS authentication response code: 200
+[2025-05-27 17:29:13.346] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4MzQxNzUzLCJpYXQiOjE3NDgzMzgxNTMsImp0aSI6IjRlOGEyMTQ5LWVlYmYtNGU4ZC04N2U5LWZiMGZkODE1NTVhYSJ9.ObiKzWxRrre79ci-EYHZkxBuwLsBaBTmV0SxwB-njp1tHo5Bgjg4bR0r6VhJycc--J-vxmzeG08JPGW5gpXPEA"}
+[2025-05-27 17:29:13.350] DDS token received (first 10 chars): eyJhbGciOi...
+[2025-05-27 17:29:13.357] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
+[2025-05-27 17:29:13.607] Domain authentication response code: 200
+[2025-05-27 17:29:13.620] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
+[2025-05-27 17:29:13.632] Updated domain info after token validation
+[2025-05-27 17:29:13.642] Token validation successful via re-authentication
+2025-05-27T09:29:13.646Z: Token validation successful: {"message":"Token is valid","valid":true}
+2025-05-27T09:29:14.295Z: Auto-promotion disabled, not starting inactivity timer after reset
+2025-05-27T09:29:14.307Z: Touch detected, reset inactivity timer processed
+2025-05-27T09:29:18.873Z: User confirmed app exit
+2025-05-27T09:29:18.931Z: App state changed from active to background

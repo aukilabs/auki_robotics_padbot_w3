@@ -422,6 +422,10 @@ function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Ele
                     // First activate the promotion globally
                     await globalAny.startPromotion();
                     
+                    // Set the remountFromConfig flag to false before closing
+                    // This ensures promotion will start when MainScreen mounts
+                    globalAny.remountFromConfig = false;
+                    
                     // Then close the config screen
                     onClose();
                   } else {
