@@ -1091,6 +1091,41 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     initPromotion();
   }, []);
 
+  // Function to handle battery status updates
+  const handleBatteryStatusUpdate = (event: any) => {
+    const { batteryPercentage, dockingStatus, isCharging } = event;
+    setBatteryLevel(batteryPercentage);
+
+    // If not docked and battery is low
+    if (dockingStatus !== 'on_dock' && batteryPercentage <= 20 && !isLowBatteryAlertShown) {
+      setIsLowBatteryAlertShown(true);
+      Alert.alert(
+        'Battery Level Low',
+        'Battery level is critically low. The robot will return to the charging dock.',
+        [
+          {
+            text: 'Cancel',
+            onPress: () => {
+              setIsLowBatteryAlertShown(false);
+            },
+            style: 'cancel'
+          }
+        ],
+        { cancelable: true }
+      );
+
+      // Use handleGoHome instead of direct goHome call
+      handleGoHome()
+        .then(() => LogUtils.writeDebugToFile('Returning home due to low battery'))
+        .catch(error => LogUtils.writeDebugToFile(`Failed to return home due to low battery: ${error}`));
+    }
+
+    // If charging and battery is above 80%, clear the alert
+    if (isCharging && batteryPercentage >= 80 && isLowBatteryAlertShown) {
+      setIsLowBatteryAlertShown(false);
+    }
+  };
+
   return (
     <SafeAreaView 
       style={styles.container}
