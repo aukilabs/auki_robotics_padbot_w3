@@ -179,7 +179,14 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
           // Read patrol points file
           const patrolPointsContent = await NativeModules.FileUtils.readFile('patrol_points.json');
           if (patrolPointsContent) {
-            await LogUtils.writeDebugToFile(`Patrol Points Configuration:\n${patrolPointsContent}`);
+            const patrolPoints = JSON.parse(patrolPointsContent);
+            const formattedPoints = patrolPoints.patrol_points.map((point: any) => ({
+              yaw: point.yaw,
+              y: point.y,
+              x: point.x,
+              name: point.name
+            }));
+            await LogUtils.writeDebugToFile(`Patrol Points Configuration: ${JSON.stringify(formattedPoints)}`);
           }
         }
         try {
