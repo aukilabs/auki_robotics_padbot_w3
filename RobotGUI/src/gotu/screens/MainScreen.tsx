@@ -1407,8 +1407,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     // In the new system:
     // x remains the same
     // y becomes 0 (ground plane)
-    // z becomes the old y, but inverted
-    const z = -y; // Invert y to get z
+    // z becomes the old y (removed negative sign on 2024-03-19 for semantic shelves)
+    const z = y; // Use y directly for z without inversion
     
     // Convert yaw to quaternion
     const quaternion = yawToQuaternion(yaw);
