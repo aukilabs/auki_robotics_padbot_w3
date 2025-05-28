@@ -765,7 +765,6 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           await LogUtils.writeDebugToFile('Setting navigation status to ARRIVED');
           
           // Only start the inactivity timer if auto-promotion is enabled in the configuration
-          // This prevents promotion from automatically starting after a user-initiated navigation
           try {
             const autoPromotionEnabled = await NativeModules.ConfigManagerModule.getAutoPromotionEnabled();
             if (autoPromotionEnabled) {
@@ -773,10 +772,16 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
               startInactivityTimer();
             } else {
               await LogUtils.writeDebugToFile('Auto-promotion disabled, not starting inactivity timer');
+              // Ensure promotion is cancelled when auto-promotion is disabled
+              promotionCancelled = true;
+              globalAny.promotionActive = false;
             }
           } catch (error) {
             // Default to not starting promotion if we can't check the config
             await LogUtils.writeDebugToFile('Error checking auto-promotion config, defaulting to not starting timer');
+            // Ensure promotion is cancelled when config check fails
+            promotionCancelled = true;
+            globalAny.promotionActive = false;
           }
           
           // Add a small delay to ensure state updates are processed
