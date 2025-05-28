@@ -171,16 +171,18 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
         const sortedProducts = [...products].sort((a, b) => a.name.localeCompare(b.name));
         await LogUtils.writeDebugToFile(`Loaded ${products.length} products`);
         
+        let formattedPoints: any[] = [];
+        
         // Then check POIs against config
         if (isMounted) {
           setLoadingText('Validating waypoints...');
           await LogUtils.writeDebugToFile('Validating waypoints...');
           
-          // Read patrol points file
+          
           const patrolPointsContent = await NativeModules.FileUtils.readFile('patrol_points.json');
           if (patrolPointsContent) {
             const patrolPoints = JSON.parse(patrolPointsContent);
-            const formattedPoints = patrolPoints.patrol_points.map((point: any) => ({
+            formattedPoints = patrolPoints.patrol_points.map((point: any) => ({
               yaw: point.yaw,
               y: point.y,
               x: point.x,
@@ -190,12 +192,13 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
           }
         }
         try {
-          // Get config first to know what POIs we expect
           const config = await NativeModules.DomainUtils.getConfig();
-          await LogUtils.writeDebugToFile(`Config waypoints: ${JSON.stringify(config.patrol_points)}`);
+          // Use formattedPoints instead of config.patrol_points
+          const configPatrolPoints = formattedPoints;
+          await LogUtils.writeDebugToFile(`Config waypoints: ${JSON.stringify(configPatrolPoints)}`);
           
           // Get waypoints from config
-          const configPatrolPoints = Array.isArray(config.patrol_points) ? config.patrol_points : [];
+          const configPatrolPointsArray = Array.isArray(configPatrolPoints) ? configPatrolPoints : [];
           
           // Get current POIs
           let pois = await NativeModules.SlamtecUtils.getPOIs();
@@ -221,9 +224,9 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
           
           // Check for mismatches
           const extraPOIs = validPoiNames.filter((name: string) => 
-            !configPatrolPoints.find((cp: { name: string }) => cp.name === name)
+            !configPatrolPointsArray.find((cp: { name: string }) => cp.name === name)
           );
-          const missingPoints = configPatrolPoints.filter((cp: { name: string }) => 
+          const missingPoints = configPatrolPointsArray.filter((cp: { name: string }) => 
             !validPoiNames.includes(cp.name)
           );
           

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import android.graphics.BitmapFactory;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.robotgui.FileUtilsModule;
 
 public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
     private static final String TAG = "SlamtecUtilsModule";
@@ -338,8 +339,93 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
         });
     }
 
+    private void initializeDefaultPOIs(Promise promise) {
+        try {
+            Log.d(TAG, "Starting POI initialization...");
+            logToFile("Starting POI initialization...");
+            // Get the ReactApplicationContext
+            ReactApplicationContext context = getReactApplicationContext();
+            if (context != null) {
+                Log.d(TAG, "Got ReactApplicationContext, reading patrol_points.json from assets");
+                logToFile("Got ReactApplicationContext, reading patrol_points.json from assets");
+                try {
+                    // Read patrol points from assets
+                    java.io.InputStream is = context.getAssets().open("Download/Cactus/config/patrol_points.json");
+                    int size = is.available();
+                    byte[] buffer = new byte[size];
+                    is.read(buffer);
+                    is.close();
+                    String patrolPointsContent = new String(buffer, "UTF-8");
+                    Log.d(TAG, "Read patrol points content: " + patrolPointsContent);
+                    logToFile("Read patrol points content: " + patrolPointsContent);
+
+                    if (patrolPointsContent != null) {
+                        JSONObject patrolPoints = new JSONObject(patrolPointsContent);
+                        JSONObject patrol = patrolPoints.getJSONObject("patrol");
+                        Log.d(TAG, "Parsed patrol points JSON: " + patrol.toString());
+                        logToFile("Parsed patrol points JSON: " + patrol.toString());
+                        
+                        // Initialize all patrol points from JSON
+                        for (int i = 1; i <= 4; i++) {
+                            String pointKey = "point" + i;
+                            if (patrol.has(pointKey)) {
+                                JSONArray pointData = patrol.getJSONArray(pointKey);
+                                if (pointData.length() >= 3) {
+                                    double x = pointData.getDouble(0);
+                                    double y = pointData.getDouble(1);
+                                    double yaw = pointData.getDouble(2);
+                                    String logMsg = String.format("Creating POI %d at [%.2f, %.2f, %.2f]", i, x, y, yaw);
+                                    Log.d(TAG, logMsg);
+                                    logToFile(logMsg);
+                                    createPOI(
+                                        x,  // x
+                                        y,  // y
+                                        yaw,  // yaw
+                                        "Patrol Point " + i,
+                                        promise
+                                    );
+                                } else {
+                                    String errorMsg = "Point " + i + " data is incomplete, expected 3 values but got " + pointData.length();
+                                    Log.e(TAG, errorMsg);
+                                    logToFile("ERROR: " + errorMsg);
+                                }
+                            } else {
+                                String errorMsg = "Point " + i + " not found in patrol points JSON";
+                                Log.e(TAG, errorMsg);
+                                logToFile("ERROR: " + errorMsg);
+                            }
+                        }
+                    } else {
+                        String errorMsg = "Patrol points content is null";
+                        Log.e(TAG, errorMsg);
+                        logToFile("ERROR: " + errorMsg);
+                    }
+                    Log.d(TAG, "POI initialization complete");
+                    logToFile("POI initialization complete");
+                } catch (Exception e) {
+                    String errorMsg = "Error reading patrol points file: " + e.getMessage();
+                    Log.e(TAG, errorMsg);
+                    logToFile("ERROR: " + errorMsg);
+                    e.printStackTrace();
+                }
+            } else {
+                String errorMsg = "ReactApplicationContext is null";
+                Log.e(TAG, errorMsg);
+                logToFile("ERROR: " + errorMsg);
+            }
+        } catch (Exception e) {
+            String errorMsg = "Error initializing POIs: " + e.getMessage();
+            Log.e(TAG, errorMsg);
+            logToFile("ERROR: " + errorMsg);
+            e.printStackTrace();
+        }
+    }
+
     private void createPOI(double x, double y, double yaw, String displayName, Promise promise) {
         try {
+            String logMsg = String.format("Creating POI '%s' at [%.2f, %.2f, %.2f]", displayName, x, y, yaw);
+            Log.d(TAG, logMsg);
+            logToFile(logMsg);
             String url = BASE_URL + "/api/core/artifact/v1/pois";
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             
@@ -354,6 +440,9 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
                     .put("type", "")
                     .put("group", ""));
 
+            Log.d(TAG, "POI request body: " + body.toString());
+            logToFile("POI request body: " + body.toString());
+
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setDoOutput(true);
@@ -363,40 +452,67 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
                 os.write(input, 0, input.length);
             }
 
-            if (connection.getResponseCode() >= 200 && connection.getResponseCode() <= 204) {
-                Log.d(TAG, "Successfully created POI: " + displayName);
+            int responseCode = connection.getResponseCode();
+            if (responseCode >= 200 && responseCode <= 204) {
+                String successMsg = "Successfully created POI: " + displayName + " (response code: " + responseCode + ")";
+                Log.d(TAG, successMsg);
+                logToFile(successMsg);
             } else {
-                Log.e(TAG, "Failed to create POI: " + displayName + ", code: " + connection.getResponseCode());
+                String errorMsg = "Failed to create POI: " + displayName + ", code: " + responseCode;
+                Log.e(TAG, errorMsg);
+                logToFile("ERROR: " + errorMsg);
+                // Try to read error response
+                try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                        new java.io.InputStreamReader(connection.getErrorStream()))) {
+                    String line;
+                    StringBuilder errorResponse = new StringBuilder();
+                    while ((line = reader.readLine()) != null) {
+                        errorResponse.append(line);
+                    }
+                    Log.e(TAG, "Error response: " + errorResponse.toString());
+                    logToFile("ERROR response: " + errorResponse.toString());
+                } catch (Exception e) {
+                    Log.e(TAG, "Could not read error response: " + e.getMessage());
+                    logToFile("ERROR: Could not read error response: " + e.getMessage());
+                }
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error creating POI: " + e.getMessage());
+            String errorMsg = "Error creating POI: " + e.getMessage();
+            Log.e(TAG, errorMsg);
+            logToFile("ERROR: " + errorMsg);
+            e.printStackTrace();
         }
     }
 
-    private void initializeDefaultPOIs(Promise promise) {
+    private void logToFile(String message) {
         try {
-            Log.d(TAG, "Starting POI initialization...");
-            // Initialize all patrol points from config
-            for (int i = 1; i <= 4; i++) {
-                String pointKey = "patrol.point" + i;
-                double[] poiData = configManager.getDoubleArray(pointKey);
-                if (poiData != null && poiData.length >= 3) {
-                    Log.d(TAG, String.format("Creating POI %d at [%.2f, %.2f, %.2f]", i, poiData[0], poiData[1], poiData[2]));
-                    createPOI(
-                        poiData[0],  // x
-                        poiData[1],  // y
-                        poiData[2],  // yaw
-                        "Patrol Point " + i,
-                        promise
-                    );
-                } else {
-                    Log.d(TAG, "No valid POI data for point " + i);
-                }
-            }
-            Log.d(TAG, "POI initialization complete");
+            FileUtilsModule fileUtils = new FileUtilsModule(getReactApplicationContext());
+            fileUtils.appendToFile("debug_log.txt", message, new Promise() {
+                @Override
+                public void resolve(Object value) {}
+                @Override
+                public void reject(String code, String message) {}
+                @Override
+                public void reject(String code, Throwable e) {}
+                @Override
+                public void reject(String code, String message, Throwable e) {}
+                @Override
+                public void reject(Throwable e) {}
+                @Override
+                public void reject(String code) {}
+                @Override
+                public void reject(String code, WritableMap userInfo) {}
+                @Override
+                public void reject(String code, String message, WritableMap userInfo) {}
+                @Override
+                public void reject(String code, String message, Throwable e, WritableMap userInfo) {}
+                @Override
+                public void reject(String code, Throwable e, WritableMap userInfo) {}
+                @Override
+                public void reject(Throwable e, WritableMap userInfo) {}
+            });
         } catch (Exception e) {
-            Log.e(TAG, "Error initializing POIs: " + e.getMessage());
-            e.printStackTrace();
+            Log.e(TAG, "Error writing to debug log: " + e.getMessage());
         }
     }
 
