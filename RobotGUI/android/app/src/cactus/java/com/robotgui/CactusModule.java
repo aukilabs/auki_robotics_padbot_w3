@@ -2,6 +2,7 @@ package com.robotgui;
 
 import android.util.Log;
 import com.facebook.react.bridge.*;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import java.net.HttpURLConnection;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import androidx.annotation.Nullable;
 
 public class CactusModule extends ReactContextBaseJavaModule {
     private static final String TAG = "CactusModule";
@@ -90,18 +92,35 @@ public class CactusModule extends ReactContextBaseJavaModule {
                     this.backendUrl = configManager.getNestedString("cactus.backend_url", "");
                     this.identity = configManager.getNestedString("cactus.identity", "");
                     this.password = configManager.getNestedString("cactus.password", "");
-                    this.domainId = configManager.getNestedString("cactus.domain_id", "");
-                    this.storeBackendUrl = configManager.getNestedString("cactus.store_backend_url", "");
                     
-                    String configStatus = "Config loaded - Backend URL: " + (backendUrl.isEmpty() ? "empty" : "set") + 
-                              ", Identity: " + (identity.isEmpty() ? "empty" : "set") + 
-                              ", Password: " + (password.isEmpty() ? "empty" : "set") +
-                              ", Domain ID: " + (domainId.isEmpty() ? "empty" : "set") +
-                              ", Store Backend URL: " + (storeBackendUrl.isEmpty() ? "empty" : "set");
-                    Log.d(TAG, configStatus);
-                    logToFile(configStatus);
-                    
-                    isInitialized = true;
+                    // Get domain ID directly from shared preferences
+                    ReactApplicationContext context = getReactApplicationContext();
+                    if (context != null) {
+                        android.content.SharedPreferences prefs = context.getSharedPreferences("DomainAuth", android.content.Context.MODE_PRIVATE);
+                        this.domainId = prefs.getString("domain_id", "");
+                        Log.d(TAG, "Got domain ID from shared preferences: " + domainId);
+                        logToFile("Got domain ID from shared preferences: " + domainId);
+                        
+                        if (!domainId.isEmpty()) {
+                            storeBackendUrl = configManager.getNestedString("cactus.store_backend_url", "");
+                            
+                            String configStatus = "Config loaded - Backend URL: " + (backendUrl.isEmpty() ? "empty" : "set") + 
+                                      ", Identity: " + (identity.isEmpty() ? "empty" : "set") + 
+                                      ", Password: " + (password.isEmpty() ? "empty" : "set") +
+                                      ", Domain ID: " + (domainId.isEmpty() ? "empty" : "set") +
+                                      ", Store Backend URL: " + (storeBackendUrl.isEmpty() ? "empty" : "set");
+                            Log.d(TAG, configStatus);
+                            logToFile(configStatus);
+                            
+                            isInitialized = true;
+                        } else {
+                            Log.e(TAG, "Domain ID is empty");
+                            logToFile("ERROR: Domain ID is empty");
+                        }
+                    } else {
+                        Log.e(TAG, "React context is null");
+                        this.domainId = "";
+                    }
                 } else {
                     Log.e(TAG, "ConfigManager is null during initialization");
                     logToFile("ERROR: ConfigManager is null during initialization");
@@ -462,7 +481,7 @@ public class CactusModule extends ReactContextBaseJavaModule {
         if (!isInitialized) {
             Log.e(TAG, "CactusModule not properly initialized");
             logToFile("ERROR: CactusModule not properly initialized");
-            promise.reject("INIT_ERROR", "CactusModule not properly initialized");
+            mainHandler.post(() -> promise.reject("INIT_ERROR", "CactusModule not properly initialized"));
             return;
         }
 
@@ -528,7 +547,6 @@ public class CactusModule extends ReactContextBaseJavaModule {
                 } catch (Exception e) {
                     Log.e(TAG, "Error getting product data from CSV: " + e.getMessage(), e);
                     logToFile("ERROR getting product data from CSV: " + e.getMessage());
-                    // NO FALLBACK - Reject with error instead
                     mainHandler.post(() -> promise.reject("CSV_ERROR", "Error getting product data from CSV: " + e.getMessage()));
                     return;
                 }
