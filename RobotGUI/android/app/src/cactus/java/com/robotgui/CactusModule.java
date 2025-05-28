@@ -34,6 +34,8 @@ public class CactusModule extends ReactContextBaseJavaModule {
     private String storeBackendUrl;
     private boolean isInitialized = false;
     private static final String DEBUG_LOG_FILENAME = "debug_log.txt";
+    private String productNamesJson;
+    private String positionsResponse;
 
     public CactusModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -383,7 +385,10 @@ public class CactusModule extends ReactContextBaseJavaModule {
                             apiResponse.append(responseLine.trim());
                         }
                     }
-                    logToFile("API Response: " + apiResponse.toString());
+                    // Store the raw response string
+                    productNamesJson = apiResponse.toString();
+                    logToFile("API Response: " + productNamesJson);
+                    Log.d(TAG, "Stored product names response: " + (productNamesJson != null ? "success" : "failed"));
                 } else {
                     StringBuilder errorResponse = new StringBuilder();
                     try (BufferedReader br = new BufferedReader(
@@ -429,15 +434,18 @@ public class CactusModule extends ReactContextBaseJavaModule {
                 
                 // Get response
                 if (positionsConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    StringBuilder positionsResponse = new StringBuilder();
+                    StringBuilder positionsResponseBuilder = new StringBuilder();
                     try (BufferedReader br = new BufferedReader(
                             new InputStreamReader(positionsConnection.getInputStream(), "utf-8"))) {
                         String responseLine;
                         while ((responseLine = br.readLine()) != null) {
-                            positionsResponse.append(responseLine.trim());
+                            positionsResponseBuilder.append(responseLine.trim());
                         }
                     }
-                    logToFile("Positions API Response: " + positionsResponse.toString());
+                    // Store the parsed positions response
+                    positionsResponse = new JSONObject(positionsResponseBuilder.toString()).toString();
+                    logToFile("Positions API Response: " + positionsResponse);
+                    Log.d(TAG, "Stored positions response: " + (positionsResponse != null ? "success" : "failed"));
                 } else {
                     StringBuilder errorResponse = new StringBuilder();
                     try (BufferedReader br = new BufferedReader(
@@ -585,6 +593,111 @@ public class CactusModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getProducts(Promise promise) {
+        Log.d(TAG, "getProducts called");
+        logToFile("getProducts called");
+        ensureInitialized();
+        
+        if (!isInitialized) {
+            Log.e(TAG, "CactusModule not properly initialized");
+            logToFile("ERROR: CactusModule not properly initialized");
+            mainHandler.post(() -> promise.reject("INIT_ERROR", "CactusModule not properly initialized"));
+            return;
+        }
+
+        executorService.execute(() -> {
+            try {
+                // First authenticate
+                Log.d(TAG, "Attempting authentication");
+                logToFile("Attempting authentication");
+                JSONObject auth = authWithPassword();
+                if (auth == null) {
+                    Log.e(TAG, "Authentication failed - auth object is null");
+                    logToFile("ERROR: Authentication failed - auth object is null");
+                    mainHandler.post(() -> promise.reject("AUTH_ERROR", "Authentication failed"));
+                    return;
+                }
+                String token = auth.getString("token");
+                Log.d(TAG, "Authentication successful, got token");
+                logToFile("Authentication successful, got token");
+
+                // Get domain collection ID
+                String domainCollectionId = getDomainCollectionId(token);
+                Log.d(TAG, "Got domain collection ID: " + domainCollectionId);
+                logToFile("Got domain collection ID: " + domainCollectionId);
+
+                // Get semantic product data which will make the two API calls
+                try {
+                    JSONObject semanticData = getSemanticProductData(domainCollectionId, token);
+                    Log.d(TAG, "Got semantic product data");
+                    logToFile("Got semantic product data");
+
+                    // Check if we have valid responses
+                    if (productNamesJson == null || positionsResponse == null) {
+                        String errorMsg = "Missing API responses - productNamesJson: " + (productNamesJson == null ? "null" : "present") + 
+                                        ", positionsResponse: " + (positionsResponse == null ? "null" : "present");
+                        Log.e(TAG, errorMsg);
+                        logToFile("ERROR: " + errorMsg);
+                        mainHandler.post(() -> promise.reject("API_RESPONSE_ERROR", errorMsg));
+                        return;
+                    }
+
+                    // Parse the stored API responses
+                    String unquotedProductNames = productNamesJson.substring(1, productNamesJson.length() - 1); // Remove outer quotes
+                    String unescapedProductNames = unquotedProductNames.replace("\\\"", "\""); // Unescape quotes
+                    JSONObject productNamesData = new JSONObject(unescapedProductNames);
+                    JSONObject positionsData = new JSONObject(positionsResponse);
+
+                    // Create final products array
+                    WritableArray products = Arguments.createArray();
+                    
+                    // Iterate through product names to build products array
+                    JSONArray productNames = productNamesData.getJSONArray("data");
+                    for (int i = 0; i < productNames.length(); i++) {
+                        JSONObject product = productNames.getJSONObject(i);
+                        String productId = product.getString("productId");
+                        String productName = product.getString("productName");
+
+                        // Find matching position data
+                        if (positionsData.has(productId)) {
+                            JSONObject position = positionsData.getJSONObject(productId);
+                            
+                            WritableMap productMap = Arguments.createMap();
+                            productMap.putString("id", productId);
+                            productMap.putString("name", productName);
+                            productMap.putString("eslCode", productId);
+                            
+                            WritableMap poseMap = Arguments.createMap();
+                            poseMap.putDouble("x", position.getDouble("x"));
+                            poseMap.putDouble("y", position.getDouble("y"));
+                            poseMap.putDouble("z", position.getDouble("z"));
+                            productMap.putMap("pose", poseMap);
+                            
+                            products.pushMap(productMap);
+                        } else {
+                            Log.w(TAG, "No position data found for product: " + productId);
+                            logToFile("WARNING: No position data found for product: " + productId);
+                        }
+                    }
+
+                    Log.d(TAG, "Successfully created " + products.size() + " products");
+                    logToFile("Successfully created " + products.size() + " products");
+                    mainHandler.post(() -> promise.resolve(products));
+
+                } catch (Exception e) {
+                    Log.e(TAG, "Error processing product data: " + e.getMessage());
+                    logToFile("ERROR processing product data: " + e.getMessage());
+                    mainHandler.post(() -> promise.reject("PRODUCTS_ERROR", "Error processing products: " + e.getMessage()));
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error in getProducts: " + e.getMessage(), e);
+                logToFile("ERROR in getProducts: " + e.getMessage());
+                mainHandler.post(() -> promise.reject("PRODUCTS_ERROR", "Error getting products: " + e.getMessage()));
+            }
+        });
+    }
+
+    @ReactMethod // Do not modify this method under any circumstances
+    public void getProductsOld(Promise promise) {
         Log.d(TAG, "getProducts called");
         logToFile("getProducts called");
         ensureInitialized();
