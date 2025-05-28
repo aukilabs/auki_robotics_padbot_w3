@@ -341,7 +341,18 @@ public class CactusModule extends ReactContextBaseJavaModule {
             JSONObject jsonResponse = new JSONObject(response.toString());
             Log.d(TAG, "Successfully retrieved semantic product data");
             logToFile("Successfully retrieved semantic product data");
-            logToFile("Semantic product data response: " + jsonResponse.toString());
+            
+            // Extract codes from items
+            JSONArray items = jsonResponse.getJSONArray("items");
+            JSONArray codes = new JSONArray();
+            for (int i = 0; i < items.length(); i++) {
+                JSONObject item = items.getJSONObject(i);
+                codes.put(item.getString("code"));
+            }
+            
+            // Log the codes list
+            logToFile("Semantic product codes: " + codes.toString());
+            
             return jsonResponse;
         }
         String errorMsg = "Failed to get semantic product data. Response code: " + connection.getResponseCode();
