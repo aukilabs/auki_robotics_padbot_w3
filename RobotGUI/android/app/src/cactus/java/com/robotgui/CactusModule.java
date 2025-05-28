@@ -353,6 +353,52 @@ public class CactusModule extends ReactContextBaseJavaModule {
             // Log the codes list
             logToFile("Semantic product codes: " + codes.toString());
             
+            // Make API call to get product names
+            try {
+                String productNameUrl = storeBackendUrl + "/GetProductName";
+                logToFile("Making API call to: " + productNameUrl);
+                
+                HttpURLConnection productNameConnection = (HttpURLConnection) new URL(productNameUrl).openConnection();
+                productNameConnection.setRequestMethod("POST");
+                productNameConnection.setRequestProperty("Content-Type", "application/json");
+                productNameConnection.setDoOutput(true);
+                
+                // Create request body
+                JSONObject requestBody = new JSONObject();
+                requestBody.put("skus", codes.toString());
+                
+                // Send request
+                try (java.io.OutputStream os = productNameConnection.getOutputStream()) {
+                    byte[] input = requestBody.toString().getBytes("utf-8");
+                    os.write(input, 0, input.length);
+                }
+                
+                // Get response
+                if (productNameConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    StringBuilder apiResponse = new StringBuilder();
+                    try (BufferedReader br = new BufferedReader(
+                            new InputStreamReader(productNameConnection.getInputStream(), "utf-8"))) {
+                        String responseLine;
+                        while ((responseLine = br.readLine()) != null) {
+                            apiResponse.append(responseLine.trim());
+                        }
+                    }
+                    logToFile("API Response: " + apiResponse.toString());
+                } else {
+                    StringBuilder errorResponse = new StringBuilder();
+                    try (BufferedReader br = new BufferedReader(
+                            new InputStreamReader(productNameConnection.getErrorStream(), "utf-8"))) {
+                        String responseLine;
+                        while ((responseLine = br.readLine()) != null) {
+                            errorResponse.append(responseLine.trim());
+                        }
+                    }
+                    logToFile("API Error Response: " + errorResponse.toString());
+                }
+            } catch (Exception e) {
+                logToFile("Error making API call: " + e.getMessage());
+            }
+            
             return jsonResponse;
         }
         String errorMsg = "Failed to get semantic product data. Response code: " + connection.getResponseCode();
