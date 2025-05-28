@@ -10,6 +10,8 @@ import com.facebook.react.modules.core.PermissionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import android.os.Environment;
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -113,6 +115,42 @@ public class FileUtilsModule extends ReactContextBaseJavaModule {
             promise.resolve(null);
         } catch (IOException e) {
             promise.reject("FILE_WRITE_ERROR", "Failed to write to file: " + e.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void readFile(String filename, Promise promise) {
+        try {
+            if (!checkAndRequestPermissions()) {
+                promise.reject("PERMISSION_ERROR", "Storage permission not granted");
+                return;
+            }
+
+            // Get app variant and determine directory name
+            String appVariant = reactContext.getResources().getString(R.string.app_variant);
+            String appDirName = appVariant.equals("gotu") ? "GoTu" : "CactusAssistant";
+            
+            // Get app-specific directory
+            File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            File appDir = new File(downloadsDir, appDirName);
+            
+            // Read file from app-specific directory
+            File file = new File(appDir, filename);
+            if (!file.exists()) {
+                promise.resolve(null);
+                return;
+            }
+
+            StringBuilder content = new StringBuilder();
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append("\n");
+            }
+            reader.close();
+            promise.resolve(content.toString());
+        } catch (IOException e) {
+            promise.reject("FILE_READ_ERROR", "Failed to read file: " + e.getMessage());
         }
     }
 } 

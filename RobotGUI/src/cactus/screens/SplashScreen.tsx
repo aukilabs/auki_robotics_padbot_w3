@@ -175,6 +175,12 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
         if (isMounted) {
           setLoadingText('Validating waypoints...');
           await LogUtils.writeDebugToFile('Validating waypoints...');
+          
+          // Read patrol points file
+          const patrolPointsContent = await NativeModules.FileUtils.readFile('patrol_points.json');
+          if (patrolPointsContent) {
+            await LogUtils.writeDebugToFile(`Patrol Points Configuration:\n${patrolPointsContent}`);
+          }
         }
         try {
           // Get config first to know what POIs we expect
