@@ -361,39 +361,29 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
 
                     if (patrolPointsContent != null) {
                         JSONObject patrolPoints = new JSONObject(patrolPointsContent);
-                        JSONObject patrol = patrolPoints.getJSONObject("patrol");
-                        Log.d(TAG, "Parsed patrol points JSON: " + patrol.toString());
-                        logToFile("Parsed patrol points JSON: " + patrol.toString());
+                        JSONArray pointsArray = patrolPoints.getJSONArray("patrol_points");
+                        Log.d(TAG, "Parsed patrol points JSON: " + pointsArray.toString());
+                        logToFile("Parsed patrol points JSON: " + pointsArray.toString());
                         
-                        // Initialize all patrol points from JSON
-                        for (int i = 1; i <= 4; i++) {
-                            String pointKey = "point" + i;
-                            if (patrol.has(pointKey)) {
-                                JSONArray pointData = patrol.getJSONArray(pointKey);
-                                if (pointData.length() >= 3) {
-                                    double x = pointData.getDouble(0);
-                                    double y = pointData.getDouble(1);
-                                    double yaw = pointData.getDouble(2);
-                                    String logMsg = String.format("Creating POI %d at [%.2f, %.2f, %.2f]", i, x, y, yaw);
-                                    Log.d(TAG, logMsg);
-                                    logToFile(logMsg);
-                                    createPOI(
-                                        x,  // x
-                                        y,  // y
-                                        yaw,  // yaw
-                                        "Patrol Point " + i,
-                                        promise
-                                    );
-                                } else {
-                                    String errorMsg = "Point " + i + " data is incomplete, expected 3 values but got " + pointData.length();
-                                    Log.e(TAG, errorMsg);
-                                    logToFile("ERROR: " + errorMsg);
-                                }
-                            } else {
-                                String errorMsg = "Point " + i + " not found in patrol points JSON";
-                                Log.e(TAG, errorMsg);
-                                logToFile("ERROR: " + errorMsg);
-                            }
+                        // Initialize all patrol points from JSON array
+                        for (int i = 0; i < pointsArray.length(); i++) {
+                            JSONObject point = pointsArray.getJSONObject(i);
+                            String name = point.getString("name");
+                            double x = point.getDouble("x");
+                            double y = point.getDouble("y");
+                            double yaw = point.getDouble("yaw");
+                            
+                            String logMsg = String.format("Creating POI '%s' at [%.2f, %.2f, %.2f]", name, x, y, yaw);
+                            Log.d(TAG, logMsg);
+                            logToFile(logMsg);
+                            
+                            createPOI(
+                                x,  // x
+                                y,  // y
+                                yaw,  // yaw
+                                name,  // display name
+                                promise
+                            );
                         }
                     } else {
                         String errorMsg = "Patrol points content is null";
