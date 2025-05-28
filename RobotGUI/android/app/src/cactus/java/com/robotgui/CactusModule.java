@@ -398,6 +398,60 @@ public class CactusModule extends ReactContextBaseJavaModule {
             } catch (Exception e) {
                 logToFile("Error making API call: " + e.getMessage());
             }
+
+            // Make API call to get product positions
+            try {
+                String positionsUrl = backendUrl + "/requestMultipleProductPositions";
+                logToFile("Making API call to: " + positionsUrl);
+                
+                HttpURLConnection positionsConnection = (HttpURLConnection) new URL(positionsUrl).openConnection();
+                positionsConnection.setRequestMethod("POST");
+                positionsConnection.setRequestProperty("Content-Type", "application/json");
+                positionsConnection.setRequestProperty("Authorization", "Bearer " + token);
+                positionsConnection.setDoOutput(true);
+                
+                // Create request body
+                JSONObject positionsRequestBody = new JSONObject();
+                positionsRequestBody.put("domainId", domainId);
+                
+                // Convert JSONArray to string array
+                String[] skusArray = new String[codes.length()];
+                for (int i = 0; i < codes.length(); i++) {
+                    skusArray[i] = codes.getString(i);
+                }
+                positionsRequestBody.put("skus", new JSONArray(skusArray));
+                
+                // Send request
+                try (java.io.OutputStream os = positionsConnection.getOutputStream()) {
+                    byte[] input = positionsRequestBody.toString().getBytes("utf-8");
+                    os.write(input, 0, input.length);
+                }
+                
+                // Get response
+                if (positionsConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    StringBuilder positionsResponse = new StringBuilder();
+                    try (BufferedReader br = new BufferedReader(
+                            new InputStreamReader(positionsConnection.getInputStream(), "utf-8"))) {
+                        String responseLine;
+                        while ((responseLine = br.readLine()) != null) {
+                            positionsResponse.append(responseLine.trim());
+                        }
+                    }
+                    logToFile("Positions API Response: " + positionsResponse.toString());
+                } else {
+                    StringBuilder errorResponse = new StringBuilder();
+                    try (BufferedReader br = new BufferedReader(
+                            new InputStreamReader(positionsConnection.getErrorStream(), "utf-8"))) {
+                        String responseLine;
+                        while ((responseLine = br.readLine()) != null) {
+                            errorResponse.append(responseLine.trim());
+                        }
+                    }
+                    logToFile("Positions API Error Response: " + errorResponse.toString());
+                }
+            } catch (Exception e) {
+                logToFile("Error making positions API call: " + e.getMessage());
+            }
             
             return jsonResponse;
         }
