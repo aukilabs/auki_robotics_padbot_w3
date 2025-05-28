@@ -29,6 +29,7 @@ public class CactusModule extends ReactContextBaseJavaModule {
     private String identity;
     private String password;
     private String domainId;
+    private String storeBackendUrl;
     private boolean isInitialized = false;
     private static final String DEBUG_LOG_FILENAME = "debug_log.txt";
 
@@ -90,11 +91,13 @@ public class CactusModule extends ReactContextBaseJavaModule {
                     this.identity = configManager.getNestedString("cactus.identity", "");
                     this.password = configManager.getNestedString("cactus.password", "");
                     this.domainId = configManager.getNestedString("cactus.domain_id", "");
+                    this.storeBackendUrl = configManager.getNestedString("cactus.store_backend_url", "");
                     
                     String configStatus = "Config loaded - Backend URL: " + (backendUrl.isEmpty() ? "empty" : "set") + 
                               ", Identity: " + (identity.isEmpty() ? "empty" : "set") + 
                               ", Password: " + (password.isEmpty() ? "empty" : "set") +
-                              ", Domain ID: " + (domainId.isEmpty() ? "empty" : "set");
+                              ", Domain ID: " + (domainId.isEmpty() ? "empty" : "set") +
+                              ", Store Backend URL: " + (storeBackendUrl.isEmpty() ? "empty" : "set");
                     Log.d(TAG, configStatus);
                     logToFile(configStatus);
                     
@@ -298,6 +301,35 @@ public class CactusModule extends ReactContextBaseJavaModule {
         throw new Exception(errorMsg);
     }
 
+    private JSONObject getSemanticProductData(String domainCollectionId, String token) throws Exception {
+        String url = backendUrl + "/api/collections/SemanticProductData/records?filter=(domain='" + domainCollectionId + "')";
+        Log.d(TAG, "Getting semantic product data from URL: " + url);
+        logToFile("Getting semantic product data from URL: " + url);
+
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Authorization", "Bearer " + token);
+
+        if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            StringBuilder response = new StringBuilder();
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+            }
+            JSONObject jsonResponse = new JSONObject(response.toString());
+            Log.d(TAG, "Successfully retrieved semantic product data");
+            logToFile("Successfully retrieved semantic product data");
+            logToFile("Semantic product data response: " + jsonResponse.toString());
+            return jsonResponse;
+        }
+        String errorMsg = "Failed to get semantic product data. Response code: " + connection.getResponseCode();
+        logToFile("ERROR: " + errorMsg);
+        throw new Exception(errorMsg);
+    }
+
     private Map<String, String> downloadAndParseCsv(String recordId, String collectionId, String filename, String token) throws Exception {
         String url = backendUrl + "/api/files/" + collectionId + "/" + recordId + "/" + filename;
         Log.d(TAG, "Downloading CSV from URL: " + url);
@@ -459,6 +491,17 @@ public class CactusModule extends ReactContextBaseJavaModule {
                 JSONArray eslData = getESLData(domainCollectionId, token);
                 Log.d(TAG, "Got ESL data, count: " + eslData.length());
                 logToFile("Got ESL data, count: " + eslData.length());
+
+                // Get semantic product data
+                try {
+                    JSONObject semanticData = getSemanticProductData(domainCollectionId, token);
+                    Log.d(TAG, "Got semantic product data");
+                    logToFile("Got semantic product data");
+                } catch (Exception e) {
+                    Log.e(TAG, "Error getting semantic product data: " + e.getMessage());
+                    logToFile("ERROR getting semantic product data: " + e.getMessage());
+                    // Continue with other product data even if semantic data fails
+                }
 
                 // Get CSV info from DomainBarcodeNames
                 Map<String, String> barcodeToName;

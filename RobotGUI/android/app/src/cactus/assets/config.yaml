@@ -15,6 +15,7 @@ domain:
 cactus:
   #backend_url: "https://retail-ops-backend-0.prod.lookingglassprotocol.com"  # dev
   backend_url: "https://cactus-backend-0.prod.lookingglassprotocol.com"  # dev
+  store_backend_url: "https://fakestore-backend.prod.lookingglassprotocol.com"  # dev
   domain_id: "8093f9bf-c374-4162-ab74-ab61949627f1"  # AUKI Demo Space
   identity: "phil+cbd@aukilabs.com"
   password: "7999fodY-qWewQ5" 

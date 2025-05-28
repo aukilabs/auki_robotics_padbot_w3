@@ -161,7 +161,7 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
             await new Promise(resolve => setTimeout(resolve, 1500));
           }
         }
-        
+
         // Load products first
         if (isMounted) {
           setLoadingText('Loading products...');
