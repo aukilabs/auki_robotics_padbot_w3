@@ -86,13 +86,34 @@ let navigatingToConfig = false; // Add flag to track if we're navigating to conf
 globalAny.clearInactivityTimer = null;
 globalAny.restartPromotion = null;
 
-// Define patrol points globally
-const patrolPoints = [
-  { name: "Patrol Point 1", x: -1.14, y: 2.21, yaw: 3.14 },
-  { name: "Patrol Point 2", x: -6.11, y: 2.35, yaw: -1.57 },
-  { name: "Patrol Point 3", x: -6.08, y: 0.05, yaw: 0 },
-  { name: "Patrol Point 4", x: -1.03, y: 0.01, yaw: 1.57 }
-];
+// Define patrol points globally - will be populated from file
+let patrolPoints: Array<{
+  name: string;
+  x: number;
+  y: number;
+  yaw: number;
+}> = [];
+
+// Load patrol points from file
+const loadPatrolPoints = async () => {
+  try {
+    const patrolPointsContent = await NativeModules.FileUtils.readFile('patrol_points.json');
+    if (patrolPointsContent) {
+      const data = JSON.parse(patrolPointsContent);
+      patrolPoints = data.patrol_points.map((point: any) => ({
+        name: point.name,
+        x: point.x,
+        y: point.y,
+        yaw: point.yaw
+      }));
+      await LogUtils.writeDebugToFile(`Loaded patrol points: ${JSON.stringify(patrolPoints)}`);
+    } else {
+      await LogUtils.writeDebugToFile('No patrol points file found');
+    }
+  } catch (error) {
+    await LogUtils.writeDebugToFile(`Error loading patrol points: ${error instanceof Error ? error.message : String(error)}`);
+  }
+};
 
 // Add token refresh interval (55 minutes to refresh before expiration)
 const TOKEN_REFRESH_INTERVAL = 55 * 60 * 1000;
@@ -422,42 +443,46 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     isMountedRef.current = true;
     promotionMounted = true;
     
-    // Log the current promotion state
-    LogUtils.writeDebugToFile(`MainScreen mounted. Promotion state: active=${globalAny.promotionActive}, cancelled=${promotionCancelled}, currentPointIndex=${currentPointIndex}, remountFromConfig=${remountFromConfig}`);
+    // Load patrol points first
+    loadPatrolPoints().then(() => {
+      // Log the current promotion state
+      LogUtils.writeDebugToFile(`MainScreen mounted. Promotion state: active=${globalAny.promotionActive}, cancelled=${promotionCancelled}, currentPointIndex=${currentPointIndex}, remountFromConfig=${remountFromConfig}`);
+      
+      // Only start promotion if it was explicitly activated via the global startPromotion function
+      if (globalAny.promotionActive && !promotionCancelled) {
+        LogUtils.writeDebugToFile('Active promotion detected on mount, starting navigation to first waypoint');
+        
+        // Set patrol state to active
+        setIsPatrolling(true);
+        isPatrollingRef.current = true;
+        
+        // Set navigation status to PATROL immediately to show the promotion screen
+        setNavigationStatus(NavigationStatus.PATROL);
+        
+        // Set robot speed to patrol speed
+        (async () => {
+          try {
+            await NativeModules.SlamtecUtils.setMaxLineSpeed(SPEEDS.patrol.toString());
+            await LogUtils.writeDebugToFile(`Set robot speed to patrol mode: ${SPEEDS.patrol} m/s when mounting`);
+          } catch (error: any) {
+            await LogUtils.writeDebugToFile(`Failed to set patrol speed when mounting: ${error.message}`);
+          }
+        })();
+        
+        // Start navigation with a small delay
+        setTimeout(() => {
+          if (isPatrollingRef.current && isMountedRef.current && !navigationCancelledRef.current) {
+            LogUtils.writeDebugToFile('Starting navigation to first waypoint');
+            navigateToNextPoint();
+          } else {
+            LogUtils.writeDebugToFile(`Navigation not starting: isMounted=${isMountedRef.current}, navigationCancelled=${navigationCancelledRef.current}`);
+          }
+        }, 500);
+      } else {
+        LogUtils.writeDebugToFile('No active promotion detected on mount');
+      }
+    });
     
-    // Only start promotion if it was explicitly activated via the global startPromotion function
-    // and not cancelled, and we're not remounting after config screen
-    if (globalAny.promotionActive && !promotionCancelled) {
-      LogUtils.writeDebugToFile('Active promotion detected on mount, starting navigation to first waypoint');
-      
-      // Set patrol state to active
-      setIsPatrolling(true);
-      isPatrollingRef.current = true;
-      
-      // Set navigation status to PATROL immediately to show the promotion screen
-      setNavigationStatus(NavigationStatus.PATROL);
-      
-      // Set robot speed to patrol speed
-      (async () => {
-        try {
-          await NativeModules.SlamtecUtils.setMaxLineSpeed(SPEEDS.patrol.toString());
-          await LogUtils.writeDebugToFile(`Set robot speed to patrol mode: ${SPEEDS.patrol} m/s when mounting`);
-        } catch (error: any) {
-          await LogUtils.writeDebugToFile(`Failed to set patrol speed when mounting: ${error.message}`);
-        }
-      })();
-      
-      // Start navigation with a small delay
-      setTimeout(() => {
-        if (isPatrollingRef.current && isMountedRef.current && !navigationCancelledRef.current) {
-          LogUtils.writeDebugToFile('Starting navigation to first waypoint');
-          navigateToNextPoint();
-        } else {
-          LogUtils.writeDebugToFile(`Navigation not starting: isMounted=${isMountedRef.current}, navigationCancelled=${navigationCancelledRef.current}`);
-        }
-      }, 500);
-    }
-
     return () => {
       isMountedRef.current = false;
       promotionMounted = false;

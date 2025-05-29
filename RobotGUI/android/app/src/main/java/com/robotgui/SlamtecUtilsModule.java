@@ -16,6 +16,7 @@ import java.util.Map;
 import android.graphics.BitmapFactory;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.robotgui.FileUtilsModule;
+import android.os.Environment;
 
 public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
     private static final String TAG = "SlamtecUtilsModule";
@@ -343,47 +344,109 @@ public class SlamtecUtilsModule extends ReactContextBaseJavaModule {
         try {
             Log.d(TAG, "Starting POI initialization...");
             logToFile("Starting POI initialization...");
+            
             // Get the ReactApplicationContext
+            Log.d(TAG, "About to get ReactApplicationContext...");
+            logToFile("About to get ReactApplicationContext...");
+            
             ReactApplicationContext context = getReactApplicationContext();
+            Log.d(TAG, "Got ReactApplicationContext: " + (context != null ? "not null" : "null"));
+            logToFile("Got ReactApplicationContext: " + (context != null ? "not null" : "null"));
+            
             if (context != null) {
-                Log.d(TAG, "Got ReactApplicationContext, reading patrol_points.json from assets");
-                logToFile("Got ReactApplicationContext, reading patrol_points.json from assets");
+                Log.d(TAG, "Got ReactApplicationContext, checking patrol_points.json in Downloads directory");
+                logToFile("Got ReactApplicationContext, checking patrol_points.json in Downloads directory");
                 try {
-                    // Read patrol points from assets
-                    java.io.InputStream is = context.getAssets().open("Download/Cactus/config/patrol_points.json");
-                    int size = is.available();
-                    byte[] buffer = new byte[size];
-                    is.read(buffer);
-                    is.close();
-                    String patrolPointsContent = new String(buffer, "UTF-8");
-                    Log.d(TAG, "Read patrol points content: " + patrolPointsContent);
-                    logToFile("Read patrol points content: " + patrolPointsContent);
+                    // Get app variant and determine correct path
+                    Log.d(TAG, "About to get app variant...");
+                    logToFile("About to get app variant...");
+                    
+                    String appVariant = context.getResources().getString(R.string.app_variant);
+                    Log.d(TAG, "Got app variant: " + appVariant);
+                    logToFile("Got app variant: " + appVariant);
+                    
+                    // Get the Downloads directory and app-specific directory
+                    File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                    File appDir = new File(downloadsDir, appVariant.equals("gotu") ? "GoTu" : "CactusAssistant");
+                    if (!appDir.exists()) {
+                        appDir.mkdirs();
+                    }
+                    
+                    // Read patrol points from the app-specific directory
+                    File patrolPointsFile = new File(appDir, "patrol_points.json");
+                    Log.d(TAG, "Looking for patrol points file at: " + patrolPointsFile.getAbsolutePath());
+                    logToFile("Looking for patrol points file at: " + patrolPointsFile.getAbsolutePath());
+                    
+                    if (!patrolPointsFile.exists()) {
+                        String errorMsg = "Patrol points file does not exist at: " + patrolPointsFile.getAbsolutePath();
+                        Log.e(TAG, errorMsg);
+                        logToFile("ERROR: " + errorMsg);
+                        promise.reject("POI_ERROR", errorMsg);
+                        return;
+                    }
+                    
+                    Log.d(TAG, "File exists, attempting to read content...");
+                    logToFile("File exists, attempting to read content...");
+                    
+                    // Read file content using FileInputStream for Android 7 compatibility
+                    StringBuilder content = new StringBuilder();
+                    try (java.io.FileInputStream fis = new java.io.FileInputStream(patrolPointsFile);
+                         java.io.InputStreamReader isr = new java.io.InputStreamReader(fis, "UTF-8");
+                         java.io.BufferedReader reader = new java.io.BufferedReader(isr)) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            content.append(line);
+                        }
+                    }
+                    String patrolPointsContent = content.toString();
+                    
+                    Log.d(TAG, "Successfully read file content, length: " + patrolPointsContent.length());
+                    logToFile("Successfully read file content, length: " + patrolPointsContent.length());
+                    Log.d(TAG, "File content: " + patrolPointsContent);
+                    logToFile("File content: " + patrolPointsContent);
 
                     if (patrolPointsContent != null) {
-                        JSONObject patrolPoints = new JSONObject(patrolPointsContent);
-                        JSONArray pointsArray = patrolPoints.getJSONArray("patrol_points");
-                        Log.d(TAG, "Parsed patrol points JSON: " + pointsArray.toString());
-                        logToFile("Parsed patrol points JSON: " + pointsArray.toString());
-                        
-                        // Initialize all patrol points from JSON array
-                        for (int i = 0; i < pointsArray.length(); i++) {
-                            JSONObject point = pointsArray.getJSONObject(i);
-                            String name = point.getString("name");
-                            double x = point.getDouble("x");
-                            double y = point.getDouble("y");
-                            double yaw = point.getDouble("yaw");
+                        try {
+                            Log.d(TAG, "Attempting to parse JSON...");
+                            logToFile("Attempting to parse JSON...");
+                            JSONObject patrolPoints = new JSONObject(patrolPointsContent);
+                            Log.d(TAG, "Successfully created JSONObject");
+                            logToFile("Successfully created JSONObject");
                             
-                            String logMsg = String.format("Creating POI '%s' at [%.2f, %.2f, %.2f]", name, x, y, yaw);
-                            Log.d(TAG, logMsg);
-                            logToFile(logMsg);
+                            Log.d(TAG, "Attempting to get patrol_points array...");
+                            logToFile("Attempting to get patrol_points array...");
+                            JSONArray pointsArray = patrolPoints.getJSONArray("patrol_points");
+                            Log.d(TAG, "Successfully got patrol_points array with " + pointsArray.length() + " points");
+                            logToFile("Successfully got patrol_points array with " + pointsArray.length() + " points");
                             
-                            createPOI(
-                                x,  // x
-                                y,  // y
-                                yaw,  // yaw
-                                name,  // display name
-                                promise
-                            );
+                            Log.d(TAG, "Parsed patrol points JSON: " + pointsArray.toString());
+                            logToFile("Parsed patrol points JSON: " + pointsArray.toString());
+                            
+                            // Initialize all patrol points from JSON array
+                            for (int i = 0; i < pointsArray.length(); i++) {
+                                JSONObject point = pointsArray.getJSONObject(i);
+                                String name = point.getString("name");
+                                double x = point.getDouble("x");
+                                double y = point.getDouble("y");
+                                double yaw = point.getDouble("yaw");
+                                
+                                String logMsg = String.format("Creating POI '%s' at [%.2f, %.2f, %.2f]", name, x, y, yaw);
+                                Log.d(TAG, logMsg);
+                                logToFile(logMsg);
+                                
+                                createPOI(
+                                    x,  // x
+                                    y,  // y
+                                    yaw,  // yaw
+                                    name,  // display name
+                                    promise
+                                );
+                            }
+                        } catch (Exception e) {
+                            String errorMsg = "Error reading patrol points file: " + e.getMessage();
+                            Log.e(TAG, errorMsg);
+                            logToFile("ERROR: " + errorMsg);
+                            e.printStackTrace();
                         }
                     } else {
                         String errorMsg = "Patrol points content is null";
