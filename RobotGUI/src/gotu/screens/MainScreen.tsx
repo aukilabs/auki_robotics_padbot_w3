@@ -737,14 +737,32 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
             return;
           }
         }
-        
-        // Get product coordinates
-        const poseZ = product.pose.pz || product.pose.z;
-        const coords = {
-          x: product.pose.px || product.pose.x,
-          y: 0,
-          z: poseZ
-        };
+
+        // Try to fetch new coordinates first
+        let coords;
+        try {
+          await LogUtils.writeDebugToFile(`Attempting to fetch new coordinates for product ${product.id}`);
+          const newPose = await NativeModules.CactusModule.requestProductPosition(product.id);
+          if (newPose) {
+            await LogUtils.writeDebugToFile(`Successfully fetched new coordinates: ${JSON.stringify(newPose)}`);
+            coords = {
+              x: newPose.x,
+              y: 0,
+              z: newPose.z
+            };
+          } else {
+            throw new Error('No new coordinates received');
+          }
+        } catch (error) {
+          await LogUtils.writeDebugToFile(`Failed to fetch new coordinates, falling back to existing pose: ${error.message}`);
+          // Fall back to existing coordinates
+          const poseZ = product.pose.pz || product.pose.z;
+          coords = {
+            x: product.pose.px || product.pose.x,
+            y: 0,
+            z: poseZ
+          };
+        }
     
         await LogUtils.writeDebugToFile(`Requesting navmesh coordinates for: ${JSON.stringify(coords)}`);
         const navTarget = await NativeModules.DomainUtils.getNavmeshCoord(coords);
@@ -2039,8 +2057,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     <SafeAreaView 
       style={styles.container}
       onTouchStart={() => {
-        // Only reset timer if we're not in promotion mode
-        if (!isPatrollingRef.current && navigationStatus !== NavigationStatus.PATROL) {
+        // Reset timer in all states except when navigating to a specific product
+        if (navigationStatus !== NavigationStatus.NAVIGATING) {
           // We can't use await in the onTouchStart handler, so we handle it with a promise
           resetInactivityTimer()
             .then(() => LogUtils.writeDebugToFile('Touch detected, reset inactivity timer processed'))

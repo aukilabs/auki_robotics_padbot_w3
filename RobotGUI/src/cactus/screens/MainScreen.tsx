@@ -106,6 +106,7 @@ interface MainScreenProps {
 }
 
 interface Product {
+  id: string;
   name: string;
   eslCode: string;
   pose: {
@@ -235,14 +236,13 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   // Function to restart the promotion
   const restartPromotion = async () => {
     try {
-      // Only restart if we're not already in promotion mode
-      if (!isPatrollingRef.current && isMountedRef.current) {
+      // Only restart if we're not already in promotion mode and promotion is active
+      if (!isPatrollingRef.current && isMountedRef.current && globalAny.promotionActive) {
         await LogUtils.writeDebugToFile('Auto-restarting promotion after inactivity');
         
         // Use the same logic as the global startPromotion function
         promotionCancelled = false;
         currentPointIndex = 0;
-        globalAny.promotionActive = true;
         
         // Set patrol state to active
         setIsPatrolling(true);
@@ -306,6 +306,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         // Always keep in PATROL state, don't change to other states during patrol
         setNavigationStatus(NavigationStatus.PATROL);
         setSelectedProduct({
+          id: '',
           name: point.name,
           eslCode: `PP${currentPointIndex + 1}`,
           pose: {
@@ -735,12 +736,31 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         }
 
         // Get product coordinates
-        const poseZ = product.pose.pz || product.pose.z;
-        const coords = {
-          x: product.pose.px || product.pose.x,
-          y: 0,
-          z: poseZ
-        };
+        let coords;
+        try {
+          await LogUtils.writeDebugToFile('Attempting to get new pose from requestProductPosition');
+          const newPose = await NativeModules.CactusModule.requestProductPosition(product.eslCode);
+          if (newPose) {
+            await LogUtils.writeDebugToFile(`Got new pose from requestProductPosition: ${JSON.stringify(newPose)}`);
+            coords = {
+              x: newPose.x,
+              y: 0,
+              z: -newPose.z
+            };
+            await LogUtils.writeDebugToFile(`Using new pose coordinates: ${JSON.stringify(coords)}`);
+          } else {
+            throw new Error('No new pose received');
+          }
+        } catch (error: any) {
+          await LogUtils.writeDebugToFile(`Failed to get new pose, falling back to product.pose: ${error.message}`);
+          const poseZ = product.pose.pz || product.pose.z;
+          coords = {
+            x: product.pose.px || product.pose.x,
+            y: 0,
+            z: -poseZ
+          };
+          await LogUtils.writeDebugToFile(`Using fallback coordinates from product.pose: ${JSON.stringify(coords)}`);
+        }
     
         await LogUtils.writeDebugToFile(`Requesting navmesh coordinates for: ${JSON.stringify(coords)}`);
         const navTarget = await NativeModules.DomainUtils.getNavmeshCoord(coords);

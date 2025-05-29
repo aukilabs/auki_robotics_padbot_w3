@@ -323,7 +323,7 @@ public class CactusModule extends ReactContextBaseJavaModule {
     }
 
     private JSONObject getSemanticProductData(String domainCollectionId, String token) throws Exception {
-        String url = backendUrl + "/api/collections/SemanticProductData/records?filter=(domain='" + domainCollectionId + "')";
+        String url = backendUrl + "/api/collections/SemanticProductData/records?filter=(domain='" + domainCollectionId + "')&perPage=10000";
         Log.d(TAG, "Getting semantic product data from URL: " + url);
         logToFile("Getting semantic product data from URL: " + url);
 
@@ -832,6 +832,100 @@ public class CactusModule extends ReactContextBaseJavaModule {
                 Log.e(TAG, "Error in getProducts: " + e.getMessage(), e);
                 logToFile("ERROR in getProducts: " + e.getMessage());
                 mainHandler.post(() -> promise.reject("PRODUCTS_ERROR", "Error getting products: " + e.getMessage()));
+            }
+        });
+    }
+
+    @ReactMethod
+    public void requestProductPosition(String productId, Promise promise) {
+        Log.d(TAG, "requestProductPosition called for product: " + productId);
+        logToFile("requestProductPosition called for product: " + productId);
+        ensureInitialized();
+        
+        if (!isInitialized) {
+            Log.e(TAG, "CactusModule not properly initialized");
+            logToFile("ERROR: CactusModule not properly initialized");
+            mainHandler.post(() -> promise.reject("INIT_ERROR", "CactusModule not properly initialized"));
+            return;
+        }
+
+        executorService.execute(() -> {
+            try {
+                // First authenticate
+                Log.d(TAG, "Attempting authentication");
+                logToFile("Attempting authentication");
+                JSONObject auth = authWithPassword();
+                if (auth == null) {
+                    Log.e(TAG, "Authentication failed - auth object is null");
+                    logToFile("ERROR: Authentication failed - auth object is null");
+                    mainHandler.post(() -> promise.reject("AUTH_ERROR", "Authentication failed"));
+                    return;
+                }
+                String token = auth.getString("token");
+                Log.d(TAG, "Authentication successful, got token");
+                logToFile("Authentication successful, got token");
+
+                // Get domain collection ID
+                String domainCollectionId = getDomainCollectionId(token);
+                Log.d(TAG, "Got domain collection ID: " + domainCollectionId);
+                logToFile("Got domain collection ID: " + domainCollectionId);
+
+                // Make API call to get product position
+                String positionsUrl = backendUrl + "/api/collections/ProductPositions/records?filter=(domain='" + 
+                    domainCollectionId + "' AND sku='" + productId + "')";
+                logToFile("Making API call to: " + positionsUrl);
+                
+                HttpURLConnection positionsConnection = (HttpURLConnection) new URL(positionsUrl).openConnection();
+                positionsConnection.setRequestMethod("GET");
+                positionsConnection.setRequestProperty("Authorization", "Bearer " + token);
+                
+                // Get response
+                if (positionsConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    StringBuilder positionsResponseBuilder = new StringBuilder();
+                    try (BufferedReader br = new BufferedReader(
+                            new InputStreamReader(positionsConnection.getInputStream(), "utf-8"))) {
+                        String responseLine;
+                        while ((responseLine = br.readLine()) != null) {
+                            positionsResponseBuilder.append(responseLine.trim());
+                        }
+                    }
+                    JSONObject jsonResponse = new JSONObject(positionsResponseBuilder.toString());
+                    JSONArray items = jsonResponse.getJSONArray("items");
+                    
+                    if (items.length() > 0) {
+                        JSONObject positionData = items.getJSONObject(0);
+                        logToFile("Got position data: " + positionData.toString());
+                        
+                        // Create response map
+                        WritableMap responseMap = Arguments.createMap();
+                        responseMap.putDouble("x", positionData.getDouble("x"));
+                        responseMap.putDouble("y", positionData.getDouble("y"));
+                        responseMap.putDouble("z", positionData.getDouble("z"));
+                        
+                        mainHandler.post(() -> promise.resolve(responseMap));
+                    } else {
+                        String errorMsg = "No position data found for product: " + productId;
+                        logToFile("ERROR: " + errorMsg);
+                        mainHandler.post(() -> promise.reject("POSITION_ERROR", errorMsg));
+                    }
+                } else {
+                    StringBuilder errorResponse = new StringBuilder();
+                    try (BufferedReader br = new BufferedReader(
+                            new InputStreamReader(positionsConnection.getErrorStream(), "utf-8"))) {
+                        String responseLine;
+                        while ((responseLine = br.readLine()) != null) {
+                            errorResponse.append(responseLine.trim());
+                        }
+                    }
+                    String errorMsg = "Failed to get product position. Response code: " + positionsConnection.getResponseCode() + 
+                                    ", Error: " + errorResponse.toString();
+                    logToFile("ERROR: " + errorMsg);
+                    mainHandler.post(() -> promise.reject("POSITION_ERROR", errorMsg));
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error in requestProductPosition: " + e.getMessage());
+                logToFile("ERROR in requestProductPosition: " + e.getMessage());
+                mainHandler.post(() -> promise.reject("POSITION_ERROR", "Error getting product position: " + e.getMessage()));
             }
         });
     }

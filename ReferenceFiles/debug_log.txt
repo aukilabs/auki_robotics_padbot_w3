@@ -1,288 +1,60 @@
-2025-05-28T12:28:41.075Z: === New Debug Session Started ===
-2025-05-28T12:28:41.081Z: App Version: unknown
-2025-05-28T12:28:41.090Z: Starting app initialization...
-2025-05-28T12:28:41.106Z: Attempting authentication...
-2025-05-28T12:28:41.117Z: Authentication attempt 1/3
-[2025-05-28 20:28:43.878] Authentication successful, initiating map download...
-2025-05-28T12:28:43.882Z: Authentication successful
-[2025-05-28 20:28:43.888] Starting downloadMapAfterAuth process
-2025-05-28T12:28:43.889Z: Updating map...
-[2025-05-28 20:28:43.914] Using map endpoint: https://dsc.dev.aukiverse.com/spatial/crosssection
-2025-05-28T12:28:43.948Z: Authentication successful - map download was triggered during authentication
-[2025-05-28 20:28:43.976] Sending map request: {"domainId":"8093f9bf-c374-4162-ab74-ab61949627f1","domainServerUrl":"https:\/\/domain-server-us-east-1.aukiverse.com","height":0.1,"fileType":"stcm","pixelsPerMeter":20}
-[2025-05-28 20:28:43.997] Executing map download request
-[2025-05-28 20:28:46.469] Response content type: multipart/form-data; boundary=----5810822248506211218229965637
-[2025-05-28 20:28:46.637] Processing multipart/form-data response
-[2025-05-28 20:28:46.648] Found boundary: ------5810822248506211218229965637
-[2025-05-28 20:28:46.668] Split response into 4 parts
-[2025-05-28 20:28:46.675] Found img part in multipart response
-[2025-05-28 20:28:46.694] Extracted base64 data of length: 459868
-[2025-05-28 20:28:46.710] Successfully decoded 459868 bytes of base64 data to 344901 bytes of binary STCM data
-[2025-05-28 20:28:46.718] STCM map saved to: /storage/emulated/0/Download/CactusAssistant/map.stcm
-[2025-05-28 20:28:46.722] Using SLAM API base URL: http://127.0.0.1:1448
-[2025-05-28 20:28:46.727] Clearing old POIs and map data
-[2025-05-28 20:28:46.738] Clear POIs response code: 200
-2025-05-28T12:28:46.980Z: Map update complete
-2025-05-28T12:28:46.986Z: Loading products...
-[CactusModule] getProducts called
-[CactusModule] Initializing CactusModule
-[CactusModule] Got domain ID from shared preferences: 8093f9bf-c374-4162-ab74-ab61949627f1
-[CactusModule] Config loaded - Backend URL: set, Identity: set, Password: set, Domain ID: set, Store Backend URL: set
-[CactusModule] Attempting authentication
-[CactusModule] Authenticating with URL: https://cactus-backend-0.prod.lookingglassprotocol.com/api/collections/users/auth-with-password
-[2025-05-28 20:28:47.072] Clear map response code: 200
-[2025-05-28 20:28:47.086] Uploading new map: /storage/emulated/0/Download/CactusAssistant/map.stcm
-[2025-05-28 20:28:47.102] Uploaded 344901 bytes
-[CactusModule] Authentication successful
-[CactusModule] Authentication successful, got token
-[CactusModule] Getting domain collection ID from URL: https://cactus-backend-0.prod.lookingglassprotocol.com/api/collections/Domains/records?filter=(DomainID='8093f9bf-c374-4162-ab74-ab61949627f1')
-[2025-05-28 20:28:48.172] Upload map response code: 200
-[2025-05-28 20:28:48.177] Found homedock_qr_id: 2ZWHV5L6I04, getting pose data
-[2025-05-28 20:28:48.181] Getting pose data for QR ID: 2ZWHV5L6I04
-[2025-05-28 20:28:48.186] Fetching lighthouse data for QR ID: 2ZWHV5L6I04 from domain server: https://domain-server-us-east-1.aukiverse.com
-[CactusModule] Found domain collection ID: cgne5h3ujx1g8q2
-[CactusModule] Got domain collection ID: cgne5h3ujx1g8q2
-[CactusModule] Getting ESL data from URL: https://cactus-backend-0.prod.lookingglassprotocol.com/api/collections/ESLDomainData/records?filter=(domain='cgne5h3ujx1g8q2')&perPage=100000
-[2025-05-28 20:28:49.515] Get lighthouses response code: 200
-[2025-05-28 20:28:49.625] Found 'poses' field with 79 items
-[2025-05-28 20:28:49.632] Found matching lighthouse with short_id: 2ZWHV5L6I04
-[2025-05-28 20:28:49.638] Transformed coordinates: Original (px=0.12365669757127762, py=0.0, pz=-1.9286682605743408) -> Transformed (px=0.12365669757127762, py=1.9286682605743408, pz=0.0)
-[2025-05-28 20:28:49.645] Converted quaternion (rx=-0.7070834125222052, ry=0.005742730586745238, rz=0.0057427317661111555, rw=0.7070835097873683) -> yaw=3.14
-[2025-05-28 20:28:49.651] Saved homedock data to preferences: x=0.12365669757127762, y=1.9286682605743408, z=0.0, yaw=3.14
-[2025-05-28 20:28:49.658] Setting home dock from QR data: x=0.12365669757127762, y=1.9286682605743408, z=0.0, yaw=3.14
-[2025-05-28 20:28:49.672] Clear home docks response code: 200
-[2025-05-28 20:28:49.688] Set home dock response code: 200
-[2025-05-28 20:28:49.692] Setting robot pose from QR data: x=-0.07634304877423029, y=1.9286682605743408, z=3.185305832973657E-4, yaw=3.14
-[2025-05-28 20:28:49.700] Set pose response code: 200
-[2025-05-28 20:28:49.703] Saving persistent map
-[2025-05-28 20:28:49.770] Save persistent map response code: 200
-[2025-05-28 20:28:49.786] Map processing completed successfully
-[CactusModule] Retrieved 282 ESL items
-[CactusModule] Got ESL data, count: 282
-[CactusModule] Getting semantic product data from URL: https://cactus-backend-0.prod.lookingglassprotocol.com/api/collections/SemanticProductData/records?filter=(domain='cgne5h3ujx1g8q2')
-[CactusModule] Successfully retrieved semantic product data
-[CactusModule] Semantic product codes: ["8801073140622","4582293810024","4901790035493","49021051708","4897878170029","4897878170005","4897878000098","47878830046","4897878810024","4897878800025","4897878800032","4897878000074","4897878460038","4897878630011","4897878630028","8801073141735","8801073140578","8801073142145","8801043061605","8801043020022","9555655005319","4897878760121","4979397000145","4897878460014","4897878140015","4897878141708","4897878141609","4897878830114","4891028670506","4891028714576"]
-[CactusModule] Making API call to: https://fakestore-backend.prod.lookingglassprotocol.com/GetProductName
-[CactusModule] API Response: "{\"data\": [{\"productId\":\"8801073140622\",\"productName\":\"Potato Ramen 5 Packs\"},{\"productId\":\"4582293810024\",\"productName\":\"Curry Udon\"},{\"productId\":\"4901790035493\",\"productName\":\"Four Seas Yaki Udon\"},{\"productId\":\"49021051708\",\"productName\":\"Nissin Donbei Udon\"},{\"productId\":\"4897878170029\",\"productName\":\"Nissin Vietnamese Chicken Vermicelli\"},{\"productId\":\"4897878170005\",\"productName\":\"Nissin Korean Kimchi Vermicelli \"},{\"productId\":\"4897878000098\",\"productName\":\"Nissin Demae Spicy Sesame Oil 100g\"},{\"productId\":\"47878830046\",\"productName\":\"Nissin Demae Tamen Yuzu Pepper Tonkotsu 98g\"},{\"productId\":\"4897878810024\",\"productName\":\"Nissin Demae Ramen Auper Hot Tonkotsu 100g\"},{\"productId\":\"4897878800025\",\"productName\":\"Nissin Demae Ramen Kyushu Tonkotsu 100g\"},{\"productId\":\"4897878800032\",\"productName\":\"Nissin Demae Ramen Spicy Seafood 100g\"},{\"productId\":\"4897878000074\",\"productName\":\"Nissin Demae Ramen Satay Flavour 100g\"},{\"productId\":\"4897878460038\",\"productName\":\"Nissin Thai Curry Crab 5 pack\"},{\"productId\":\"4897878630011\",\"productName\":\"Nissin Big Seafood Cup Noodles\"},{\"productId\":\"4897878630028\",\"productName\":\"Nissin Big Spicy Seafood Cup Noodles\"},{\"productId\":\"8801073141735\",\"productName\":\"Samyang Stir Chicken Ramen Cheese 5 packs\"},{\"productId\":\"8801073140578\",\"productName\":\"Samyang Hot Chicken Ramen 5 packs\"},{\"productId\":\"8801073142145\",\"productName\":\"Samyang Korean Gomtang  Ramen 5 packs\"},{\"productId\":\"8801043061605\",\"productName\":\"Nongshim Stir Fried Noodle 4 packs\"},{\"productId\":\"8801043020022\",\"productName\":\"Nongshim Potato Noodle Ramen 5 packs\"},{\"productId\":\"9555655005319\",\"productName\":\"MeeKuali Goreng Pedas Spicy Fried Noddles 4 packs\"},{\"productId\":\"4897878760121\",\"productName\":\"Nissin Raoh Pack Spicy Tonkotsu 5 packs\"},{\"productId\":\"4979397000145\",\"productName\":\"Nissin kobe Miso Ramen 5 packs\"},{\"productId\":\"4897878460014\",\"productName\":\"Nissin Thai Tom Yung 5 packs\"},{\"productId\":\"4897878140015\",\"productName\":\"Nissin Demae Ramen Sesame Oil 5 packs\"},{\"productId\":\"4897878141708\",\"productName\":\"Nissin Demae Ramen Hokkaido Wheat 5 packs\"},{\"productId\":\"4897878141609\",\"productName\":\"Nissin Demae Ramen Hokkaido Wheat Spicy Sesame Oil 5 packs\"},{\"productId\":\"4897878830114\",\"productName\":\"Nissin Demae Ramen Hokkaido Wheat Black Garlic 5 packs\"},{\"productId\":\"4891028670506\",\"productName\":\"VITA Tsing Shum Zhan Apple\u0026Jasmine\"},{\"productId\":\"4891028714576\",\"productName\":\"Vita cold brew no sugar oolong tea \"}]}"
-[CactusModule] Making API call to: https://cactus-backend-0.prod.lookingglassprotocol.com/requestMultipleProductPositions
-[CactusModule] Positions API Response: {"4582293810024":{"x":-2.6803614551370796,"y":1.0697566180142957,"z":-0.8693868111480366},"47878830046":{"x":-4.773484934460033,"y":1.0697566180142957,"z":-0.8597602166912772},"4891028670506":{"x":-5.665755306904714,"y":1.0540011013644062,"z":0.8467266289307007},"4891028714576":{"x":-5.431491592237023,"y":1.0540011013644062,"z":0.8420306391042685},"4897878000074":{"x":-4.230823291672601,"y":0.7396191679664952,"z":-0.862256000439326},"4897878000098":{"x":-4.4246310212395406,"y":1.0697566180142957,"z":-0.8613646491007372},"4897878140015":{"x":-4.0633180396897455,"y":0,"z":-0.8630263826676778},"4897878141609":{"x":-4.61151704617909,"y":0,"z":-0.8605051317385265},"4897878141708":{"x":-4.337417542934418,"y":0,"z":-0.8617657572031021},"4897878170005":{"x":-4.075777108019048,"y":1.0697566180142957,"z":-0.862969081510197},"4897878170029":{"x":-3.7269231947985566,"y":1.0697566180142957,"z":-0.864573513919657},"4897878460014":{"x":-3.789218536445073,"y":0,"z":-0.8642870081322535},"4897878460038":{"x":-3.378069281578064,"y":0.7396191679664952,"z":-0.8661779463291168},"4897878630011":{"x":-2.951692276530796,"y":0.7396191679664952,"z":-0.8681389192740123},"4897878630028":{"x":-2.525315271483527,"y":0.7396191679664952,"z":-0.8700998922189077},"4897878760121":{"x":-3.241019529955728,"y":0,"z":-0.8668082590614047},"4897878800025":{"x":-5.0835773017671375,"y":0.7396191679664952,"z":-0.8583340545495352},"4897878800032":{"x":-4.65720029671987,"y":0.7396191679664952,"z":-0.8602950274944305},"4897878810024":{"x":-5.122338847680525,"y":1.0697566180142957,"z":-0.8581557842818174},"4897878830114":{"x":-5.159716052668435,"y":0,"z":-0.8579838808093753},"4901790035493":{"x":-3.0292153683575718,"y":1.0697566180142957,"z":-0.8677823787385768},"49021051708":{"x":-3.378069281578064,"y":1.0697566180142957,"z":-0.8661779463291168},"4979397000145":{"x":-3.5151190332004005,"y":0,"z":-0.8655476335968291},"8801043020022":{"x":-2.41872102022171,"y":0,"z":-0.8705901354551315},"8801043061605":{"x":-2.1446215169770375,"y":0,"z":-0.8718507609197073},"8801073140578":{"x":-1.5964225104876928,"y":0,"z":-0.8743720118488585},"8801073140622":{"x":-1.9826536286960952,"y":1.0697566180142957,"z":-0.8725956759669564},"8801073141735":{"x":-2.098938266436259,"y":0.7396191679664952,"z":-0.8720608651638031},"8801073142145":{"x":-1.8705220137323655,"y":0,"z":-0.8731113863842829},"9555655005319":{"x":-2.966920026711055,"y":0,"z":-0.8680688845259803}}
-[CactusModule] Got semantic product data
-[CactusModule] Getting CSV info from DomainBarcodeNames
-[CactusModule] Looking up DomainBarcodeNames record ID from URL: https://cactus-backend-0.prod.lookingglassprotocol.com/api/collections/DomainBarcodeNames/records?filter=(domain='cgne5h3ujx1g8q2')
-[CactusModule] Found DomainBarcodeNames record ID: y7pv93tulu87t9n
-[CactusModule] Getting domain barcode names from URL: https://cactus-backend-0.prod.lookingglassprotocol.com/api/collections/DomainBarcodeNames/records/y7pv93tulu87t9n
-[CactusModule] Successfully retrieved DomainBarcodeNames record
-[CactusModule] Got CSV info - recordId: y7pv93tulu87t9n, collectionId: 8au74ydwwk9wqcn, filename: merged_barcode_data_ktvFyNVUte.csv
-[CactusModule] Downloading and parsing CSV file
-[CactusModule] Downloading CSV from URL: https://cactus-backend-0.prod.lookingglassprotocol.com/api/files/8au74ydwwk9wqcn/y7pv93tulu87t9n/merged_barcode_data_ktvFyNVUte.csv
-[CactusModule] CSV HTTP response code: 200
-[CactusModule] CSV header: 標籤條碼,標籤型號,商品條碼*,商品名稱,绑定時間,標籤狀態,barcode,id
-[CactusModule] Mapping example - ESL Code: '86778E490', Product Name: '怡泉零奶油蘇打水 330ML', Barcode: '4890008412303'
-[CactusModule] Mapping example - ESL Code: '856F55239', Product Name: '百味來通心粉 Rigate 500G', Barcode: '8076802085738'
-[CactusModule] WARNING: CSV line has fewer than 7 columns: 89B454070,ZKC15V-NH,DEMO_WD008,货架DEMO_WD008,2024-08-21 20:36:02,在線,,
-[CactusModule] WARNING: CSV line has fewer than 7 columns: 8571E6684,ZKC15V-NH,DEMO_WD007,货架DEMO_WD007,2024-08-21 20:36:02,在線,,
-[CactusModule] WARNING: CSV line has fewer than 7 columns: 83909D092,ZKC15V-NH,DEMO_WD006,货架DEMO_WD006,2024-08-21 20:36:02,在線,,
-[CactusModule] WARNING: CSV line has fewer than 7 columns: 80691C824,ZKC15V-NH,DEMO_WD015,货架DEMO_WD015,2024-08-21 20:36:02,在線,,
-[CactusModule] WARNING: CSV line has fewer than 7 columns: 87562D500,ZKC15V-NH,DEMO_WD014,货架DEMO_WD014,2024-08-21 20:36:02,在線,,
-[CactusModule] WARNING: CSV line has fewer than 7 columns: 88291279E,ZKC15V-NH,DEMO_WD013,货架DEMO_WD013,2024-08-21 20:36:02,在線,,
-[CactusModule] WARNING: CSV line has fewer than 7 columns: 86090905C,ZKC15V-NH,DEMO_WD012,货架DEMO_WD012,2024-08-21 20:36:02,在線,,
-[CactusModule] WARNING: CSV line has fewer than 7 columns: 89E560020,ZKC15V-NH,DEMO_WD011,货架DEMO_WD011,2024-08-21 20:36:02,在線,,
-[CactusModule] WARNING: CSV line has fewer than 7 columns: 899E58963,ZKC15V-NH,DEMO_WD010,货架DEMO_WD010,2024-08-21 20:36:02,在線,,
-[CactusModule] WARNING: CSV line has fewer than 7 columns: 892E01563,ZKC15V-NH,DEMO_WD009,货架DEMO_WD009,2024-08-21 20:36:02,在線,,
-[CactusModule] WARNING: CSV line has fewer than 7 columns: 85395840A,ZKC15V-NH,DEMO_WD024,货架DEMO_WD024,2024-08-21 20:34:42,在線,,
-[CactusModule] WARNING: CSV line has fewer than 7 columns: 8953786B4,ZKC15V-NH,DEMO_WD023,货架DEMO_WD023,2024-08-21 20:34:42,在線,,
-[CactusModule] WARNING: CSV line has fewer than 7 columns: 8B5764034,ZKC15V-NH,DEMO_WD022,货架DEMO_WD022,2024-08-21 20:34:42,在線,,
-[CactusModule] WARNING: CSV line has fewer than 7 columns: 8D9081492,ZKC15V-NH,DEMO_WD021,货架DEMO_WD021,2024-08-21 20:34:42,在線,,
-[CactusModule] CSV preview (first 5 lines):
-標籤條碼,標籤型號,商品條碼*,商品名稱,绑定時間,標籤狀態,barcode,id
-86778E490,ZKC26V-N,100017, 怡泉零奶油蘇打水 330ML,2025-04-11 10:41:38,在線,4890008412303.0,100017
-856F55239,ZKC21V-N,100302, 百味來通心粉 Rigate 500G,2025-04-10 19:49:10,在線,8076802085738.0,100302
-8C3155945,ZKC21V-N,100357, 百味來螺絲粉 N.98 500G,2025-04-10 19:49:09,在線,8076802085981.0,100357
-89061D609,ZKC21V-N,100354, Barilla Chifferi 義大利麵 500 G,2025-04-10 19:49:09,在線,8076809547956.0,100354
-
-[CactusModule] Parsed CSV with 602 entries
-[CactusModule] Sample keys in lookup map: '4894521050707', '8499596A3', '4891133241189', '82990C562', '85326B226', 
-[CactusModule] Successfully parsed barcode CSV from DomainBarcodeNames
-[CactusModule] Creating final products array from ESL data and barcode names
-[CactusModule] Missing product name for ESL code: 038000200458
-[CactusModule] Missing product name for ESL code: 038000200748
-[CactusModule] Missing product name for ESL code: 028400017015
-[CactusModule] Missing product name for ESL code: 4898118831106
-[CactusModule] Missing product name for ESL code: 044600009384
-[CactusModule] (additional missing products not logged)
-[CactusModule] Successfully matched 272 products, 10 missing
-2025-05-28T12:28:55.034Z: Loaded 282 products
-2025-05-28T12:28:55.037Z: Validating waypoints...
-2025-05-28T12:28:55.060Z: Patrol Points Configuration: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"Patrol Point 1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"Patrol Point 2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"Patrol Point 3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"Patrol Point 4"}]
-2025-05-28T12:28:55.070Z: Config waypoints: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"Patrol Point 1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"Patrol Point 2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"Patrol Point 3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"Patrol Point 4"}]
-Starting POI initialization...
-Got ReactApplicationContext, reading patrol_points.json from assets
-Read patrol points content: {
-  "patrol_points": [
-    {
-      "name": "Patrol Point 1",
-      "x": -1.14,
-      "y": 2.21,
-      "yaw": 3.14
-    },
-    {
-      "name": "Patrol Point 2",
-      "x": -6.11,
-      "y": 2.35,
-      "yaw": -1.57
-    },
-    {
-      "name": "Patrol Point 3",
-      "x": -6.08,
-      "y": 0.05,
-      "yaw": 0
-    },
-    {
-      "name": "Patrol Point 4",
-      "x": -1.03,
-      "y": 0.01,
-      "yaw": 1.57
-    }
-  ]
-} 
-Parsed patrol points JSON: [{"name":"Patrol Point 1","x":-1.14,"y":2.21,"yaw":3.14},{"name":"Patrol Point 2","x":-6.11,"y":2.35,"yaw":-1.57},{"name":"Patrol Point 3","x":-6.08,"y":0.05,"yaw":0},{"name":"Patrol Point 4","x":-1.03,"y":0.01,"yaw":1.57}]
-Creating POI 'Patrol Point 1' at [-1.14, 2.21, 3.14]
-Creating POI 'Patrol Point 1' at [-1.14, 2.21, 3.14]
-POI request body: {"id":"aa7ecba2-0451-434c-b915-f7fd15521907","pose":{"x":-1.14,"y":2.21,"yaw":3.14},"metadata":{"display_name":"Patrol Point 1","type":"","group":""}}
-ERROR: Error creating POI: null
-Creating POI 'Patrol Point 2' at [-6.11, 2.35, -1.57]
-Creating POI 'Patrol Point 2' at [-6.11, 2.35, -1.57]
-POI request body: {"id":"a174c747-e9c5-495e-9dc7-6190eaf2d819","pose":{"x":-6.11,"y":2.35,"yaw":-1.57},"metadata":{"display_name":"Patrol Point 2","type":"","group":""}}
-ERROR: Error creating POI: null
-Creating POI 'Patrol Point 3' at [-6.08, 0.05, 0.00]
-Creating POI 'Patrol Point 3' at [-6.08, 0.05, 0.00]
-POI request body: {"id":"7406d35c-b027-426d-a8ff-f88b0b28bc50","pose":{"x":-6.08,"y":0.05,"yaw":0},"metadata":{"display_name":"Patrol Point 3","type":"","group":""}}
-ERROR: Error creating POI: null
-Creating POI 'Patrol Point 4' at [-1.03, 0.01, 1.57]
-Creating POI 'Patrol Point 4' at [-1.03, 0.01, 1.57]
-POI request body: {"id":"98720230-7ff8-40f9-bf49-6fe17b13aafb","pose":{"x":-1.03,"y":0.01,"yaw":1.57},"metadata":{"display_name":"Patrol Point 4","type":"","group":""}}
-ERROR: Error creating POI: null
-POI initialization complete
-2025-05-28T12:28:55.195Z: Initial POIs fetch: []
-2025-05-28T12:28:55.201Z: No POIs found, waiting for initialization...
-Starting POI initialization...
-Got ReactApplicationContext, reading patrol_points.json from assets
-Read patrol points content: {
-  "patrol_points": [
-    {
-      "name": "Patrol Point 1",
-      "x": -1.14,
-      "y": 2.21,
-      "yaw": 3.14
-    },
-    {
-      "name": "Patrol Point 2",
-      "x": -6.11,
-      "y": 2.35,
-      "yaw": -1.57
-    },
-    {
-      "name": "Patrol Point 3",
-      "x": -6.08,
-      "y": 0.05,
-      "yaw": 0
-    },
-    {
-      "name": "Patrol Point 4",
-      "x": -1.03,
-      "y": 0.01,
-      "yaw": 1.57
-    }
-  ]
-} 
-Parsed patrol points JSON: [{"name":"Patrol Point 1","x":-1.14,"y":2.21,"yaw":3.14},{"name":"Patrol Point 2","x":-6.11,"y":2.35,"yaw":-1.57},{"name":"Patrol Point 3","x":-6.08,"y":0.05,"yaw":0},{"name":"Patrol Point 4","x":-1.03,"y":0.01,"yaw":1.57}]
-Creating POI 'Patrol Point 1' at [-1.14, 2.21, 3.14]
-Creating POI 'Patrol Point 1' at [-1.14, 2.21, 3.14]
-POI request body: {"id":"5a633c21-13a2-4f10-a458-c4e76e1c14dc","pose":{"x":-1.14,"y":2.21,"yaw":3.14},"metadata":{"display_name":"Patrol Point 1","type":"","group":""}}
-ERROR: Error creating POI: null
-Creating POI 'Patrol Point 2' at [-6.11, 2.35, -1.57]
-Creating POI 'Patrol Point 2' at [-6.11, 2.35, -1.57]
-POI request body: {"id":"bf7aee65-ffb0-4171-84d1-fd759e804567","pose":{"x":-6.11,"y":2.35,"yaw":-1.57},"metadata":{"display_name":"Patrol Point 2","type":"","group":""}}
-ERROR: Error creating POI: null
-Creating POI 'Patrol Point 3' at [-6.08, 0.05, 0.00]
-Creating POI 'Patrol Point 3' at [-6.08, 0.05, 0.00]
-POI request body: {"id":"1c7fc295-b271-4557-8f76-6640e6f77ae9","pose":{"x":-6.08,"y":0.05,"yaw":0},"metadata":{"display_name":"Patrol Point 3","type":"","group":""}}
-ERROR: Error creating POI: null
-Creating POI 'Patrol Point 4' at [-1.03, 0.01, 1.57]
-Creating POI 'Patrol Point 4' at [-1.03, 0.01, 1.57]
-POI request body: {"id":"0c2b9af6-fdac-4dbf-9517-1c9f1cb42d0b","pose":{"x":-1.03,"y":0.01,"yaw":1.57},"metadata":{"display_name":"Patrol Point 4","type":"","group":""}}
-ERROR: Error creating POI: null
-POI initialization complete
-2025-05-28T12:28:57.356Z: POIs after initialization: []
-2025-05-28T12:28:57.361Z: Found POI names: []
-2025-05-28T12:28:57.367Z: Valid POI names: []
-2025-05-28T12:28:57.375Z: POI validation error: Missing waypoints: Patrol Point 1, Patrol Point 2, Patrol Point 3, Patrol Point 4
-2025-05-28T12:28:57.383Z: Clearing and reinitializing POIs...
-Starting POI initialization...
-Got ReactApplicationContext, reading patrol_points.json from assets
-Read patrol points content: {
-  "patrol_points": [
-    {
-      "name": "Patrol Point 1",
-      "x": -1.14,
-      "y": 2.21,
-      "yaw": 3.14
-    },
-    {
-      "name": "Patrol Point 2",
-      "x": -6.11,
-      "y": 2.35,
-      "yaw": -1.57
-    },
-    {
-      "name": "Patrol Point 3",
-      "x": -6.08,
-      "y": 0.05,
-      "yaw": 0
-    },
-    {
-      "name": "Patrol Point 4",
-      "x": -1.03,
-      "y": 0.01,
-      "yaw": 1.57
-    }
-  ]
-} 
-Parsed patrol points JSON: [{"name":"Patrol Point 1","x":-1.14,"y":2.21,"yaw":3.14},{"name":"Patrol Point 2","x":-6.11,"y":2.35,"yaw":-1.57},{"name":"Patrol Point 3","x":-6.08,"y":0.05,"yaw":0},{"name":"Patrol Point 4","x":-1.03,"y":0.01,"yaw":1.57}]
-Creating POI 'Patrol Point 1' at [-1.14, 2.21, 3.14]
-Creating POI 'Patrol Point 1' at [-1.14, 2.21, 3.14]
-POI request body: {"id":"0a816bae-6914-431a-9ff2-eba1a91bcd97","pose":{"x":-1.14,"y":2.21,"yaw":3.14},"metadata":{"display_name":"Patrol Point 1","type":"","group":""}}
-Successfully created POI: Patrol Point 1 (response code: 200)
-Creating POI 'Patrol Point 2' at [-6.11, 2.35, -1.57]
-Creating POI 'Patrol Point 2' at [-6.11, 2.35, -1.57]
-POI request body: {"id":"97e56df7-69f6-4b2c-83e3-a061fedbf574","pose":{"x":-6.11,"y":2.35,"yaw":-1.57},"metadata":{"display_name":"Patrol Point 2","type":"","group":""}}
-Successfully created POI: Patrol Point 2 (response code: 200)
-Creating POI 'Patrol Point 3' at [-6.08, 0.05, 0.00]
-Creating POI 'Patrol Point 3' at [-6.08, 0.05, 0.00]
-POI request body: {"id":"8b470a0c-e7d8-4350-9341-528b77c722f1","pose":{"x":-6.08,"y":0.05,"yaw":0},"metadata":{"display_name":"Patrol Point 3","type":"","group":""}}
-Successfully created POI: Patrol Point 3 (response code: 200)
-Creating POI 'Patrol Point 4' at [-1.03, 0.01, 1.57]
-Creating POI 'Patrol Point 4' at [-1.03, 0.01, 1.57]
-POI request body: {"id":"95f8ae3a-d66c-4c4e-aad7-0a6e0bcd7db7","pose":{"x":-1.03,"y":0.01,"yaw":1.57},"metadata":{"display_name":"Patrol Point 4","type":"","group":""}}
-Successfully created POI: Patrol Point 4 (response code: 200)
-POI initialization complete
-2025-05-28T12:28:57.520Z: POIs have been reset and reinitialized
-2025-05-28T12:28:57.548Z: POIs after reset: [{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"Patrol Point 1"},"id":"0a816bae-6914-431a-9ff2-eba1a91bcd97"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"Patrol Point 3"},"id":"8b470a0c-e7d8-4350-9341-528b77c722f1"},{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"Patrol Point 4"},"id":"95f8ae3a-d66c-4c4e-aad7-0a6e0bcd7db7"},{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"Patrol Point 2"},"id":"97e56df7-69f6-4b2c-83e3-a061fedbf574"}]
-2025-05-28T12:28:58.563Z: Initialization complete, transitioning to main screen...
-2025-05-28T12:28:59.320Z: Patrol state changed to: inactive
-2025-05-28T12:28:59.322Z: MainScreen mounted. Promotion state: active=false, cancelled=false, currentPointIndex=0, remountFromConfig=false
-2025-05-28T12:28:59.323Z: No active promotion detected on mount
-2025-05-28T12:28:59.765Z: Performing initial token validation
-2025-05-28T12:28:59.767Z: Performing initial health check in MainScreen...
-2025-05-28T12:28:59.829Z: Proactively validating authentication token
-2025-05-28T12:28:59.830Z: Initial health check response: {
+2025-05-29T02:37:18.461Z: === New Debug Session Started ===
+2025-05-29T02:37:18.471Z: App Version: unknown
+2025-05-29T02:37:18.478Z: Starting app initialization...
+2025-05-29T02:37:18.483Z: Attempting authentication...
+2025-05-29T02:37:18.500Z: Authentication attempt 1/3
+2025-05-29T02:37:21.224Z: Authentication successful
+[2025-05-29 10:37:21.229] Authentication successful, initiating map download...
+2025-05-29T02:37:21.233Z: Updating map...
+2025-05-29T02:37:21.250Z: Authentication successful - map download was triggered during authentication
+[2025-05-29 10:37:21.255] Starting downloadMapAfterAuth process
+[2025-05-29 10:37:21.265] Using map endpoint: https://dsc.dev.aukiverse.com/spatial/crosssection
+[2025-05-29 10:37:21.276] Sending map request: {"domainId":"8093f9bf-c374-4162-ab74-ab61949627f1","domainServerUrl":"https:\/\/domain-server-us-east-1.aukiverse.com","height":0.1,"fileType":"stcm","pixelsPerMeter":20}
+[2025-05-29 10:37:21.291] Executing map download request
+[2025-05-29 10:37:23.199] Response content type: multipart/form-data; boundary=----9733452824104281382012970729
+[2025-05-29 10:37:23.214] Processing multipart/form-data response
+[2025-05-29 10:37:23.224] Found boundary: ------9733452824104281382012970729
+[2025-05-29 10:37:23.232] Split response into 4 parts
+[2025-05-29 10:37:23.240] Found img part in multipart response
+[2025-05-29 10:37:23.249] Extracted base64 data of length: 51432
+[2025-05-29 10:37:23.263] Successfully decoded 51432 bytes of base64 data to 38573 bytes of binary STCM data
+[2025-05-29 10:37:23.274] STCM map saved to: /storage/emulated/0/Download/CactusAssistant/map.stcm
+[2025-05-29 10:37:23.280] Using SLAM API base URL: http://127.0.0.1:1448
+[2025-05-29 10:37:23.284] Clearing old POIs and map data
+[2025-05-29 10:37:23.298] Clear POIs response code: 200
+[2025-05-29 10:37:23.623] Clear map response code: 200
+[2025-05-29 10:37:23.630] Uploading new map: /storage/emulated/0/Download/CactusAssistant/map.stcm
+[2025-05-29 10:37:23.642] Uploaded 38573 bytes
+2025-05-29T02:37:24.271Z: Map update complete
+2025-05-29T02:37:24.281Z: Loading products...
+2025-05-29T02:37:24.294Z: Error during initialization: Cannot read property 'getProducts' of null
+[2025-05-29 10:37:24.458] Upload map response code: 200
+[2025-05-29 10:37:24.463] Found homedock_qr_id: 2ZWHV5L6I04, getting pose data
+[2025-05-29 10:37:24.472] Getting pose data for QR ID: 2ZWHV5L6I04
+[2025-05-29 10:37:24.479] Fetching lighthouse data for QR ID: 2ZWHV5L6I04 from domain server: https://domain-server-us-east-1.aukiverse.com
+[2025-05-29 10:37:25.502] Get lighthouses response code: 200
+[2025-05-29 10:37:25.958] Found 'poses' field with 79 items
+[2025-05-29 10:37:25.964] Found matching lighthouse with short_id: 2ZWHV5L6I04
+[2025-05-29 10:37:25.977] Transformed coordinates: Original (px=0.12365669757127762, py=0.0, pz=-1.9286682605743408) -> Transformed (px=0.12365669757127762, py=1.9286682605743408, pz=0.0)
+[2025-05-29 10:37:25.981] Converted quaternion (rx=-0.7070834125222052, ry=0.005742730586745238, rz=0.0057427317661111555, rw=0.7070835097873683) -> yaw=3.14
+[2025-05-29 10:37:25.987] Saved homedock data to preferences: x=0.12365669757127762, y=1.9286682605743408, z=0.0, yaw=3.14
+[2025-05-29 10:37:25.994] Setting home dock from QR data: x=0.12365669757127762, y=1.9286682605743408, z=0.0, yaw=3.14
+[2025-05-29 10:37:26.011] Clear home docks response code: 200
+[2025-05-29 10:37:26.021] Set home dock response code: 200
+[2025-05-29 10:37:26.029] Setting robot pose from QR data: x=-0.07634304877423029, y=1.9286682605743408, z=3.185305832973657E-4, yaw=3.14
+[2025-05-29 10:37:26.044] Set pose response code: 200
+[2025-05-29 10:37:26.047] Saving persistent map
+[2025-05-29 10:37:26.061] Save persistent map response code: 200
+[2025-05-29 10:37:26.064] Map processing completed successfully
+2025-05-29T02:37:27.073Z: Starting health check...
+2025-05-29T02:37:27.313Z: Health check response: {
   "deviceFound": true,
   "status": "Robot health check successful",
   "slamApiAvailable": true,
   "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
   "responseCode": 200
 }
-2025-05-28T12:28:59.831Z: Parsed health check response: {
+2025-05-29T02:37:27.315Z: Parsed health check response: {
   "baseError": [],
   "hasDepthCameraDisconnected": false,
   "hasError": false,
@@ -292,23 +64,51 @@ POI initialization complete
   "hasSystemEmergencyStop": false,
   "hasWarning": false
 }
-2025-05-28T12:28:59.831Z: Initial health check successful
-[2025-05-28 20:28:59.952] Starting token validation...
-[2025-05-28 20:28:59.960] Domain info from storage: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","created_at":"2024-02-02T00:35:47.24977Z","updated_at":"2025-05-02T06:00:55.444308Z","claimed_by_kazm_id":null,"owner_wallet_address":"","access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsiZG9tYWluOnJ3Il0sImRvbWFpbl9pZCI6IjgwOTNmOWJmLWMzNzQtNDE2Mi1hYjc0LWFiNjE5NDk2MjdmMSIsIm9yZyI6ImNiYWM0MGVmLTc0NTItNDA4ZS04MTdiLWFmZDRlOTEzYWQwYyIsInR5cGUiOiJ1c2VyLWFjY2VzcyIsImlzcyI6ImRkcyIsInN1YiI6IjNlMDNlMjk4LWY0NzEtNDk4Ni05YjEwLTgzOTlmMzUzMDYyMCIsImF1ZCI6WyJkZHMiLCJodHRwczovL2RvbWFpbi1zZXJ2ZXItdXMtZWFzdC0xLmF1a2l2ZXJzZS5jb20iXSwiZXhwIjoxNzQ4NDM4OTIzLCJpYXQiOjE3NDg0MzUzMjN9.hZLlzVb9xmJZmKhD1oWRMZtB-PrhdUG_tSQdxu6Q4CXpi0cDbsTu3MNQj7B9y85ML8AvK_Mpx_7Athd4px-tTQ","domain_server":{"id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","organization_id":"00000000-0000-0000-0000-000000000001","name":"node-c1349ff69a9f4d46a6b","url":"https://domain-server-us-east-1.aukiverse.com","version":"v0.5.37","status":"online","created_at":"2024-01-18T09:08:31.358792Z","updated_at":"2025-05-26T09:17:22.865415Z","redirect_url":null,"mode":"public","variants":["auki"],"description":"","staking_status":"Staked","ip":"52.45.94.183","latitude":37.751,"longitude":-97.822,"asn":16509,"h3_cell_index":"8226e7fffffffff","cloud_region":""}}
-[2025-05-28 20:28:59.966] Re-authenticating with email: phil+aukilabs@aukilabs.com, domainId: 8093f9bf-c374-4162-ab74-ab61949627f1
-[2025-05-28 20:28:59.974] Posemesh user login URL: https://api.auki.network/user/login
-[2025-05-28 20:29:00.975] Posemesh user login response code: 200
-[2025-05-28 20:29:00.981] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDg0Mzg5NDAsImlhdC...
-[2025-05-28 20:29:00.991] Posemesh token received (first 10 chars): eyJhbGciOi...
-[2025-05-28 20:29:00.997] DDS authentication URL: https://api.auki.network/service/domains-access-token
-[2025-05-28 20:29:01.690] DDS authentication response code: 200
-[2025-05-28 20:29:01.700] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4NDM4OTQxLCJpYXQiOjE3NDg0MzUzNDEsImp0aSI6ImFmNGM5MThjLWE5ZWEtNDMwNy05ZTc5LWU5MmFhOTE4YzQ0ZCJ9.9XX1xKZ_1G9JN03WJpLxBTc_AkugKbMpkNEtRwU4_AWZ53-AiakP96ByLtGHTWFTqzxrtgZNM1nAc5X2aM6k1Q"}
-[2025-05-28 20:29:01.710] DDS token received (first 10 chars): eyJhbGciOi...
-[2025-05-28 20:29:01.721] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
-[2025-05-28 20:29:02.515] Domain authentication response code: 200
-[2025-05-28 20:29:02.525] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
-[2025-05-28 20:29:02.535] Updated domain info after token validation
-[2025-05-28 20:29:02.544] Token validation successful via re-authentication
-2025-05-28T12:29:02.548Z: Token validation successful: {"message":"Token is valid","valid":true}
-2025-05-28T12:29:05.117Z: User confirmed app exit
-2025-05-28T12:29:05.245Z: App state changed from active to background
+2025-05-29T02:37:27.316Z: Connection status: Health Check OK, Message: Health Check OK
+2025-05-29T02:37:29.858Z: Patrol state changed to: inactive
+2025-05-29T02:37:29.860Z: MainScreen mounted. Promotion state: active=false, cancelled=false, currentPointIndex=0, remountFromConfig=false
+2025-05-29T02:37:29.864Z: No active promotion detected on mount
+2025-05-29T02:37:29.865Z: Performing initial token validation
+2025-05-29T02:37:29.866Z: Performing initial health check in MainScreen...
+2025-05-29T02:37:29.875Z: App state changed from active to active
+2025-05-29T02:37:29.889Z: Proactively validating authentication token
+2025-05-29T02:37:29.966Z: Initial health check response: {
+  "deviceFound": true,
+  "status": "Robot health check successful",
+  "slamApiAvailable": true,
+  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
+  "responseCode": 200
+}
+2025-05-29T02:37:29.966Z: Parsed health check response: {
+  "baseError": [],
+  "hasDepthCameraDisconnected": false,
+  "hasError": false,
+  "hasFatal": false,
+  "hasLidarDisconnected": false,
+  "hasSdpDisconnected": false,
+  "hasSystemEmergencyStop": false,
+  "hasWarning": false
+}
+2025-05-29T02:37:29.967Z: Initial health check successful
+[2025-05-29 10:37:29.985] Starting token validation...
+[2025-05-29 10:37:29.988] Domain info from storage: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","created_at":"2024-02-02T00:35:47.24977Z","updated_at":"2025-05-02T06:00:55.444308Z","claimed_by_kazm_id":null,"owner_wallet_address":"","access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsiZG9tYWluOnJ3Il0sImRvbWFpbl9pZCI6IjgwOTNmOWJmLWMzNzQtNDE2Mi1hYjc0LWFiNjE5NDk2MjdmMSIsIm9yZyI6ImNiYWM0MGVmLTc0NTItNDA4ZS04MTdiLWFmZDRlOTEzYWQwYyIsInR5cGUiOiJ1c2VyLWFjY2VzcyIsImlzcyI6ImRkcyIsInN1YiI6IjNlMDNlMjk4LWY0NzEtNDk4Ni05YjEwLTgzOTlmMzUzMDYyMCIsImF1ZCI6WyJkZHMiLCJodHRwczovL2RvbWFpbi1zZXJ2ZXItdXMtZWFzdC0xLmF1a2l2ZXJzZS5jb20iXSwiZXhwIjoxNzQ4NDg5ODQxLCJpYXQiOjE3NDg0ODYyNDF9.Xjva819Syne0RrFgj9WjKrycXrhsYdERspwa0JrF3ngpjW_2Gtdbiz-STqHAOXNs2WScojf1KNTfixNsWozESA","domain_server":{"id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","organization_id":"00000000-0000-0000-0000-000000000001","name":"node-c1349ff69a9f4d46a6b","url":"https://domain-server-us-east-1.aukiverse.com","version":"v0.5.37","status":"online","created_at":"2024-01-18T09:08:31.358792Z","updated_at":"2025-05-26T09:17:22.865415Z","redirect_url":null,"mode":"public","variants":["auki"],"description":"","staking_status":"Staked","ip":"52.45.94.183","latitude":37.751,"longitude":-97.822,"asn":16509,"h3_cell_index":"8226e7fffffffff","cloud_region":""}}
+[2025-05-29 10:37:29.995] Re-authenticating with email: phil+aukilabs@aukilabs.com, domainId: 8093f9bf-c374-4162-ab74-ab61949627f1
+[2025-05-29 10:37:30.001] Posemesh user login URL: https://api.auki.network/user/login
+[2025-05-29 10:37:31.274] Posemesh user login response code: 200
+[2025-05-29 10:37:31.283] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDg0ODk4NTEsImlhdC...
+[2025-05-29 10:37:31.292] Posemesh token received (first 10 chars): eyJhbGciOi...
+[2025-05-29 10:37:31.302] DDS authentication URL: https://api.auki.network/service/domains-access-token
+[2025-05-29 10:37:31.971] DDS authentication response code: 200
+[2025-05-29 10:37:31.978] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4NDg5ODUxLCJpYXQiOjE3NDg0ODYyNTEsImp0aSI6ImIwN2I3MjRhLWU4YjEtNDBlNy1hYTFhLWJkMTMxMTgyMjZmZiJ9.vMnG0XJKpx0FPb7R0La8Nlim2JNSi14s5Pnzr1UwBYi_YC7jBQA3jHT_Gz5a2IJofqhdiupBHXzkzjdtDM_iHw"}
+[2025-05-29 10:37:31.983] DDS token received (first 10 chars): eyJhbGciOi...
+[2025-05-29 10:37:31.995] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
+[2025-05-29 10:37:32.896] Domain authentication response code: 200
+[2025-05-29 10:37:32.905] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
+[2025-05-29 10:37:32.914] Updated domain info after token validation
+[2025-05-29 10:37:32.921] Token validation successful via re-authentication
+2025-05-29T02:37:32.924Z: Token validation successful: {"message":"Token is valid","valid":true}
+2025-05-29T02:37:37.296Z: User confirmed app exit
+2025-05-29T02:37:37.383Z: App state changed from active to background
+2025-05-29T02:37:38.209Z: Component unmounted, waypoint sequence cancelled
+2025-05-29T02:37:38.217Z: Cleared token validation interval
+2025-05-29T02:37:38.227Z: Cleared token refresh interval
