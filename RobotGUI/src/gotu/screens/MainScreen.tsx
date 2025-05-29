@@ -75,7 +75,7 @@ loadSpeeds();
 const INACTIVITY_TIMEOUT = 20000;
 
 // Global variables to track promotion state across component lifecycles
-globalAny.promotionActive = false;
+let promotionActive = false;
 let promotionMounted = false;
 let promotionCancelled = false;
 let currentPointIndex = 0;
@@ -86,34 +86,13 @@ let navigatingToConfig = false; // Add flag to track if we're navigating to conf
 globalAny.clearInactivityTimer = null;
 globalAny.restartPromotion = null;
 
-// Define patrol points globally - will be populated from file
-let patrolPoints: Array<{
-  name: string;
-  x: number;
-  y: number;
-  yaw: number;
-}> = [];
-
-// Load patrol points from file
-const loadPatrolPoints = async () => {
-  try {
-    const patrolPointsContent = await NativeModules.FileUtils.readFile('patrol_points.json');
-    if (patrolPointsContent) {
-      const data = JSON.parse(patrolPointsContent);
-      patrolPoints = data.patrol_points.map((point: any) => ({
-        name: point.name,
-        x: point.x,
-        y: point.y,
-        yaw: point.yaw
-      }));
-      await LogUtils.writeDebugToFile(`Loaded patrol points: ${JSON.stringify(patrolPoints)}`);
-    } else {
-      await LogUtils.writeDebugToFile('No patrol points file found');
-    }
-  } catch (error) {
-    await LogUtils.writeDebugToFile(`Error loading patrol points: ${error instanceof Error ? error.message : String(error)}`);
-  }
-};
+// Define patrol points globally
+const patrolPoints = [
+  { name: "Patrol Point 1", x: -1.14, y: 2.21, yaw: 3.14 },
+  { name: "Patrol Point 2", x: -6.11, y: 2.35, yaw: -1.57 },
+  { name: "Patrol Point 3", x: -6.08, y: 0.05, yaw: 0 },
+  { name: "Patrol Point 4", x: -1.03, y: 0.01, yaw: 1.57 }
+];
 
 // Add token refresh interval (55 minutes to refresh before expiration)
 const TOKEN_REFRESH_INTERVAL = 55 * 60 * 1000;
@@ -170,7 +149,7 @@ globalAny.startPromotion = async () => {
   // Set the promotion state
   promotionCancelled = false;
   currentPointIndex = 0;
-  globalAny.promotionActive = true;
+  promotionActive = true;
   
   // Reset the remountFromConfig flag to ensure promotion starts even when coming from config screen
   remountFromConfig = false;
@@ -293,7 +272,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         // Use the same logic as the global startPromotion function
         promotionCancelled = false;
         currentPointIndex = 0;
-        globalAny.promotionActive = true;
+        promotionActive = true;
         
         // Set patrol state to active
         setIsPatrolling(true);
@@ -443,46 +422,42 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     isMountedRef.current = true;
     promotionMounted = true;
     
-    // Load patrol points first
-    loadPatrolPoints().then(() => {
-      // Log the current promotion state
-      LogUtils.writeDebugToFile(`MainScreen mounted. Promotion state: active=${globalAny.promotionActive}, cancelled=${promotionCancelled}, currentPointIndex=${currentPointIndex}, remountFromConfig=${remountFromConfig}`);
-      
-      // Only start promotion if it was explicitly activated via the global startPromotion function
-      if (globalAny.promotionActive && !promotionCancelled) {
-        LogUtils.writeDebugToFile('Active promotion detected on mount, starting navigation to first waypoint');
-        
-        // Set patrol state to active
-        setIsPatrolling(true);
-        isPatrollingRef.current = true;
-        
-        // Set navigation status to PATROL immediately to show the promotion screen
-        setNavigationStatus(NavigationStatus.PATROL);
-        
-        // Set robot speed to patrol speed
-        (async () => {
-          try {
-            await NativeModules.SlamtecUtils.setMaxLineSpeed(SPEEDS.patrol.toString());
-            await LogUtils.writeDebugToFile(`Set robot speed to patrol mode: ${SPEEDS.patrol} m/s when mounting`);
-          } catch (error: any) {
-            await LogUtils.writeDebugToFile(`Failed to set patrol speed when mounting: ${error.message}`);
-          }
-        })();
-        
-        // Start navigation with a small delay
-        setTimeout(() => {
-          if (isPatrollingRef.current && isMountedRef.current && !navigationCancelledRef.current) {
-            LogUtils.writeDebugToFile('Starting navigation to first waypoint');
-            navigateToNextPoint();
-          } else {
-            LogUtils.writeDebugToFile(`Navigation not starting: isMounted=${isMountedRef.current}, navigationCancelled=${navigationCancelledRef.current}`);
-          }
-        }, 500);
-      } else {
-        LogUtils.writeDebugToFile('No active promotion detected on mount');
-      }
-    });
+    // Log the current promotion state
+    LogUtils.writeDebugToFile(`MainScreen mounted. Promotion state: active=${promotionActive}, cancelled=${promotionCancelled}, currentPointIndex=${currentPointIndex}, remountFromConfig=${remountFromConfig}`);
     
+    // Only start promotion if it was explicitly activated via the global startPromotion function
+    // and not cancelled, and we're not remounting after config screen
+    if (promotionActive && !promotionCancelled) {
+      LogUtils.writeDebugToFile('Active promotion detected on mount, starting navigation to first waypoint');
+      
+      // Set patrol state to active
+      setIsPatrolling(true);
+      isPatrollingRef.current = true;
+      
+      // Set navigation status to PATROL immediately to show the promotion screen
+      setNavigationStatus(NavigationStatus.PATROL);
+      
+      // Set robot speed to patrol speed
+      (async () => {
+        try {
+          await NativeModules.SlamtecUtils.setMaxLineSpeed(SPEEDS.patrol.toString());
+          await LogUtils.writeDebugToFile(`Set robot speed to patrol mode: ${SPEEDS.patrol} m/s when mounting`);
+        } catch (error: any) {
+          await LogUtils.writeDebugToFile(`Failed to set patrol speed when mounting: ${error.message}`);
+        }
+      })();
+      
+      // Start navigation with a small delay
+      setTimeout(() => {
+        if (isPatrollingRef.current && isMountedRef.current && !navigationCancelledRef.current) {
+          LogUtils.writeDebugToFile('Starting navigation to first waypoint');
+          navigateToNextPoint();
+        } else {
+          LogUtils.writeDebugToFile(`Navigation not starting: isMounted=${isMountedRef.current}, navigationCancelled=${navigationCancelledRef.current}`);
+        }
+      }, 500);
+    }
+
     return () => {
       isMountedRef.current = false;
       promotionMounted = false;
@@ -692,7 +667,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     
     // Cancel any ongoing patrol
     setIsPatrolling(false);
-    globalAny.promotionActive = false;
+    promotionActive = false;
     promotionCancelled = true;
     await LogUtils.writeDebugToFile('Waypoint sequence cancelled due to product selection');
     
@@ -737,32 +712,14 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
             return;
           }
         }
-
-        // Try to fetch new coordinates first
-        let coords;
-        try {
-          await LogUtils.writeDebugToFile(`Attempting to fetch new coordinates for product ${product.id}`);
-          const newPose = await NativeModules.CactusUtils.requestProductPosition(product.id);
-          if (newPose) {
-            await LogUtils.writeDebugToFile(`Successfully fetched new coordinates: ${JSON.stringify(newPose)}`);
-            coords = {
-              x: newPose.x,
-              y: 0,
-              z: newPose.z
-            };
-          } else {
-            throw new Error('No new coordinates received');
-          }
-        } catch (error) {
-          await LogUtils.writeDebugToFile(`Failed to fetch new coordinates, falling back to existing pose: ${error.message}`);
-          // Fall back to existing coordinates
-          const poseZ = product.pose.pz || product.pose.z;
-          coords = {
-            x: product.pose.px || product.pose.x,
-            y: 0,
-            z: poseZ
-          };
-        }
+        
+        // Get product coordinates
+        const poseZ = product.pose.pz || product.pose.z;
+        const coords = {
+          x: product.pose.px || product.pose.x,
+          y: 0,
+          z: poseZ
+        };
     
         await LogUtils.writeDebugToFile(`Requesting navmesh coordinates for: ${JSON.stringify(coords)}`);
         const navTarget = await NativeModules.DomainUtils.getNavmeshCoord(coords);
@@ -808,6 +765,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           await LogUtils.writeDebugToFile('Setting navigation status to ARRIVED');
           
           // Only start the inactivity timer if auto-promotion is enabled in the configuration
+          // This prevents promotion from automatically starting after a user-initiated navigation
           try {
             const autoPromotionEnabled = await NativeModules.ConfigManagerModule.getAutoPromotionEnabled();
             if (autoPromotionEnabled) {
@@ -815,16 +773,10 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
               startInactivityTimer();
             } else {
               await LogUtils.writeDebugToFile('Auto-promotion disabled, not starting inactivity timer');
-              // Ensure promotion is cancelled when auto-promotion is disabled
-              promotionCancelled = true;
-              globalAny.promotionActive = false;
             }
           } catch (error) {
             // Default to not starting promotion if we can't check the config
             await LogUtils.writeDebugToFile('Error checking auto-promotion config, defaulting to not starting timer');
-            // Ensure promotion is cancelled when config check fails
-            promotionCancelled = true;
-            globalAny.promotionActive = false;
           }
           
           // Add a small delay to ensure state updates are processed
@@ -956,7 +908,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       // Mark navigation as cancelled
       navigationCancelledRef.current = true;
       promotionCancelled = true;
-      globalAny.promotionActive = false;
+      promotionActive = false;
       
       // Stop heartbeat checks
       // stopHeartbeatCheck();
@@ -1000,7 +952,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       // Even if stopping fails, still cancel patrol and return to list
       navigationCancelledRef.current = true;
       promotionCancelled = true;
-      globalAny.promotionActive = false;
+      promotionActive = false;
       setIsPatrolling(false);
       isPatrollingRef.current = false;
       setSelectedProduct(null);
@@ -1025,7 +977,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   const handleGoHome = async () => {
     // Cancel any ongoing patrol unless it's the final step of patrol
     setIsPatrolling(false);
-    globalAny.promotionActive = false;
+    promotionActive = false;
     promotionCancelled = true;
     await LogUtils.writeDebugToFile('Waypoint sequence cancelled due to manual Go Home');
     
@@ -1455,8 +1407,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     // In the new system:
     // x remains the same
     // y becomes 0 (ground plane)
-    // z becomes the old y (removed negative sign on 2024-03-19 for semantic shelves)
-    const z = y; // Use y directly for z without inversion
+    // z becomes the old y, but inverted
+    const z = -y; // Invert y to get z
     
     // Convert yaw to quaternion
     const quaternion = yawToQuaternion(yaw);
@@ -1538,15 +1490,24 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           // Always use PUT when a data ID exists, otherwise use POST to create one
           const robotPoseDataId = DeviceStorage.getIdentifiers().robotPoseDataId;
           if (robotPoseDataId) {
-            await NativeModules.DomainUtils.putRobotPoseData(robotPoseDataId, poseData);
+            // If we have a stored data ID, use PUT
+            await LogUtils.writeDebugToFile(`Using PUT with existing data ID: ${robotPoseDataId}`);
+            const result = await NativeModules.DomainUtils.writeRobotPose(JSON.stringify(poseData), "PUT", robotPoseDataId);
+            await LogUtils.writeDebugToFile(`Pose data sent successfully with PUT: ${JSON.stringify(result)}`);
           } else {
-            const newDataId = await NativeModules.DomainUtils.postRobotPoseData(poseData);
-            if (newDataId) {
-              DeviceStorage.setRobotPoseDataId(newDataId);
+            // If no data ID yet, use POST to create one
+            await LogUtils.writeDebugToFile(`Using POST to create new robot pose data`);
+            const result = await NativeModules.DomainUtils.writeRobotPose(JSON.stringify(poseData), "POST", null);
+            await LogUtils.writeDebugToFile(`Pose data sent successfully with POST: ${JSON.stringify(result)}`);
+            
+            // If this was a POST and we got a data ID back, store it for future updates
+            if (result.dataId) {
+              DeviceStorage.setRobotPoseDataId(result.dataId);
+              await LogUtils.writeDebugToFile(`Stored new robot pose data ID: ${result.dataId}`);
             }
           }
         } catch (error: any) {
-          await LogUtils.writeDebugToFile(`Error sending pose data to domain: ${error.message}`);
+          await LogUtils.writeDebugToFile(`Error sending pose data: ${error.message}`);
         }
       }
     } catch (error: any) {
@@ -1951,9 +1912,6 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         // Only proceed with token validation if health check passes
         await validateToken();
 
-        // Start battery monitoring
-        startBatteryMonitoring();
-
         // Then proceed with map operations
         LogUtils.writeDebugToFile('Initial health check successful');
       } catch (error) {
@@ -1968,97 +1926,16 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     };
 
     initializeApp();
-
-    // Cleanup function
-    return () => {
-      stopBatteryMonitoring();
-    };
   }, []);
 
   const [isInputFocused, setIsInputFocused] = useState(false);
-  const [batteryLevel, setBatteryLevel] = useState<number>(100);
-  const [isLowBatteryAlertShown, setIsLowBatteryAlertShown] = useState(false);
-  const batteryEventSubscription = useRef<any>(null);
-
-  // Function to handle battery status updates
-  const handleBatteryStatusUpdate = (event: any) => {
-    const { batteryPercentage, dockingStatus, isCharging } = event;
-    setBatteryLevel(batteryPercentage);
-
-    // If not docked and battery is low
-    if (dockingStatus !== 'on_dock' && batteryPercentage <= 20 && !isLowBatteryAlertShown) {
-      setIsLowBatteryAlertShown(true);
-      Alert.alert(
-        'Battery Level Low',
-        'Battery level is critically low. The robot will return to the charging dock.',
-        [
-          {
-            text: 'Cancel',
-            onPress: () => {
-              setIsLowBatteryAlertShown(false);
-            },
-            style: 'cancel'
-          }
-        ],
-        { cancelable: true }
-      );
-
-      // Return home regardless of current mode
-      try {
-        NativeModules.SlamtecUtils.goHome();
-        LogUtils.writeDebugToFile('Returning home due to low battery');
-      } catch (error) {
-        LogUtils.writeDebugToFile(`Failed to return home due to low battery: ${error}`);
-      }
-    }
-
-    // If charging and battery is above 80%, clear the alert
-    if (isCharging && batteryPercentage >= 80 && isLowBatteryAlertShown) {
-      setIsLowBatteryAlertShown(false);
-    }
-  };
-
-  // Start battery monitoring
-  const startBatteryMonitoring = () => {
-    try {
-      // Subscribe to battery status events
-      const eventEmitter = new NativeEventEmitter(NativeModules.BatteryMonitor);
-      batteryEventSubscription.current = eventEmitter.addListener(
-        'BatteryStatusUpdate',
-        handleBatteryStatusUpdate
-      );
-
-      // Start the native monitoring
-      NativeModules.BatteryMonitor.startMonitoring();
-      LogUtils.writeDebugToFile('Started battery monitoring');
-    } catch (error) {
-      LogUtils.writeDebugToFile(`Error starting battery monitoring: ${error}`);
-    }
-  };
-
-  // Stop battery monitoring
-  const stopBatteryMonitoring = () => {
-    try {
-      // Remove event listener
-      if (batteryEventSubscription.current) {
-        batteryEventSubscription.current.remove();
-        batteryEventSubscription.current = null;
-      }
-
-      // Stop the native monitoring
-      NativeModules.BatteryMonitor.stopMonitoring();
-      LogUtils.writeDebugToFile('Stopped battery monitoring');
-    } catch (error) {
-      LogUtils.writeDebugToFile(`Error stopping battery monitoring: ${error}`);
-    }
-  };
 
   return (
     <SafeAreaView 
       style={styles.container}
       onTouchStart={() => {
-        // Reset timer in all states except when navigating to a specific product
-        if (navigationStatus !== NavigationStatus.NAVIGATING) {
+        // Only reset timer if we're not in promotion mode
+        if (!isPatrollingRef.current && navigationStatus !== NavigationStatus.PATROL) {
           // We can't use await in the onTouchStart handler, so we handle it with a promise
           resetInactivityTimer()
             .then(() => LogUtils.writeDebugToFile('Touch detected, reset inactivity timer processed'))

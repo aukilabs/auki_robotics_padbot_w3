@@ -21,11 +21,11 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
   const [loadingText, setLoadingText] = useState('Initializing...');
   const [showDockDialog, setShowDockDialog] = useState(false);
   const [isDocked, setIsDocked] = useState(false);
-  const [isMounted, setIsMounted] = useState(true);
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
     let pollInterval: NodeJS.Timeout;
+    let isMounted = true;
 
     const checkDockStatus = async () => {
       try {
@@ -88,13 +88,26 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
         await LogUtils.initializeLogging();
         await LogUtils.writeDebugToFile('Starting app initialization...');
 
+        // Get device identifiers early and store them globally
+        try {
+          if (isMounted) {
+            setLoadingText('Initializing device...');
+          }
+          
+          const identifiers = await NativeModules.DomainUtils.getDeviceIdentifiers();
+          DeviceStorage.setIdentifiers(identifiers.deviceId, identifiers.macAddress);
+          await LogUtils.writeDebugToFile(`Device identifiers initialized: deviceId=${identifiers.deviceId}, macAddress=${identifiers.macAddress}`);
+        } catch (identifierError: any) {
+          await LogUtils.writeDebugToFile(`Error initializing device identifiers: ${identifierError.message}`);
+        }
+
         // First authenticate with stored credentials
         if (isMounted) {
           setLoadingText('Authenticating...');
           await LogUtils.writeDebugToFile('Attempting authentication...');
         }
         
-        // Use the regular authentication system
+        // Use the regular authentication system, not gotu credentials
         let authSuccess = false;
         let authAttempts = 0;
         const maxAuthAttempts = 3;
@@ -108,6 +121,34 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
             await NativeModules.DomainUtils.authenticate(null, null, null);
             await LogUtils.writeDebugToFile('Authentication successful');
             authSuccess = true;
+
+            // First try to get existing robot pose data ID
+            try {
+              await LogUtils.writeDebugToFile('Checking for existing robot pose data ID...');
+              const dataIdResult = await NativeModules.DomainUtils.getRobotPoseDataId();
+              
+              if (dataIdResult.exists) {
+                // Use existing data ID if available
+                DeviceStorage.setRobotPoseDataId(dataIdResult.dataId);
+                await LogUtils.writeDebugToFile(`Found existing robot pose data ID: ${dataIdResult.dataId}`);
+              } else {
+                // Only if no existing data ID, send test robot pose data with POST method
+                await LogUtils.writeDebugToFile('No existing data ID found. Sending test robot pose data with POST method...');
+                const testData = '{"Test 1 2 3 4"}';
+                const result = await NativeModules.DomainUtils.writeRobotPose(testData, 'POST', null);
+                await LogUtils.writeDebugToFile(`Robot pose test data sent successfully with ${result.method} method`);
+                
+                // Store the data ID from POST result
+                if (result.dataId) {
+                  DeviceStorage.setRobotPoseDataId(result.dataId);
+                  await LogUtils.writeDebugToFile(`Robot pose data ID from POST: ${result.dataId}`);
+                } else {
+                  await LogUtils.writeDebugToFile('No robot pose data ID returned from POST. Will create one with the first pose update.');
+                }
+              }
+            } catch (poseError: any) {
+              await LogUtils.writeDebugToFile(`Error handling robot pose data: ${poseError.message}`);
+            }
           } catch (authError: any) {
             await LogUtils.writeDebugToFile(`Authentication error on attempt ${authAttempts}: ${authError.message}`);
             
@@ -161,121 +202,50 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
             await new Promise(resolve => setTimeout(resolve, 1500));
           }
         }
-
+         
         // Load items from Gotu endpoint
         if (isMounted) {
           setLoadingText('Loading items...');
           await LogUtils.writeDebugToFile('Loading Gotu items...');
         }
-        const items = await NativeModules.GotuUtils.getItems();
-        const sortedItems = [...items].sort((a, b) => a.name.localeCompare(b.name));
-        await LogUtils.writeDebugToFile(`Loaded ${items.length} items`);
+        
+        try {
+          const products = await NativeModules.GotuUtils.getItems();
+          const sortedProducts = [...products].sort((a, b) => a.name.localeCompare(b.name));
+          await LogUtils.writeDebugToFile(`Loaded ${products.length} items`);
 
-        // Then check POIs against config
-        if (isMounted) {
-          setLoadingText('Validating waypoints...');
-          await LogUtils.writeDebugToFile('Validating waypoints...');
-          
-          let formattedPoints: any[] = [];
-          const patrolPointsContent = await NativeModules.FileUtils.readFile('patrol_points.json');
-          if (patrolPointsContent) {
-            const patrolPoints = JSON.parse(patrolPointsContent);
-            formattedPoints = patrolPoints.patrol_points.map((point: any) => ({
-              yaw: point.yaw,
-              y: point.y,
-              x: point.x,
-              name: point.name
-            }));
-            await LogUtils.writeDebugToFile(`Patrol Points Configuration: ${JSON.stringify(formattedPoints)}`);
+          if (isMounted) {
+            // Add a short delay before transition
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await LogUtils.writeDebugToFile('Initialization complete, transitioning to main screen...');
+            
+            // Create fade-out animation
+            Animated.timing(opacity, {
+              toValue: 0,
+              duration: 500,
+              easing: Easing.out(Easing.cubic),
+              useNativeDriver: true,
+            }).start(() => {
+              onFinish(sortedProducts);
+            });
           }
-
-          try {
-            const config = await NativeModules.DomainUtils.getConfig();
-            // Use formattedPoints instead of config.patrol_points
-            const configPatrolPoints = formattedPoints;
-            await LogUtils.writeDebugToFile(`Config waypoints: ${JSON.stringify(configPatrolPoints)}`);
-            
-            // Get waypoints from config
-            const configPatrolPointsArray = Array.isArray(configPatrolPoints) ? configPatrolPoints : [];
-            
-            // Get current POIs
-            let pois = await NativeModules.SlamtecUtils.getPOIs();
-            await LogUtils.writeDebugToFile(`Initial POIs fetch: ${JSON.stringify(pois)}`);
-            
-            // If POIs is empty, wait a moment and try again as they might be initializing
-            if (Array.isArray(pois) && pois.length === 0) {
-              await LogUtils.writeDebugToFile('No POIs found, waiting for initialization...');
-              await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for POIs to initialize
-              pois = await NativeModules.SlamtecUtils.getPOIs();
-              await LogUtils.writeDebugToFile(`POIs after initialization: ${JSON.stringify(pois)}`);
-            }
-            
-            // POIs response is an array of POI objects with metadata.display_name
-            const poiNames = Array.isArray(pois) ? pois.map((poi: any) => poi.metadata?.display_name?.trim()) : [];
-            await LogUtils.writeDebugToFile(`Found POI names: ${JSON.stringify(poiNames)}`);
-            
-            // Filter out any undefined or empty names
-            const validPoiNames = poiNames.filter((name): name is string => 
-              typeof name === 'string' && name.length > 0
-            );
-            await LogUtils.writeDebugToFile(`Valid POI names: ${JSON.stringify(validPoiNames)}`);
-            
-            // Check for mismatches
-            const extraPOIs = validPoiNames.filter((name: string) => 
-              !configPatrolPointsArray.find((cp: { name: string }) => cp.name === name)
-            );
-            const missingPoints = configPatrolPointsArray.filter((cp: { name: string }) => 
-              !validPoiNames.includes(cp.name)
-            );
-            
-            if (extraPOIs.length > 0 || missingPoints.length > 0) {
-              let errorMsg = '';
-              if (extraPOIs.length > 0) {
-                errorMsg += `Unexpected POIs found: ${extraPOIs.join(', ')}\n`;
+        } catch (itemsError: any) {
+          await LogUtils.writeDebugToFile(`Error loading items: ${itemsError.message}`);
+          if (isMounted) {
+            setLoadingText('Error loading items. Please restart the application.');
+            setTimeout(() => {
+              if (isMounted) {
+                Animated.timing(opacity, {
+                  toValue: 0,
+                  duration: 500,
+                  easing: Easing.out(Easing.cubic),
+                  useNativeDriver: true,
+                }).start(() => {
+                  onFinish([], { goToConfig: true });
+                });
               }
-              if (missingPoints.length > 0) {
-                errorMsg += `Missing waypoints: ${missingPoints.map((p: { name: string }) => p.name).join(', ')}`;
-              }
-              await LogUtils.writeDebugToFile(`POI validation error: ${errorMsg}`);
-              
-              // Clear and reinitialize POIs
-              await LogUtils.writeDebugToFile('Clearing and reinitializing POIs...');
-              if (isMounted) setLoadingText('Resetting waypoints...');
-              
-              await NativeModules.SlamtecUtils.clearAndInitializePOIs();
-              await LogUtils.writeDebugToFile('POIs have been reset and reinitialized');
-              
-              // Verify the POIs again
-              pois = await NativeModules.SlamtecUtils.getPOIs();
-              await LogUtils.writeDebugToFile(`POIs after reset: ${JSON.stringify(pois)}`);
-            } else {
-              await LogUtils.writeDebugToFile('POI validation successful - all points match config');
-            }
-          } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            await LogUtils.writeDebugToFile(`Waypoint validation error: ${errorMessage}`);
-            if (isMounted) {
-              setLoadingText(`Error validating waypoints: ${errorMessage}`);
-              // Keep error visible for 5 seconds
-              await new Promise(resolve => setTimeout(resolve, 5000));
-            }
+            }, 2000);
           }
-        }
-
-        if (isMounted) {
-          // Add 1 second delay before transition
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          await LogUtils.writeDebugToFile('Initialization complete, transitioning to main screen...');
-          
-          // Create fade-out animation
-          Animated.timing(opacity, {
-            toValue: 0,
-            duration: 500,
-            easing: Easing.out(Easing.cubic),
-            useNativeDriver: true,
-          }).start(() => {
-            onFinish(sortedItems);
-          });
         }
       } catch (error: any) {
         if (isMounted) {
@@ -283,7 +253,7 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
           await LogUtils.writeDebugToFile(`Error during initialization: ${errorMessage}`);
           console.error('Error during initialization:', error);
           setLoadingText(errorMessage);
-          // Still finish after error, but with empty items
+          // Still finish after error, but with empty products
           setTimeout(() => {
             if (isMounted) {
               Animated.timing(opacity, {
@@ -317,10 +287,9 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
     }, 30000);
 
     return () => {
-      setIsMounted(false);
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
+      isMounted = false;
+      clearTimeout(timeoutId);
+      if (pollInterval) clearInterval(pollInterval);
     };
   }, [opacity, onFinish]);
 
