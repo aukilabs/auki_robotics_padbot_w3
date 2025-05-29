@@ -138,8 +138,7 @@ globalAny.startPromotion = async () => {
   currentPointIndex = 0;
   globalAny.promotionActive = true;
   
-  // Reset the remountFromConfig flag to ensure promotion starts even when coming from config screen
-  remountFromConfig = false;
+  // Don't reset remountFromConfig flag here - it should be handled in the mount effect
   
   // Set robot speed to patrol speed immediately
   try {
@@ -236,13 +235,14 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   // Function to restart the promotion
   const restartPromotion = async () => {
     try {
-      // Only restart if we're not already in promotion mode and promotion is active
-      if (!isPatrollingRef.current && isMountedRef.current && globalAny.promotionActive) {
+      // Only restart if we're not already in promotion mode
+      if (!isPatrollingRef.current && isMountedRef.current) {
         await LogUtils.writeDebugToFile('Auto-restarting promotion after inactivity');
         
         // Use the same logic as the global startPromotion function
         promotionCancelled = false;
         currentPointIndex = 0;
+        globalAny.promotionActive = true;
         
         // Set patrol state to active
         setIsPatrolling(true);
@@ -397,7 +397,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     LogUtils.writeDebugToFile(`MainScreen mounted. Promotion state: active=${globalAny.promotionActive}, cancelled=${promotionCancelled}, currentPointIndex=${currentPointIndex}, remountFromConfig=${remountFromConfig}`);
     
     // Start promotion if it was explicitly activated via the global startPromotion function
-    if (globalAny.promotionActive && !promotionCancelled) {
+    // and not cancelled, and we're not remounting after config screen
+    if (globalAny.promotionActive && !promotionCancelled && !remountFromConfig) {
       LogUtils.writeDebugToFile('Active promotion detected on mount, starting navigation to first waypoint');
       
       // Set patrol state to active
@@ -427,7 +428,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         }
       }, 500);
     } else {
-      LogUtils.writeDebugToFile('No active promotion detected on mount');
+      LogUtils.writeDebugToFile('No active promotion detected on mount or remounting from config');
     }
     
     // Reset remountFromConfig flag after checking

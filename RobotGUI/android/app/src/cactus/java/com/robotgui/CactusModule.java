@@ -353,7 +353,7 @@ public class CactusModule extends ReactContextBaseJavaModule {
             }
             
             // Log the codes list
-            logToFile("Semantic product codes: " + codes.toString());
+            //logToFile("Semantic product codes: " + codes.toString());
             
             // Make API call to get product names
             try {
@@ -387,7 +387,7 @@ public class CactusModule extends ReactContextBaseJavaModule {
                     }
                     // Store the raw response string
                     productNamesJson = apiResponse.toString();
-                    logToFile("API Response: " + productNamesJson);
+                    //logToFile("API Response: " + productNamesJson);
                     Log.d(TAG, "Stored product names response: " + (productNamesJson != null ? "success" : "failed"));
                 } else {
                     StringBuilder errorResponse = new StringBuilder();
@@ -444,7 +444,7 @@ public class CactusModule extends ReactContextBaseJavaModule {
                     }
                     // Store the parsed positions response
                     positionsResponse = new JSONObject(positionsResponseBuilder.toString()).toString();
-                    logToFile("Positions API Response: " + positionsResponse);
+                    //logToFile("Positions API Response: " + positionsResponse);
                     Log.d(TAG, "Stored positions response: " + (positionsResponse != null ? "success" : "failed"));
                 } else {
                     StringBuilder errorResponse = new StringBuilder();
