@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import androidx.annotation.Nullable;
+import java.net.URLEncoder;
 
 public class CactusModule extends ReactContextBaseJavaModule {
     private static final String TAG = "CactusModule";
@@ -871,12 +872,12 @@ public class CactusModule extends ReactContextBaseJavaModule {
                 logToFile("Got domain collection ID: " + domainCollectionId);
 
                 // Make API call to get product position
-                String positionsUrl = backendUrl + "/api/collections/ProductPositions/records?filter=(domain='" + 
-                    domainCollectionId + "' AND sku='" + productId + "')";
+                String positionsUrl = backendUrl + "/requestProductPositions?sku=" + URLEncoder.encode(productId, "UTF-8") + "&domainId=" + URLEncoder.encode(domainId, "UTF-8");
                 logToFile("Making API call to: " + positionsUrl);
                 
                 HttpURLConnection positionsConnection = (HttpURLConnection) new URL(positionsUrl).openConnection();
                 positionsConnection.setRequestMethod("GET");
+                positionsConnection.setRequestProperty("Content-Type", "application/json");
                 positionsConnection.setRequestProperty("Authorization", "Bearer " + token);
                 
                 // Get response
@@ -889,22 +890,19 @@ public class CactusModule extends ReactContextBaseJavaModule {
                             positionsResponseBuilder.append(responseLine.trim());
                         }
                     }
-                    JSONObject jsonResponse = new JSONObject(positionsResponseBuilder.toString());
-                    JSONArray items = jsonResponse.getJSONArray("items");
-                    
-                    if (items.length() > 0) {
-                        JSONObject positionData = items.getJSONObject(0);
+                    JSONArray positionArray = new JSONArray(positionsResponseBuilder.toString());
+                    if (positionArray.length() > 0) {
+                        JSONObject positionData = positionArray.getJSONObject(0);
                         logToFile("Got position data: " + positionData.toString());
-                        
-                        // Create response map
+
                         WritableMap responseMap = Arguments.createMap();
                         responseMap.putDouble("x", positionData.getDouble("x"));
                         responseMap.putDouble("y", positionData.getDouble("y"));
                         responseMap.putDouble("z", positionData.getDouble("z"));
-                        
+
                         mainHandler.post(() -> promise.resolve(responseMap));
                     } else {
-                        String errorMsg = "No position data found for product: " + productId;
+                        String errorMsg = "Position array is empty";
                         logToFile("ERROR: " + errorMsg);
                         mainHandler.post(() -> promise.reject("POSITION_ERROR", errorMsg));
                     }
