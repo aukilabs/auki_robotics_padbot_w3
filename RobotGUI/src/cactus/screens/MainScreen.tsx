@@ -740,7 +740,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         let coords;
         try {
           await LogUtils.writeDebugToFile('Attempting to get new pose from requestProductPosition');
-          const newPose = await NativeModules.CactusModule.requestProductPosition(product.eslCode);
+          const newPose = await NativeModules.CactusUtils.requestProductPosition(product.eslCode);
           if (newPose) {
             await LogUtils.writeDebugToFile(`Got new pose from requestProductPosition: ${JSON.stringify(newPose)}`);
             coords = {
@@ -993,7 +993,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         );
         
       case NavigationStatus.PATROL:
-        // Full-screen image for patrol mode with tap instruction
+        // Full-screen image for patrol mode, no overlay text or banner
         return (
           <TouchableOpacity 
             style={styles.fullScreenContainer}
@@ -1001,13 +1001,10 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
             activeOpacity={1}
           >
             <Image 
-              source={require('../assets/test_image.jpg')} 
+              source={require('../assets/CactusAdLandscape.png')} 
               style={styles.fullScreenImage}
               resizeMode="cover"
             />
-            <View style={styles.tapInstructionContainer}>
-              <Text style={styles.tapInstructionText}>Tap anywhere for help finding products</Text>
-            </View>
           </TouchableOpacity>
         );
         

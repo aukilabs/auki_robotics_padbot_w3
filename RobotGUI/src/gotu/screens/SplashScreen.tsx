@@ -84,10 +84,92 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
 
     const initialize = async () => {
       try {
+        // Initialize logging first
+        await LogUtils.initializeLogging();
+        await LogUtils.writeDebugToFile('Starting app initialization...');
+
+        // First authenticate with stored credentials
         if (isMounted) {
-          setLoadingText('Initializing...');
-          await LogUtils.writeDebugToFile('Starting initialization...');
+          setLoadingText('Authenticating...');
+          await LogUtils.writeDebugToFile('Attempting authentication...');
         }
+        
+        // Use the regular authentication system
+        let authSuccess = false;
+        let authAttempts = 0;
+        const maxAuthAttempts = 3;
+        
+        while (!authSuccess && authAttempts < maxAuthAttempts) {
+          try {
+            authAttempts++;
+            await LogUtils.writeDebugToFile(`Authentication attempt ${authAttempts}/${maxAuthAttempts}`);
+            
+            // This uses the existing authentication system with stored credentials
+            await NativeModules.DomainUtils.authenticate(null, null, null);
+            await LogUtils.writeDebugToFile('Authentication successful');
+            authSuccess = true;
+          } catch (authError: any) {
+            await LogUtils.writeDebugToFile(`Authentication error on attempt ${authAttempts}: ${authError.message}`);
+            
+            // Log more detailed error information
+            if (authError.code) {
+              await LogUtils.writeDebugToFile(`Error code: ${authError.code}`);
+            }
+            
+            // Implement exponential backoff between retries
+            if (authAttempts < maxAuthAttempts) {
+              const backoffDelay = Math.pow(2, authAttempts - 1) * 1000; // 1s, 2s, 4s
+              await LogUtils.writeDebugToFile(`Retrying authentication in ${backoffDelay}ms...`);
+              await new Promise(resolve => setTimeout(resolve, backoffDelay));
+            }
+          }
+        }
+        
+        if (!authSuccess) {
+          await LogUtils.writeDebugToFile('All authentication attempts failed, proceeding with limited functionality');
+          if (isMounted) {
+            setLoadingText('Authentication failed. Some features may be limited.');
+            await new Promise(resolve => setTimeout(resolve, 2000));
+          }
+        }
+
+        // Update map
+        try {
+          if (isMounted) {
+            setLoadingText('Updating map...');
+            await LogUtils.writeDebugToFile('Updating map...');
+          }
+          
+          // Only try to update map if authentication was successful
+          if (authSuccess) {
+            // Check if map is already being downloaded from authenticate
+            // The authenticate method already triggers map download, so we'll just wait here
+            await LogUtils.writeDebugToFile('Authentication successful - map download was triggered during authentication');
+            
+            // Wait a reasonable amount of time for the map download to progress
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            
+            // No need to explicitly call downloadAndProcessMap() here as it was initiated during authentication
+            await LogUtils.writeDebugToFile('Map update complete');
+          } else {
+            await LogUtils.writeDebugToFile('Skipping map update due to authentication failure');
+          }
+        } catch (mapError: any) {
+          await LogUtils.writeDebugToFile(`Map update error: ${mapError.message}, proceeding anyway`);
+          if (isMounted) {
+            setLoadingText('Map update failed. Using existing map.');
+            await new Promise(resolve => setTimeout(resolve, 1500));
+          }
+        }
+
+        // Load items from Gotu endpoint
+        if (isMounted) {
+          setLoadingText('Loading items...');
+          await LogUtils.writeDebugToFile('Loading Gotu items...');
+        }
+        const items = await NativeModules.GotuUtils.getItems();
+        const sortedItems = [...items].sort((a, b) => a.name.localeCompare(b.name));
+        await LogUtils.writeDebugToFile(`Loaded ${items.length} items`);
 
         // Then check POIs against config
         if (isMounted) {
@@ -180,19 +262,40 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
           }
         }
 
-        // Continue with other initialization...
         if (isMounted) {
-          setLoadingText('Initialization complete');
-          await LogUtils.writeDebugToFile('Initialization complete');
-          onFinish();
+          // Add 1 second delay before transition
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          await LogUtils.writeDebugToFile('Initialization complete, transitioning to main screen...');
+          
+          // Create fade-out animation
+          Animated.timing(opacity, {
+            toValue: 0,
+            duration: 500,
+            easing: Easing.out(Easing.cubic),
+            useNativeDriver: true,
+          }).start(() => {
+            onFinish(sortedItems);
+          });
         }
-      } catch (error) {
+      } catch (error: any) {
         if (isMounted) {
-          setLoadingText(`Error: ${error instanceof Error ? error.message : String(error)}`);
-          await LogUtils.writeDebugToFile(`Initialization error: ${error instanceof Error ? error.message : String(error)}`);
-          // Keep error visible for 5 seconds
-          await new Promise(resolve => setTimeout(resolve, 5000));
-          onFinish();
+          const errorMessage = error.message || 'Error during initialization';
+          await LogUtils.writeDebugToFile(`Error during initialization: ${errorMessage}`);
+          console.error('Error during initialization:', error);
+          setLoadingText(errorMessage);
+          // Still finish after error, but with empty items
+          setTimeout(() => {
+            if (isMounted) {
+              Animated.timing(opacity, {
+                toValue: 0,
+                duration: 500,
+                easing: Easing.out(Easing.cubic),
+                useNativeDriver: true,
+              }).start(() => {
+                onFinish([], { goToConfig: true });
+              });
+            }
+          }, 2000);
         }
       }
     };

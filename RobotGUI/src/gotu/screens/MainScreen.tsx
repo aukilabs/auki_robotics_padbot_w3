@@ -742,7 +742,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         let coords;
         try {
           await LogUtils.writeDebugToFile(`Attempting to fetch new coordinates for product ${product.id}`);
-          const newPose = await NativeModules.CactusModule.requestProductPosition(product.id);
+          const newPose = await NativeModules.CactusUtils.requestProductPosition(product.id);
           if (newPose) {
             await LogUtils.writeDebugToFile(`Successfully fetched new coordinates: ${JSON.stringify(newPose)}`);
             coords = {
