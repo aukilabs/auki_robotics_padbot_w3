@@ -939,7 +939,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       setNavigationStatus(NavigationStatus.IDLE);
       
       // Start inactivity timer after returning to list
-      await resetInactivityTimer();
+      await LogUtils.writeDebugToFile('Starting inactivity timer after returning to list');
+      startInactivityTimer();
     } catch (error) {
       // Even if stopping fails, still cancel patrol and return to list
       navigationCancelledRef.current = true;
@@ -951,7 +952,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       setNavigationStatus(NavigationStatus.IDLE);
       
       // Start inactivity timer after error
-      await resetInactivityTimer();
+      await LogUtils.writeDebugToFile('Starting inactivity timer after error');
+      startInactivityTimer();
     }
   };
   

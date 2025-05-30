@@ -275,7 +275,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         
         // Use the same logic as the global startPromotion function
         promotionCancelled = false;
-        currentPointIndex = 0;
+        // Don't reset currentPointIndex, preserve it for resuming patrol
         promotionActive = true;
         
         // Set patrol state to active
@@ -299,7 +299,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         // Start navigation with a small delay to ensure UI has updated
         setTimeout(() => {
           if (isMountedRef.current && !navigationCancelledRef.current) {
-            LogUtils.writeDebugToFile('Starting navigation to first waypoint after auto-restart');
+            LogUtils.writeDebugToFile(`Starting navigation to waypoint ${currentPointIndex + 1} after auto-restart`);
             // Ensure patrol state is still active
             isPatrollingRef.current = true;
             navigateToNextPoint();
