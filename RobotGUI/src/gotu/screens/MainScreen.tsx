@@ -979,49 +979,78 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   };
   
   const handleGoHome = async () => {
+    // Cancel any ongoing patrol unless it's the final step of patrol
+    setIsPatrolling(false);
+    promotionActive = false;
+    promotionCancelled = true;
+    await LogUtils.writeDebugToFile('Waypoint sequence cancelled due to manual Go Home');
+    
+    // Reset navigation cancelled flag
+    navigationCancelledRef.current = false;
+    
+    // Reset recovery attempts counter
+    setRecoveryAttempts(0);
+    
+    // Set navigation status to NAVIGATING immediately
+    setNavigationStatus(NavigationStatus.NAVIGATING);
+    setSelectedProduct(null);
+    
+    // Reset robot speed to default
     try {
-      // Cancel any ongoing patrol and reset speed
-      if (isPatrolling) {
-        await cancelPatrol();
-      }
-      setRobotSpeed(defaultSpeed);
-
-      // Reset navigation status
-      setNavigationStatus(NavigationStatus.IDLE);
-      setNavigationError('');
-
-      // Validate token before proceeding
-      const isValid = await validateToken();
-      if (!isValid) {
-        try {
-          await refreshToken();
-        } catch (error) {
-          await LogUtils.writeDebugToFile(`Failed to refresh token: ${error}`);
-          setNavigationError('Authentication failed. Please try again.');
+      await NativeModules.SlamtecUtils.setMaxLineSpeed(SPEEDS.default.toString());
+      await LogUtils.writeDebugToFile(`Reset robot speed to default: ${SPEEDS.default} m/s`);
+    } catch (error: any) {
+      await LogUtils.writeDebugToFile(`Failed to reset robot speed: ${error.message}`);
+    }
+    
+    try {
+      // Validate token before attempting navigation
+      if (!await validateToken()) {
+        await LogUtils.writeDebugToFile('Token validation failed before going home, attempting refresh');
+        
+        if (!await refreshToken()) {
+          // If token refresh fails, show error dialog
+          await LogUtils.writeDebugToFile('Token refresh failed, cannot proceed with navigation');
+          
+          Alert.alert(
+            'Authentication Error',
+            'Your session has expired and automatic renewal failed. Please try again or restart the application.',
+            [
+              { 
+                text: 'Return to List', 
+                onPress: () => {
+                  setNavigationStatus(NavigationStatus.ERROR);
+                  setNavigationError('Session expired. Please try again.');
+                }
+              }
+            ]
+          );
           return;
         }
       }
-
-      // Start pose polling and navigate home
-      await startPosePolling();
-      setNavigationStatus(NavigationStatus.NAVIGATING);
       
-      try {
-        await NativeModules.SlamtecUtils.goHome();
+      // Start pose polling for this navigation
+      await startPosePolling();
+      
+      // Call the native module to go home
+      await LogUtils.writeDebugToFile('Starting navigation to home');
+      await NativeModules.SlamtecUtils.goHome();
+      
+      // Only update state if navigation wasn't cancelled
+      if (!navigationCancelledRef.current) {
+        await LogUtils.writeDebugToFile('Navigation to home completed');
         // Skip ARRIVED state and go directly to IDLE
         setNavigationStatus(NavigationStatus.IDLE);
         stopPosePolling();
-      } catch (error) {
-        await LogUtils.writeDebugToFile(`Navigation error: ${error}`);
-        setNavigationError('Failed to navigate home. Please try again.');
-        setNavigationStatus(NavigationStatus.IDLE);
-        stopPosePolling();
       }
-    } catch (error) {
-      await LogUtils.writeDebugToFile(`Error in handleGoHome: ${error}`);
-      setNavigationError('An unexpected error occurred. Please try again.');
-      setNavigationStatus(NavigationStatus.IDLE);
-      stopPosePolling();
+    } catch (error: any) {
+      // Only update error state if navigation wasn't cancelled
+      if (!navigationCancelledRef.current) {
+        const errorMsg = error.message || 'Navigation to home failed. Please try again.';
+        await LogUtils.writeDebugToFile(`Go Home error: ${errorMsg}`);
+        setNavigationStatus(NavigationStatus.ERROR);
+        setNavigationError(errorMsg);
+      }
     }
   };
   
@@ -1248,7 +1277,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         );
         
       case NavigationStatus.PATROL:
-        // Full-screen image for patrol mode with tap instruction
+        // Full-screen image for patrol mode, no text or banner
         return (
           <TouchableOpacity 
             style={styles.fullScreenContainer}
@@ -1256,13 +1285,10 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
             activeOpacity={1}
           >
             <Image 
-              source={require('../assets/test_image.jpg')} 
+              source={require('../assets/GotuAdLandscape.png')} 
               style={styles.fullScreenImage}
               resizeMode="cover"
             />
-            <View style={styles.tapInstructionContainer}>
-              <Text style={styles.tapInstructionText}>Tap anywhere for help finding products</Text>
-            </View>
           </TouchableOpacity>
         );
         
@@ -1343,7 +1369,24 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     }
   };
 
-  // Add a dedicated function to stop pose polling
+  // Refactor pose polling to match Cactus
+  const startPosePolling = async () => {
+    // Always clear any existing interval first
+    await stopPosePolling();
+    await LogUtils.writeDebugToFile('Starting robot pose polling at 2 times per second');
+
+    // Only set up interval if we're in NAVIGATING or PATROL states
+    if (currentNavigationStatusRef.current === NavigationStatus.NAVIGATING || 
+        currentNavigationStatusRef.current === NavigationStatus.PATROL) {
+      posePollingRef.current = setInterval(() => {
+        readRobotPose();
+      }, 500);
+      await LogUtils.writeDebugToFile('Robot pose polling started successfully');
+    } else {
+      await LogUtils.writeDebugToFile(`Not starting polling interval - not in NAVIGATING/PATROL state`);
+    }
+  };
+
   const stopPosePolling = async () => {
     if (posePollingRef.current) {
       clearInterval(posePollingRef.current);
@@ -1354,40 +1397,6 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     return false;
   };
 
-  // Helper function to convert from yaw to quaternion (assuming pitch and roll are 0)
-  const yawToQuaternion = (yaw: number) => {
-    const halfYaw = yaw / 2;
-    return {
-      w: Math.cos(halfYaw),
-      x: 0,
-      y: 0,
-      z: Math.sin(halfYaw)
-    };
-  };
-  
-  // Helper function to transform coordinates from robot system to our coordinate system
-  const transformCoordinates = (x: number, y: number, yaw: number) => {
-    // In the new system:
-    // x remains the same
-    // y becomes 0 (ground plane)
-    // z becomes the old y, but inverted
-    const z = -y; // Invert y to get z
-    
-    // Convert yaw to quaternion
-    const quaternion = yawToQuaternion(yaw);
-    
-    return {
-      x,
-      y: 0,
-      z,
-      quaternion,
-      // Keep the original values for reference
-      originalX: x,
-      originalY: y,
-      originalYaw: yaw
-    };
-  };
-
   // Function to read the pose and log it
   const readRobotPose = async () => {
     try {
@@ -1396,6 +1405,12 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           currentNavigationStatusRef.current !== NavigationStatus.PATROL) {
         await stopPosePolling();
         await LogUtils.writeDebugToFile(`Auto-stopped polling - not in NAVIGATING/PATROL state`);
+        return;
+      }
+      
+      // If in cooldown, skip reporting
+      if (poseReportingCooldownRef.current) {
+        await LogUtils.writeDebugToFile('Pose reporting is in cooldown, skipping this cycle');
         return;
       }
       
@@ -1470,35 +1485,30 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
             }
           }
         } catch (error: any) {
-          await LogUtils.writeDebugToFile(`Error sending pose data: ${error.message}`);
+          // Robust error handling: if critical error, pause reporting for 1 minute
+          const errorMsg = error.message || String(error);
+          await LogUtils.writeDebugToFile(`Error sending pose data: ${errorMsg}`);
+          if (
+            errorMsg.includes('Unable to create application data') ||
+            errorMsg.includes('System resource limit reached') ||
+            errorMsg.includes('Failed to connect') ||
+            errorMsg.includes('Failed to write robot pose data')
+          ) {
+            if (!poseReportingCooldownRef.current) {
+              poseReportingCooldownRef.current = true;
+              await LogUtils.writeDebugToFile('Critical pose reporting error detected. Pausing pose reporting for 1 minute.');
+              setTimeout(() => {
+                poseReportingCooldownRef.current = false;
+                LogUtils.writeDebugToFile('Pose reporting cooldown ended. Resuming pose reporting.');
+              }, 10000); // 10 second cooldown
+            }
+          }
+          // Do not throw or crash
         }
       }
     } catch (error: any) {
       await LogUtils.writeDebugToFile(`Error getting robot pose: ${error.message}`);
-    }
-  };
-
-  // Define startPosePolling outside the useEffect so it can be called from multiple places
-  const startPosePolling = async () => {
-    try {
-      // ALWAYS clear any existing interval first to prevent duplicates
-      await stopPosePolling();
-      
-      await LogUtils.writeDebugToFile('Starting robot pose polling at 2 times per second');
-      
-      // Call once immediately
-      await readRobotPose();
-      
-      // Only set up interval if we're in NAVIGATING or PATROL states
-      if (currentNavigationStatusRef.current === NavigationStatus.NAVIGATING || 
-          currentNavigationStatusRef.current === NavigationStatus.PATROL) {
-        posePollingRef.current = setInterval(readRobotPose, 500);
-        await LogUtils.writeDebugToFile('Robot pose polling started successfully');
-      } else {
-        await LogUtils.writeDebugToFile(`Not starting polling interval - not in NAVIGATING/PATROL state`);
-      }
-    } catch (error: any) {
-      await LogUtils.writeDebugToFile(`Error starting pose polling: ${error.message}`);
+      // Do not throw or crash
     }
   };
 
@@ -1899,6 +1909,41 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     promotionActive = false;
     promotionCancelled = true;
     await LogUtils.writeDebugToFile('Waypoint sequence cancelled');
+  };
+
+  // Add a ref to track pose reporting cooldown
+  const poseReportingCooldownRef = useRef(false);
+
+  // Helper function to convert from yaw to quaternion (assuming pitch and roll are 0)
+  const yawToQuaternion = (yaw: number) => {
+    const halfYaw = yaw / 2;
+    return {
+      w: Math.cos(halfYaw),
+      x: 0,
+      y: 0,
+      z: Math.sin(halfYaw)
+    };
+  };
+
+  // Helper function to transform coordinates from robot system to our coordinate system
+  const transformCoordinates = (x: number, y: number, yaw: number) => {
+    // In the new system:
+    // x remains the same
+    // y becomes 0 (ground plane)
+    // z becomes the old y, but inverted
+    const z = -y; // Invert y to get z
+    // Convert yaw to quaternion
+    const quaternion = yawToQuaternion(yaw);
+    return {
+      x,
+      y: 0,
+      z,
+      quaternion,
+      // Keep the original values for reference
+      originalX: x,
+      originalY: y,
+      originalYaw: yaw
+    };
   };
 
   return (
