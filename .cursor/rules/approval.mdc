@@ -1,0 +1,29 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+All code changes must be approved before being applied.
+
+Approval Request Format:
+1. Start with "APPROVAL REQUEST" header
+2. List which files are to be changed
+3. List specific changes for each file
+4. Wait for explicit approval before proceeding
+5. Do not make any changes until approved
+
+Example:
+APPROVAL REQUEST
+Files to be changed:
+1. RobotGUI/src/gotu/screens/MainScreen.tsx
+   - Change touch timeout from 5s to 10s
+   - Update log message to reflect 10s timeout
+2. CHANGELOG.md
+   - Update technical details section with new timeout value
+
+Please approve these changes before proceeding.
+
+Once approved, the build command can be run:
+```
+cd RobotGUI/android && ./gradlew clean && ./gradlew assembleRelease
+```

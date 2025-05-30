@@ -1,0 +1,47 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Changelog Rules
+
+## Format
+- Use Markdown format
+- Each entry should be dated (YYYY-MM-DD)
+- Group changes by date
+- Use clear, descriptive headings
+
+## Required Sections
+1. **Changes Made**
+   - List specific changes
+   - Use bullet points for details
+   - Include code-level changes (variables, functions, etc.)
+
+2. **Key Benefits**
+   - List the main improvements
+   - Focus on user experience and system behavior
+
+3. **Technical Details**
+   - Include timing values
+   - List state variables
+   - Document cleanup procedures
+
+4. **Files Modified**
+   - List all affected files
+   - Include full paths
+
+5. **Next Steps**
+   - List planned improvements
+   - Note areas for monitoring
+   - Document potential issues to watch
+
+## Process
+- Update changelog before applying changes
+- Include changelog updates in approval requests
+- Keep entries concise but informative
+- Link related changes across entries
+
+## Location
+- Store in root directory as `CHANGELOG.md`
+- Keep chronological order (newest first)
+- Maintain consistent formatting

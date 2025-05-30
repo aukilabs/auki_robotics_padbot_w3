@@ -2156,7 +2156,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
     fun writeRobotPose(jsonData: String, method: String = "PUT", dataId: String? = null, promise: Promise) {
         scope.launch {
             try {
-                logToFile("Starting writeRobotPose with method: $method, dataId: $dataId")
+                //logToFile("Starting writeRobotPose with method: $method, dataId: $dataId")
                 val domainInfoStr = domainInfo ?: throw Exception("No domain info available")
                 val domainInfoObj = JSONObject(domainInfoStr)
                 val accessToken = domainInfoObj.getString("access_token")

@@ -1,48 +1,249 @@
-
-2025-05-30T06:11:36.728Z: onTouchStart triggered. isPatrolling=true, navigationStatus=4
-2025-05-30T06:11:36.729Z: Touch detected during patrol, stopping patrol
-2025-05-30T06:11:36.730Z: Waypoint sequence cancelled (reason: user touch during patrol)
-2025-05-30T06:11:36.777Z: Patrol state changed to: inactive
-2025-05-30T06:11:36.791Z: Auto-promotion disabled, not starting inactivity timer after patrol stop
-2025-05-30T06:11:36.830Z: Waypoint sequence cancelled
-[2025-05-30 14:11:36.857] Write response code: 200
-[2025-05-30 14:11:36.869] Write response: {"data":[{"id":"195809dd-6e7e-4f1e-a20c-be15e8d31a0e","domain_id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"padbot-b44bd65d7d6d","data_type":"reported_pose_json","size":273,"created_at":"2025-05-29T10:19:56.182438Z","updated_at":"2025-05-30T06:11:36.705954Z"}]}
-[2025-05-30 14:11:36.875] writeRobotPose completed successfully
-2025-05-30T06:11:36.880Z: Robot movement stopped
-2025-05-30T06:11:37.026Z: Robot pose polling stopped on cleanup
-2025-05-30T06:11:37.027Z: Polling for robot call data...
-2025-05-30T06:11:37.028Z: Started robot call polling
-2025-05-30T06:11:37.028Z: Navigation state changed to: IDLE
-2025-05-30T06:11:37.028Z: Navigation status updated to: IDLE
-2025-05-30T06:11:37.032Z: Auto-promotion disabled, not starting inactivity timer
-2025-05-30T06:11:37.051Z: Polling stopped in IDLE state
-2025-05-30T06:11:37.290Z: Patrol conditions changed after navigation, not proceeding to next point
-2025-05-30T06:11:38.076Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T06:11:42.036Z: Polling for robot call data...
-2025-05-30T06:11:43.504Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T06:11:47.050Z: Polling for robot call data...
-2025-05-30T06:11:47.703Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T06:11:52.066Z: Polling for robot call data...
-2025-05-30T06:11:53.131Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T06:11:57.073Z: Polling for robot call data...
-2025-05-30T06:11:58.571Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T06:12:02.083Z: Polling for robot call data...
-2025-05-30T06:12:03.173Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T06:12:07.103Z: Polling for robot call data...
-2025-05-30T06:12:08.696Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T06:12:12.117Z: Polling for robot call data...
-2025-05-30T06:12:13.610Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T06:12:14.143Z: onTouchStart triggered. isPatrolling=false, navigationStatus=0
-2025-05-30T06:12:14.144Z: Touch detected outside patrol, resetting inactivity timer
-2025-05-30T06:12:14.145Z: Inactivity timer clear called, but no timer was running
-2025-05-30T06:12:14.168Z: Auto-promotion disabled, not starting inactivity timer after reset
-2025-05-30T06:12:14.187Z: Touch detected, reset inactivity timer processed
-2025-05-30T06:12:17.135Z: Polling for robot call data...
-2025-05-30T06:12:17.150Z: Inactivity timer clear called, but no timer was running
-2025-05-30T06:12:17.151Z: Config screen opened, cleared inactivity timer
-2025-05-30T06:12:17.309Z: Cleared token validation interval
-2025-05-30T06:12:17.310Z: Cleared token refresh interval
-2025-05-30T06:12:17.310Z: Cleaned up robot call polling
+2025-05-30T14:49:10.270Z: === New Debug Session Started ===
+2025-05-30T14:49:10.278Z: App Version: unknown
+2025-05-30T14:49:10.283Z: Starting app initialization...
+[2025-05-30 22:49:10.306] Using existing stored device ID: padbot-b44bd65d7d6d
+[2025-05-30 22:49:10.316] Device identifiers retrieved: deviceId=padbot-b44bd65d7d6d, macAddress=b44bd65d7d6d
+2025-05-30T14:49:10.332Z: Device identifiers initialized: deviceId=padbot-b44bd65d7d6d, macAddress=b44bd65d7d6d
+2025-05-30T14:49:10.338Z: Attempting authentication...
+2025-05-30T14:49:10.352Z: Authentication attempt 1/3
+[2025-05-30 22:49:12.900] Authentication successful, initiating map download...
+2025-05-30T14:49:12.896Z: Authentication successful
+[2025-05-30 22:49:12.910] Starting downloadMapAfterAuth process
+2025-05-30T14:49:12.903Z: Checking for existing robot pose data ID...
+[2025-05-30 22:49:12.919] Using map endpoint: https://dsc.dev.aukiverse.com/spatial/crosssection
+[2025-05-30 22:49:12.925] Getting robot pose data ID
+[2025-05-30 22:49:12.926] Sending map request: {"domainId":"8093f9bf-c374-4162-ab74-ab61949627f1","domainServerUrl":"https:\/\/domain-server-us-east-1.aukiverse.com","height":0.1,"fileType":"stcm","pixelsPerMeter":20}
+[2025-05-30 22:49:12.929] Using existing stored device ID: padbot-b44bd65d7d6d
+[2025-05-30 22:49:12.937] Executing map download request
+[2025-05-30 22:49:12.939] Checking for existing pose data with deviceId: padbot-b44bd65d7d6d
+[2025-05-30 22:49:12.945] Fetching data from: https://domain-server-us-east-1.aukiverse.com/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/data?name=padbot-b44bd65d7d6d&data_type=reported_pose_json
+[2025-05-30 22:49:13.858] Get response: {"data":[{"id":"195809dd-6e7e-4f1e-a20c-be15e8d31a0e","domain_id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"padbot-b44bd65d7d6d","data_type":"reported_pose_json","size":273,"created_at":"2025-05-29T10:19:56.182438Z","updated_at":"2025-05-30T14:24:20.52729Z"}]}
+[2025-05-30 22:49:13.865] Found existing pose data with ID: 195809dd-6e7e-4f1e-a20c-be15e8d31a0e
+2025-05-30T14:49:13.868Z: Found existing robot pose data ID: 195809dd-6e7e-4f1e-a20c-be15e8d31a0e
+2025-05-30T14:49:13.874Z: Updating map...
+2025-05-30T14:49:13.880Z: Authentication successful - map download was triggered during authentication
+[2025-05-30 22:49:15.058] Response content type: multipart/form-data; boundary=----9046388118407530768180399594
+[2025-05-30 22:49:15.218] Processing multipart/form-data response
+[2025-05-30 22:49:15.226] Found boundary: ------9046388118407530768180399594
+[2025-05-30 22:49:15.249] Split response into 4 parts
+[2025-05-30 22:49:15.269] Found img part in multipart response
+[2025-05-30 22:49:15.284] Extracted base64 data of length: 459868
+[2025-05-30 22:49:15.304] Successfully decoded 459868 bytes of base64 data to 344901 bytes of binary STCM data
+[2025-05-30 22:49:15.314] STCM map saved to: /storage/emulated/0/Download/GoTu/map.stcm
+[2025-05-30 22:49:15.321] Using SLAM API base URL: http://127.0.0.1:1448
+[2025-05-30 22:49:15.324] Clearing old POIs and map data
+[2025-05-30 22:49:15.337] Clear POIs response code: 200
+[2025-05-30 22:49:15.656] Clear map response code: 200
+[2025-05-30 22:49:15.662] Uploading new map: /storage/emulated/0/Download/GoTu/map.stcm
+[2025-05-30 22:49:15.710] Uploaded 344901 bytes
+[2025-05-30 22:49:16.753] Upload map response code: 200
+[2025-05-30 22:49:16.759] Found homedock_qr_id: 2ZWHV5L6I04, getting pose data
+[2025-05-30 22:49:16.764] Getting pose data for QR ID: 2ZWHV5L6I04
+[2025-05-30 22:49:16.771] Fetching lighthouse data for QR ID: 2ZWHV5L6I04 from domain server: https://domain-server-us-east-1.aukiverse.com
+2025-05-30T14:49:16.899Z: Map update complete
+2025-05-30T14:49:16.905Z: Validating waypoints...
+2025-05-30T14:49:16.925Z: Patrol Points Configuration: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"point1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"point2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"point3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"point4"}]
+Starting POI initialization...
+About to get ReactApplicationContext...
+Got ReactApplicationContext: not null
+Got ReactApplicationContext, checking patrol_points.json in Downloads directory
+About to get app variant...
+Got app variant: gotu
+Looking for patrol points file at: /storage/emulated/0/Download/GoTu/patrol_points.json
+File exists, attempting to read content...
+Successfully read file content, length: 359
+File content: {  "patrol_points": [    {      "name": "point1",      "x": -1.14,      "y": 2.21,      "yaw": 3.14    },    {      "name": "point2",      "x": -6.11,      "y": 2.35,      "yaw": -1.57    },    {      "name": "point3",      "x": -6.08,      "y": 0.05,      "yaw": 0    },    {      "name": "point4",      "x": -1.03,      "y": 0.01,      "yaw": 1.57    }  ]} 
+Attempting to parse JSON...
+Successfully created JSONObject
+Attempting to get patrol_points array...
+Successfully got patrol_points array with 4 points
+Parsed patrol points JSON: [{"name":"point1","x":-1.14,"y":2.21,"yaw":3.14},{"name":"point2","x":-6.11,"y":2.35,"yaw":-1.57},{"name":"point3","x":-6.08,"y":0.05,"yaw":0},{"name":"point4","x":-1.03,"y":0.01,"yaw":1.57}]
+Creating POI 'point1' at [-1.14, 2.21, 3.14]
+Creating POI 'point1' at [-1.14, 2.21, 3.14]
+POI request body: {"id":"88666b79-b3b1-4702-b4c8-5801df21c174","pose":{"x":-1.14,"y":2.21,"yaw":3.14},"metadata":{"display_name":"point1","type":"","group":""}}
+ERROR: Error creating POI: null
+Creating POI 'point2' at [-6.11, 2.35, -1.57]
+Creating POI 'point2' at [-6.11, 2.35, -1.57]
+POI request body: {"id":"1b8881e2-eded-4aa7-865e-6a34df5fdf71","pose":{"x":-6.11,"y":2.35,"yaw":-1.57},"metadata":{"display_name":"point2","type":"","group":""}}
+ERROR: Error creating POI: null
+Creating POI 'point3' at [-6.08, 0.05, 0.00]
+Creating POI 'point3' at [-6.08, 0.05, 0.00]
+POI request body: {"id":"65257040-2b13-4d0c-9ddf-80ed5fe195d5","pose":{"x":-6.08,"y":0.05,"yaw":0},"metadata":{"display_name":"point3","type":"","group":""}}
+ERROR: Error creating POI: null
+Creating POI 'point4' at [-1.03, 0.01, 1.57]
+Creating POI 'point4' at [-1.03, 0.01, 1.57]
+POI request body: {"id":"2bbcfac0-b5d6-48b2-a5fd-98d2e86bc334","pose":{"x":-1.03,"y":0.01,"yaw":1.57},"metadata":{"display_name":"point4","type":"","group":""}}
+ERROR: Error creating POI: null
+POI initialization complete
+2025-05-30T14:49:17.154Z: Initial POIs fetch: []
+2025-05-30T14:49:17.162Z: No POIs found, waiting for initialization...
+[2025-05-30 22:49:17.919] Get lighthouses response code: 200
+[2025-05-30 22:49:18.131] Found 'poses' field with 79 items
+[2025-05-30 22:49:18.136] Found matching lighthouse with short_id: 2ZWHV5L6I04
+[2025-05-30 22:49:18.142] Transformed coordinates: Original (px=0.12365669757127762, py=0.0, pz=-1.9286682605743408) -> Transformed (px=0.12365669757127762, py=1.9286682605743408, pz=0.0)
+[2025-05-30 22:49:18.146] Converted quaternion (rx=-0.7070834125222052, ry=0.005742730586745238, rz=0.0057427317661111555, rw=0.7070835097873683) -> yaw=3.14
+[2025-05-30 22:49:18.153] Saved homedock data to preferences: x=0.12365669757127762, y=1.9286682605743408, z=0.0, yaw=3.14
+[2025-05-30 22:49:18.161] Setting home dock from QR data: x=0.12365669757127762, y=1.9286682605743408, z=0.0, yaw=3.14
+[2025-05-30 22:49:18.174] Clear home docks response code: 200
+[2025-05-30 22:49:18.188] Set home dock response code: 200
+[2025-05-30 22:49:18.193] Setting robot pose from QR data: x=-0.07634304877423029, y=1.9286682605743408, z=3.185305832973657E-4, yaw=3.14
+[2025-05-30 22:49:18.204] Set pose response code: 200
+[2025-05-30 22:49:18.207] Saving persistent map
+[2025-05-30 22:49:18.256] Save persistent map response code: 200
+[2025-05-30 22:49:18.264] Map processing completed successfully
+Starting POI initialization...
+About to get ReactApplicationContext...
+Got ReactApplicationContext: not null
+Got ReactApplicationContext, checking patrol_points.json in Downloads directory
+About to get app variant...
+Got app variant: gotu
+Looking for patrol points file at: /storage/emulated/0/Download/GoTu/patrol_points.json
+File exists, attempting to read content...
+Successfully read file content, length: 359
+File content: {  "patrol_points": [    {      "name": "point1",      "x": -1.14,      "y": 2.21,      "yaw": 3.14    },    {      "name": "point2",      "x": -6.11,      "y": 2.35,      "yaw": -1.57    },    {      "name": "point3",      "x": -6.08,      "y": 0.05,      "yaw": 0    },    {      "name": "point4",      "x": -1.03,      "y": 0.01,      "yaw": 1.57    }  ]} 
+Attempting to parse JSON...
+Successfully created JSONObject
+Attempting to get patrol_points array...
+Successfully got patrol_points array with 4 points
+Parsed patrol points JSON: [{"name":"point1","x":-1.14,"y":2.21,"yaw":3.14},{"name":"point2","x":-6.11,"y":2.35,"yaw":-1.57},{"name":"point3","x":-6.08,"y":0.05,"yaw":0},{"name":"point4","x":-1.03,"y":0.01,"yaw":1.57}]
+Creating POI 'point1' at [-1.14, 2.21, 3.14]
+Creating POI 'point1' at [-1.14, 2.21, 3.14]
+POI request body: {"id":"f8ed08cf-e3ac-4ac0-916a-b12cb1118298","pose":{"x":-1.14,"y":2.21,"yaw":3.14},"metadata":{"display_name":"point1","type":"","group":""}}
+ERROR: Error creating POI: null
+Creating POI 'point2' at [-6.11, 2.35, -1.57]
+Creating POI 'point2' at [-6.11, 2.35, -1.57]
+POI request body: {"id":"cebe1edd-6724-4c99-8848-ea23c853058d","pose":{"x":-6.11,"y":2.35,"yaw":-1.57},"metadata":{"display_name":"point2","type":"","group":""}}
+ERROR: Error creating POI: null
+Creating POI 'point3' at [-6.08, 0.05, 0.00]
+Creating POI 'point3' at [-6.08, 0.05, 0.00]
+POI request body: {"id":"b5ad7113-42b7-4eb5-8ac1-a5a36135faea","pose":{"x":-6.08,"y":0.05,"yaw":0},"metadata":{"display_name":"point3","type":"","group":""}}
+ERROR: Error creating POI: null
+Creating POI 'point4' at [-1.03, 0.01, 1.57]
+Creating POI 'point4' at [-1.03, 0.01, 1.57]
+POI request body: {"id":"09ed537b-4af8-43bf-b0fe-4baf2ffb2844","pose":{"x":-1.03,"y":0.01,"yaw":1.57},"metadata":{"display_name":"point4","type":"","group":""}}
+ERROR: Error creating POI: null
+POI initialization complete
+2025-05-30T14:49:19.392Z: POIs after initialization: []
+2025-05-30T14:49:19.397Z: Found POI names: []
+2025-05-30T14:49:19.401Z: Valid POI names: []
+2025-05-30T14:49:19.405Z: POI validation error: Missing waypoints: point1, point2, point3, point4
+2025-05-30T14:49:19.411Z: Clearing and reinitializing POIs...
+Starting POI initialization...
+About to get ReactApplicationContext...
+Got ReactApplicationContext: not null
+Got ReactApplicationContext, checking patrol_points.json in Downloads directory
+About to get app variant...
+Got app variant: gotu
+Looking for patrol points file at: /storage/emulated/0/Download/GoTu/patrol_points.json
+File exists, attempting to read content...
+Successfully read file content, length: 359
+File content: {  "patrol_points": [    {      "name": "point1",      "x": -1.14,      "y": 2.21,      "yaw": 3.14    },    {      "name": "point2",      "x": -6.11,      "y": 2.35,      "yaw": -1.57    },    {      "name": "point3",      "x": -6.08,      "y": 0.05,      "yaw": 0    },    {      "name": "point4",      "x": -1.03,      "y": 0.01,      "yaw": 1.57    }  ]} 
+Attempting to parse JSON...
+Successfully created JSONObject
+Attempting to get patrol_points array...
+Successfully got patrol_points array with 4 points
+Parsed patrol points JSON: [{"name":"point1","x":-1.14,"y":2.21,"yaw":3.14},{"name":"point2","x":-6.11,"y":2.35,"yaw":-1.57},{"name":"point3","x":-6.08,"y":0.05,"yaw":0},{"name":"point4","x":-1.03,"y":0.01,"yaw":1.57}]
+Creating POI 'point1' at [-1.14, 2.21, 3.14]
+Creating POI 'point1' at [-1.14, 2.21, 3.14]
+POI request body: {"id":"1e95f631-686f-451b-ad8f-716ac7f94702","pose":{"x":-1.14,"y":2.21,"yaw":3.14},"metadata":{"display_name":"point1","type":"","group":""}}
+Successfully created POI: point1 (response code: 200)
+Creating POI 'point2' at [-6.11, 2.35, -1.57]
+Creating POI 'point2' at [-6.11, 2.35, -1.57]
+POI request body: {"id":"0561be31-0bcc-4200-9ea0-c68fca4a0198","pose":{"x":-6.11,"y":2.35,"yaw":-1.57},"metadata":{"display_name":"point2","type":"","group":""}}
+Successfully created POI: point2 (response code: 200)
+Creating POI 'point3' at [-6.08, 0.05, 0.00]
+Creating POI 'point3' at [-6.08, 0.05, 0.00]
+POI request body: {"id":"23e9e4d5-736d-4a4b-8c72-71589d3d658d","pose":{"x":-6.08,"y":0.05,"yaw":0},"metadata":{"display_name":"point3","type":"","group":""}}
+Successfully created POI: point3 (response code: 200)
+Creating POI 'point4' at [-1.03, 0.01, 1.57]
+Creating POI 'point4' at [-1.03, 0.01, 1.57]
+POI request body: {"id":"13e5682d-9a90-44b4-9133-34c35139520e","pose":{"x":-1.03,"y":0.01,"yaw":1.57},"metadata":{"display_name":"point4","type":"","group":""}}
+Successfully created POI: point4 (response code: 200)
+POI initialization complete
+2025-05-30T14:49:19.580Z: POIs have been reset and reinitialized
+2025-05-30T14:49:19.598Z: POIs after reset: [{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"point2"},"id":"0561be31-0bcc-4200-9ea0-c68fca4a0198"},{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"point4"},"id":"13e5682d-9a90-44b4-9133-34c35139520e"},{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"point1"},"id":"1e95f631-686f-451b-ad8f-716ac7f94702"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"point3"},"id":"23e9e4d5-736d-4a4b-8c72-71589d3d658d"}]
+2025-05-30T14:49:19.603Z: Loading Gotu items...
+2025-05-30T14:49:20.518Z: Loaded 41 items
+2025-05-30T14:49:21.532Z: Initialization complete, transitioning to main screen...
+2025-05-30T14:49:22.249Z: Patrol state changed to: inactive
+2025-05-30T14:49:22.250Z: MainScreen mounted. Promotion state: active=false, cancelled=false, currentPointIndex=0, remountFromConfig=false
+2025-05-30T14:49:22.304Z: Performing initial token validation
+2025-05-30T14:49:22.305Z: Polling for robot call data...
+2025-05-30T14:49:22.306Z: Started robot call polling
+2025-05-30T14:49:22.306Z: Navigation state changed to: IDLE
+2025-05-30T14:49:22.307Z: Navigation status updated to: IDLE
+2025-05-30T14:49:22.307Z: Performing initial health check in MainScreen...
+2025-05-30T14:49:22.308Z: Performing initial health check in MainScreen...
+2025-05-30T14:49:22.309Z: Starting robot pose polling at 2 times per second
+2025-05-30T14:49:22.377Z: validateToken called (force=true)
+2025-05-30T14:49:22.378Z: Proactively validating authentication token
+2025-05-30T14:49:22.379Z: Polling stopped in IDLE state
+2025-05-30T14:49:22.379Z: Loaded patrol points: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"point1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"point2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"point3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"point4"}]
+2025-05-30T14:49:22.380Z: Not starting polling interval - not in NAVIGATING/PATROL state
+[2025-05-30 22:49:22.409] Starting token validation...
+[2025-05-30 22:49:22.416] Domain info from storage: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","created_at":"2024-02-02T00:35:47.24977Z","updated_at":"2025-05-02T06:00:55.444308Z","claimed_by_kazm_id":null,"owner_wallet_address":"","access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsiZG9tYWluOnJ3Il0sImRvbWFpbl9pZCI6IjgwOTNmOWJmLWMzNzQtNDE2Mi1hYjc0LWFiNjE5NDk2MjdmMSIsIm9yZyI6ImNiYWM0MGVmLTc0NTItNDA4ZS04MTdiLWFmZDRlOTEzYWQwYyIsInR5cGUiOiJ1c2VyLWFjY2VzcyIsImlzcyI6ImRkcyIsInN1YiI6IjNlMDNlMjk4LWY0NzEtNDk4Ni05YjEwLTgzOTlmMzUzMDYyMCIsImF1ZCI6WyJkZHMiLCJodHRwczovL2RvbWFpbi1zZXJ2ZXItdXMtZWFzdC0xLmF1a2l2ZXJzZS5jb20iXSwiZXhwIjoxNzQ4NjIwMTUyLCJpYXQiOjE3NDg2MTY1NTJ9.H6MN8M9k8_fwEku1S1pvjYVbAe7PH-8DsI-bLseneKWlEdrQ20HB585Urip_KytbU1df6mjGcAI2BH2aFKm-xA","domain_server":{"id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","organization_id":"00000000-0000-0000-0000-000000000001","name":"node-c1349ff69a9f4d46a6b","url":"https://domain-server-us-east-1.aukiverse.com","version":"v0.5.37","status":"online","created_at":"2024-01-18T09:08:31.358792Z","updated_at":"2025-05-26T09:17:22.865415Z","redirect_url":null,"mode":"public","variants":["auki"],"description":"","staking_status":"Staked","ip":"52.45.94.183","latitude":37.751,"longitude":-97.822,"asn":16509,"h3_cell_index":"8226e7fffffffff","cloud_region":""}}
+[2025-05-30 22:49:22.423] Re-authenticating with email: phil+aukilabs@aukilabs.com, domainId: 8093f9bf-c374-4162-ab74-ab61949627f1
+[2025-05-30 22:49:22.427] Posemesh user login URL: https://api.auki.network/user/login
+2025-05-30T14:49:22.594Z: Initial health check response: {
+  "deviceFound": true,
+  "status": "Robot health check successful",
+  "slamApiAvailable": true,
+  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
+  "responseCode": 200
+}
+2025-05-30T14:49:22.597Z: validateToken called (force=false)
+2025-05-30T14:49:22.599Z: Token validation already in progress, skipping
+2025-05-30T14:49:22.601Z: Initial health check response: {
+  "deviceFound": true,
+  "status": "Robot health check successful",
+  "slamApiAvailable": true,
+  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
+  "responseCode": 200
+}
+2025-05-30T14:49:22.602Z: Parsed health check response: {
+  "baseError": [],
+  "hasDepthCameraDisconnected": false,
+  "hasError": false,
+  "hasFatal": false,
+  "hasLidarDisconnected": false,
+  "hasSdpDisconnected": false,
+  "hasSystemEmergencyStop": false,
+  "hasWarning": false
+}
+2025-05-30T14:49:22.603Z: Initial health check successful
+2025-05-30T14:49:22.605Z: Initial POIs fetch: [{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"point2"},"id":"0561be31-0bcc-4200-9ea0-c68fca4a0198"},{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"point4"},"id":"13e5682d-9a90-44b4-9133-34c35139520e"},{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"point1"},"id":"1e95f631-686f-451b-ad8f-716ac7f94702"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"point3"},"id":"23e9e4d5-736d-4a4b-8c72-71589d3d658d"}]
+2025-05-30T14:49:22.619Z: Initial health check successful
+2025-05-30T14:49:22.825Z: Found POI names: ["point2","point4","point1","point3"]
+2025-05-30T14:49:22.830Z: Valid POI names: ["point2","point4","point1","point3"]
+2025-05-30T14:49:22.837Z: POI validation successful - all points match config
+[2025-05-30 22:49:23.263] Posemesh user login response code: 200
+[2025-05-30 22:49:23.273] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDg2MjAxNjMsImlhdC...
+[2025-05-30 22:49:23.292] Posemesh token received (first 10 chars): eyJhbGciOi...
+[2025-05-30 22:49:23.296] DDS authentication URL: https://api.auki.network/service/domains-access-token
+2025-05-30T14:49:23.386Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:49:23.705Z: Inactivity timer clear called, but no timer was running
+2025-05-30T14:49:23.706Z: resetInactivityTimer - promotionActive: false, promotionCancelled: false, isPatrolling: false
+2025-05-30T14:49:23.720Z: Not starting inactivity timer - promotion is inactive or cancelled
+[2025-05-30 22:49:24.055] DDS authentication response code: 200
+[2025-05-30 22:49:24.063] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4NjIwMTYzLCJpYXQiOjE3NDg2MTY1NjMsImp0aSI6IjAxOTA2NmU4LTNkZTMtNGYyOS05ZGY4LWVkZGFlYzZmZmJhYyJ9.Cn5enygcW-biTmq84C9-epuNCmkjowcRrYfa25cs3Y_b3ZZyJ_LbYgAF6nrxY_FJmmNQZ8cnPUhbg-tQxMQS2A"}
+[2025-05-30 22:49:24.075] DDS token received (first 10 chars): eyJhbGciOi...
+[2025-05-30 22:49:24.080] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
+[2025-05-30 22:49:24.878] Domain authentication response code: 200
+[2025-05-30 22:49:24.885] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
+[2025-05-30 22:49:24.890] Updated domain info after token validation
+[2025-05-30 22:49:24.897] Token validation successful via re-authentication
+2025-05-30T14:49:24.909Z: Token validation successful: {"message":"Token is valid","valid":true}
+2025-05-30T14:49:27.324Z: Polling for robot call data...
+2025-05-30T14:49:28.870Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:49:29.276Z: Inactivity timer clear called, but no timer was running
+2025-05-30T14:49:29.277Z: resetInactivityTimer - promotionActive: false, promotionCancelled: false, isPatrolling: false
+2025-05-30T14:49:29.328Z: Not starting inactivity timer - promotion is inactive or cancelled
+2025-05-30T14:49:32.282Z: Inactivity timer clear called, but no timer was running
+2025-05-30T14:49:32.283Z: Config screen opened, cleared inactivity timer
+2025-05-30T14:49:32.468Z: Polling for robot call data...
+2025-05-30T14:49:32.468Z: Cleared token validation interval
+2025-05-30T14:49:32.469Z: Cleared token refresh interval
+2025-05-30T14:49:32.469Z: Cleaned up robot call polling
 Starting health check...
 
 Health check response: {
@@ -66,18 +267,52 @@ Parsed health check response: {
 
 Connection status: Health Check OK, Message: Health Check OK
 
-2025-05-30T06:12:18.627Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-Starting health check...
-
-Health check response: {
+2025-05-30T14:49:34.007Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:49:34.502Z: Promotion activated globally
+2025-05-30T14:49:34.559Z: Set robot speed to patrol mode: 0.25 m/s
+2025-05-30T14:49:34.568Z: MainScreen not mounted, promotion will start when it mounts
+2025-05-30T14:49:34.812Z: Patrol state changed to: inactive
+2025-05-30T14:49:34.813Z: MainScreen mounted. Promotion state: active=true, cancelled=false, currentPointIndex=0, remountFromConfig=false
+2025-05-30T14:49:34.814Z: Active promotion detected on mount, starting navigation to first waypoint
+2025-05-30T14:49:34.867Z: Performing initial token validation
+2025-05-30T14:49:34.867Z: Polling for robot call data...
+2025-05-30T14:49:34.868Z: Started robot call polling
+2025-05-30T14:49:34.868Z: Navigation state changed to: IDLE
+2025-05-30T14:49:34.869Z: Navigation status updated to: IDLE
+2025-05-30T14:49:34.869Z: Performing initial health check in MainScreen...
+2025-05-30T14:49:34.870Z: Performing initial health check in MainScreen...
+2025-05-30T14:49:34.871Z: Starting robot pose polling at 2 times per second
+2025-05-30T14:49:34.872Z: validateToken called (force=true)
+2025-05-30T14:49:34.872Z: Proactively validating authentication token
+2025-05-30T14:49:34.887Z: Polling stopped in IDLE state
+2025-05-30T14:49:34.888Z: Cleaned up robot call polling
+2025-05-30T14:49:34.888Z: Patrol state changed to: active
+2025-05-30T14:49:34.889Z: Navigation state changed to: PATROL
+2025-05-30T14:49:34.889Z: Navigation status updated to: PATROL
+2025-05-30T14:49:34.910Z: Loaded patrol points: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"point1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"point2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"point3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"point4"}]
+2025-05-30T14:49:34.915Z: Robot pose polling started successfully
+[2025-05-30 22:49:34.962] Starting token validation...
+[2025-05-30 22:49:34.968] Domain info from storage: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","created_at":"2024-02-02T00:35:47.24977Z","updated_at":"2025-05-02T06:00:55.444308Z","claimed_by_kazm_id":null,"owner_wallet_address":"","access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsiZG9tYWluOnJ3Il0sImRvbWFpbl9pZCI6IjgwOTNmOWJmLWMzNzQtNDE2Mi1hYjc0LWFiNjE5NDk2MjdmMSIsIm9yZyI6ImNiYWM0MGVmLTc0NTItNDA4ZS04MTdiLWFmZDRlOTEzYWQwYyIsInR5cGUiOiJ1c2VyLWFjY2VzcyIsImlzcyI6ImRkcyIsInN1YiI6IjNlMDNlMjk4LWY0NzEtNDk4Ni05YjEwLTgzOTlmMzUzMDYyMCIsImF1ZCI6WyJkZHMiLCJodHRwczovL2RvbWFpbi1zZXJ2ZXItdXMtZWFzdC0xLmF1a2l2ZXJzZS5jb20iXSwiZXhwIjoxNzQ4NjIwMTY0LCJpYXQiOjE3NDg2MTY1NjR9.OQP6ukrgIxGRIIE1IcwsOAAyELus9CMavaWe9d9dkqUHywEeJ8pGNcCkBlovT2DQOx9iqdYzPW3zgnddV4iIow","domain_server":{"id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","organization_id":"00000000-0000-0000-0000-000000000001","name":"node-c1349ff69a9f4d46a6b","url":"https://domain-server-us-east-1.aukiverse.com","version":"v0.5.37","status":"online","created_at":"2024-01-18T09:08:31.358792Z","updated_at":"2025-05-26T09:17:22.865415Z","redirect_url":null,"mode":"public","variants":["auki"],"description":"","staking_status":"Staked","ip":"52.45.94.183","latitude":37.751,"longitude":-97.822,"asn":16509,"h3_cell_index":"8226e7fffffffff","cloud_region":""}}
+[2025-05-30 22:49:34.974] Re-authenticating with email: phil+aukilabs@aukilabs.com, domainId: 8093f9bf-c374-4162-ab74-ab61949627f1
+[2025-05-30 22:49:34.977] Posemesh user login URL: https://api.auki.network/user/login
+2025-05-30T14:49:35.001Z: Set robot speed to patrol mode: 0.25 m/s when mounting
+2025-05-30T14:49:35.002Z: Initial health check response: {
   "deviceFound": true,
   "status": "Robot health check successful",
   "slamApiAvailable": true,
   "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
   "responseCode": 200
 }
-
-Parsed health check response: {
+2025-05-30T14:49:35.007Z: validateToken called (force=false)
+2025-05-30T14:49:35.008Z: Token validation already in progress, skipping
+2025-05-30T14:49:35.009Z: Initial health check response: {
+  "deviceFound": true,
+  "status": "Robot health check successful",
+  "slamApiAvailable": true,
+  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
+  "responseCode": 200
+}
+2025-05-30T14:49:35.010Z: Parsed health check response: {
   "baseError": [],
   "hasDepthCameraDisconnected": false,
   "hasError": false,
@@ -87,269 +322,185 @@ Parsed health check response: {
   "hasSystemEmergencyStop": false,
   "hasWarning": false
 }
-
-Connection status: Health Check OK, Message: Health Check OK
-
-Starting health check...
-
-Health check response: {
-  "deviceFound": true,
-  "status": "Robot health check successful",
-  "slamApiAvailable": true,
-  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
-  "responseCode": 200
+2025-05-30T14:49:35.011Z: Initial health check successful
+2025-05-30T14:49:35.036Z: Initial POIs fetch: [{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"point2"},"id":"0561be31-0bcc-4200-9ea0-c68fca4a0198"},{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"point4"},"id":"13e5682d-9a90-44b4-9133-34c35139520e"},{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"point1"},"id":"1e95f631-686f-451b-ad8f-716ac7f94702"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"point3"},"id":"23e9e4d5-736d-4a4b-8c72-71589d3d658d"}]
+2025-05-30T14:49:35.042Z: Initial health check successful
+2025-05-30T14:49:35.069Z: Found POI names: ["point2","point4","point1","point3"]
+2025-05-30T14:49:35.078Z: Valid POI names: ["point2","point4","point1","point3"]
+2025-05-30T14:49:35.091Z: POI validation successful - all points match config
+2025-05-30T14:49:35.331Z: Starting navigation to first waypoint
+2025-05-30T14:49:35.331Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-30T14:49:35.342Z: Starting navigation to point1 (index: 0)
+2025-05-30T14:49:35.349Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
+[2025-05-30 22:49:35.762] Posemesh user login response code: 200
+[2025-05-30 22:49:35.773] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDg2MjAxNzUsImlhdC...
+[2025-05-30 22:49:35.780] Posemesh token received (first 10 chars): eyJhbGciOi...
+[2025-05-30 22:49:35.787] DDS authentication URL: https://api.auki.network/service/domains-access-token
+2025-05-30T14:49:35.891Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+[2025-05-30 22:49:36.437] DDS authentication response code: 200
+[2025-05-30 22:49:36.445] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4NjIwMTc2LCJpYXQiOjE3NDg2MTY1NzYsImp0aSI6Ijk1YzllMGYyLTY3ZTgtNDg1OC1iYjgyLWE2NzBhNDM5ZGEyYiJ9.a6u_qpE5RAtKdyCzS8BeIuDcR_X78wpHHyJ0ypptkefLxDFvyyn4YiDyU-jzilgB2DnfOG2oiJPDL2TrBN7e7Q"}
+[2025-05-30 22:49:36.464] DDS token received (first 10 chars): eyJhbGciOi...
+[2025-05-30 22:49:36.469] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
+[2025-05-30 22:49:37.124] Domain authentication response code: 200
+[2025-05-30 22:49:37.130] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
+[2025-05-30 22:49:37.135] Updated domain info after token validation
+[2025-05-30 22:49:37.140] Token validation successful via re-authentication
+2025-05-30T14:49:37.143Z: Token validation successful: {"message":"Token is valid","valid":true}
+2025-05-30T14:49:44.998Z: Navigation to point1 completed
+2025-05-30T14:49:45.004Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-30T14:49:45.011Z: Starting navigation to point2 (index: 1)
+2025-05-30T14:49:45.019Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
+2025-05-30T14:49:47.742Z: Inactivity timer clear called, but no timer was running
+2025-05-30T14:49:47.912Z: Waypoint sequence cancelled
+2025-05-30T14:49:47.945Z: Patrol state changed to: inactive
+2025-05-30T14:49:47.983Z: Robot movement stopped
+2025-05-30T14:49:47.989Z: Promotion active, starting inactivity timer after returning to list
+2025-05-30T14:49:48.139Z: Inactivity timer cleared
+2025-05-30T14:49:48.143Z: Patrol conditions changed after navigation, not proceeding to next point
+2025-05-30T14:49:48.144Z: Robot pose polling stopped on cleanup
+2025-05-30T14:49:48.144Z: Polling for robot call data...
+2025-05-30T14:49:48.145Z: Started robot call polling
+2025-05-30T14:49:48.145Z: Navigation state changed to: IDLE
+2025-05-30T14:49:48.146Z: Navigation status updated to: IDLE
+2025-05-30T14:49:48.175Z: Polling stopped in IDLE state
+2025-05-30T14:49:49.129Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:49:53.150Z: Polling for robot call data...
+2025-05-30T14:49:54.176Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:49:58.164Z: Polling for robot call data...
+2025-05-30T14:49:59.182Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:50:03.181Z: Polling for robot call data...
+2025-05-30T14:50:04.619Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:50:08.147Z: restartPromotion called
+2025-05-30T14:50:08.148Z: Auto-restarting promotion after inactivity
+2025-05-30T14:50:08.196Z: Set robot speed to patrol mode: 0.25 m/s
+2025-05-30T14:50:08.199Z: Cleaned up robot call polling
+2025-05-30T14:50:08.199Z: Patrol state changed to: active
+2025-05-30T14:50:08.199Z: Navigation state changed to: PATROL
+2025-05-30T14:50:08.200Z: Navigation status updated to: PATROL
+2025-05-30T14:50:08.220Z: Starting polling in PATROL state
+2025-05-30T14:50:08.231Z: Starting robot pose polling at 2 times per second
+2025-05-30T14:50:08.236Z: Robot pose polling started successfully
+2025-05-30T14:50:09.214Z: Starting navigation to waypoint 2 after auto-restart
+2025-05-30T14:50:09.215Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-30T14:50:09.226Z: Starting navigation to point2 (index: 1)
+2025-05-30T14:50:09.231Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
+2025-05-30T14:50:13.326Z: Inactivity timer cleared
+2025-05-30T14:50:13.390Z: Waypoint sequence cancelled
+2025-05-30T14:50:13.434Z: Patrol state changed to: inactive
+2025-05-30T14:50:13.497Z: Robot movement stopped
+2025-05-30T14:50:13.509Z: Promotion active, starting inactivity timer after returning to list
+2025-05-30T14:50:13.671Z: Inactivity timer cleared
+2025-05-30T14:50:13.675Z: Robot pose polling stopped on cleanup
+2025-05-30T14:50:13.676Z: Polling for robot call data...
+2025-05-30T14:50:13.676Z: Started robot call polling
+2025-05-30T14:50:13.676Z: Navigation state changed to: IDLE
+2025-05-30T14:50:13.677Z: Navigation status updated to: IDLE
+2025-05-30T14:50:13.698Z: Polling stopped in IDLE state
+2025-05-30T14:50:14.012Z: Patrol conditions changed after navigation, not proceeding to next point
+2025-05-30T14:50:14.711Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:50:14.799Z: Inactivity timer cleared
+2025-05-30T14:50:14.800Z: resetInactivityTimer - promotionActive: true, promotionCancelled: false, isPatrolling: false
+2025-05-30T14:50:14.820Z: Starting inactivity timer - promotion is active and not cancelled
+2025-05-30T14:50:14.827Z: Inactivity timer clear called, but no timer was running
+2025-05-30T14:50:18.498Z: Inactivity timer cleared
+2025-05-30T14:50:18.499Z: resetInactivityTimer - promotionActive: true, promotionCancelled: false, isPatrolling: false
+2025-05-30T14:50:18.511Z: Starting inactivity timer - promotion is active and not cancelled
+2025-05-30T14:50:18.517Z: Inactivity timer clear called, but no timer was running
+2025-05-30T14:50:18.697Z: Polling for robot call data...
+2025-05-30T14:50:19.134Z: Inactivity timer cleared
+2025-05-30T14:50:19.137Z: Waypoint sequence cancelled due to product selection
+2025-05-30T14:50:19.519Z: Starting navigation to: Lounge Stage
+2025-05-30T14:50:19.659Z: Cleaned up robot call polling
+2025-05-30T14:50:19.660Z: Navigation state changed to: NAVIGATING
+2025-05-30T14:50:19.661Z: Navigation status updated to: NAVIGATING
+2025-05-30T14:50:19.671Z: Starting polling in NAVIGATING state
+2025-05-30T14:50:19.681Z: Starting robot pose polling at 2 times per second
+2025-05-30T14:50:19.688Z: Robot pose polling started successfully
+2025-05-30T14:50:19.833Z: Set robot speed to product search mode: 0.7 m/s
+2025-05-30T14:50:19.842Z: validateToken called (force=false)
+2025-05-30T14:50:19.843Z: Token validation was performed recently, skipping
+2025-05-30T14:50:19.859Z: Requesting navmesh coordinates for: {"x":1.8841,"y":0,"z":3.3539}
+2025-05-30T14:50:20.097Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:50:23.992Z: Received navTarget: {"debug":{"navmeshResult":{"deltaZ":-4.425048816258936e-8,"deltaX":-1.9548511108398436,"yaw":-0.0015926535897925476,"z":3.3538999557495117,"x":3.8389511108398438},"transformedCoords":{"z":-3.3539,"x":1.8841},"productCoords":{"z":3.3539,"x":1.8841}},"yaw":-0.0015926535897925476,"z":3.3538999557495117,"x":3.8389511108398438}
+2025-05-30T14:50:24.004Z: Raw targetCoords: {
+  "debug": {
+    "navmeshResult": {
+      "deltaZ": -4.425048816258936e-8,
+      "deltaX": -1.9548511108398436,
+      "yaw": -0.0015926535897925476,
+      "z": 3.3538999557495117,
+      "x": 3.8389511108398438
+    },
+    "transformedCoords": {
+      "z": -3.3539,
+      "x": 1.8841
+    },
+    "productCoords": {
+      "z": 3.3539,
+      "x": 1.8841
+    }
+  },
+  "yaw": -0.0015926535897925476,
+  "z": 3.3538999557495117,
+  "x": 3.8389511108398438
 }
-
-Parsed health check response: {
-  "baseError": [],
-  "hasDepthCameraDisconnected": false,
-  "hasError": false,
-  "hasFatal": false,
-  "hasLidarDisconnected": false,
-  "hasSdpDisconnected": false,
-  "hasSystemEmergencyStop": false,
-  "hasWarning": false
+2025-05-30T14:50:24.013Z: Calling navigateProduct with exact params: {
+  "x": 3.8389511108398438,
+  "y": 3.3538999557495117,
+  "yaw": -0.0015926535897925476
 }
-
-Connection status: Health Check OK, Message: Health Check OK
-
-Starting health check...
-
-Health check response: {
-  "deviceFound": true,
-  "status": "Robot health check successful",
-  "slamApiAvailable": true,
-  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
-  "responseCode": 200
-}
-
-Parsed health check response: {
-  "baseError": [],
-  "hasDepthCameraDisconnected": false,
-  "hasError": false,
-  "hasFatal": false,
-  "hasLidarDisconnected": false,
-  "hasSdpDisconnected": false,
-  "hasSystemEmergencyStop": false,
-  "hasWarning": false
-}
-
-Connection status: Health Check OK, Message: Health Check OK
-
-Starting health check...
-
-Health check response: {
-  "deviceFound": true,
-  "status": "Robot health check successful",
-  "slamApiAvailable": true,
-  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
-  "responseCode": 200
-}
-
-Parsed health check response: {
-  "baseError": [],
-  "hasDepthCameraDisconnected": false,
-  "hasError": false,
-  "hasFatal": false,
-  "hasLidarDisconnected": false,
-  "hasSdpDisconnected": false,
-  "hasSystemEmergencyStop": false,
-  "hasWarning": false
-}
-
-Connection status: Health Check OK, Message: Health Check OK
-
-Starting health check...
-
-Health check response: {
-  "deviceFound": true,
-  "status": "Robot health check successful",
-  "slamApiAvailable": true,
-  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
-  "responseCode": 200
-}
-
-Parsed health check response: {
-  "baseError": [],
-  "hasDepthCameraDisconnected": false,
-  "hasError": false,
-  "hasFatal": false,
-  "hasLidarDisconnected": false,
-  "hasSdpDisconnected": false,
-  "hasSystemEmergencyStop": false,
-  "hasWarning": false
-}
-
-Connection status: Health Check OK, Message: Health Check OK
-
-Starting health check...
-
-Health check response: {
-  "deviceFound": true,
-  "status": "Robot health check successful",
-  "slamApiAvailable": true,
-  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
-  "responseCode": 200
-}
-
-Parsed health check response: {
-  "baseError": [],
-  "hasDepthCameraDisconnected": false,
-  "hasError": false,
-  "hasFatal": false,
-  "hasLidarDisconnected": false,
-  "hasSdpDisconnected": false,
-  "hasSystemEmergencyStop": false,
-  "hasWarning": false
-}
-
-Connection status: Health Check OK, Message: Health Check OK
-
-Starting health check...
-
-Health check response: {
-  "deviceFound": true,
-  "status": "Robot health check successful",
-  "slamApiAvailable": true,
-  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
-  "responseCode": 200
-}
-
-Parsed health check response: {
-  "baseError": [],
-  "hasDepthCameraDisconnected": false,
-  "hasError": false,
-  "hasFatal": false,
-  "hasLidarDisconnected": false,
-  "hasSdpDisconnected": false,
-  "hasSystemEmergencyStop": false,
-  "hasWarning": false
-}
-
-Connection status: Health Check OK, Message: Health Check OK
-
-Starting health check...
-
-Health check response: {
-  "deviceFound": true,
-  "status": "Robot health check successful",
-  "slamApiAvailable": true,
-  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
-  "responseCode": 200
-}
-
-Parsed health check response: {
-  "baseError": [],
-  "hasDepthCameraDisconnected": false,
-  "hasError": false,
-  "hasFatal": false,
-  "hasLidarDisconnected": false,
-  "hasSdpDisconnected": false,
-  "hasSystemEmergencyStop": false,
-  "hasWarning": false
-}
-
-Connection status: Health Check OK, Message: Health Check OK
-
-2025-05-30T06:12:58.928Z: Patrol state changed to: inactive
-2025-05-30T06:12:58.928Z: MainScreen mounted. Promotion state: active=false, cancelled=true, currentPointIndex=1, remountFromConfig=false
-2025-05-30T06:12:58.953Z: Performing initial token validation
-2025-05-30T06:12:58.954Z: Polling for robot call data...
-2025-05-30T06:12:58.954Z: Started robot call polling
-2025-05-30T06:12:58.955Z: Navigation state changed to: IDLE
-2025-05-30T06:12:58.955Z: Navigation status updated to: IDLE
-2025-05-30T06:12:58.955Z: Performing initial health check in MainScreen...
-2025-05-30T06:12:58.956Z: Performing initial health check in MainScreen...
-2025-05-30T06:12:58.958Z: Starting robot pose polling at 2 times per second
-2025-05-30T06:12:58.959Z: validateToken called (force=true)
-2025-05-30T06:12:58.959Z: Proactively validating authentication token
-2025-05-30T06:12:59.019Z: Polling stopped in IDLE state
-2025-05-30T06:12:59.019Z: Loaded patrol points: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"point1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"point2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"point3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"point4"}]
-2025-05-30T06:12:59.020Z: Not starting polling interval - not in NAVIGATING/PATROL state
-[2025-05-30 14:12:59.034] Starting token validation...
-[2025-05-30 14:12:59.039] Domain info from storage: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","created_at":"2024-02-02T00:35:47.24977Z","updated_at":"2025-05-02T06:00:55.444308Z","claimed_by_kazm_id":null,"owner_wallet_address":"","access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsiZG9tYWluOnJ3Il0sImRvbWFpbl9pZCI6IjgwOTNmOWJmLWMzNzQtNDE2Mi1hYjc0LWFiNjE5NDk2MjdmMSIsIm9yZyI6ImNiYWM0MGVmLTc0NTItNDA4ZS04MTdiLWFmZDRlOTEzYWQwYyIsInR5cGUiOiJ1c2VyLWFjY2VzcyIsImlzcyI6ImRkcyIsInN1YiI6IjNlMDNlMjk4LWY0NzEtNDk4Ni05YjEwLTgzOTlmMzUzMDYyMCIsImF1ZCI6WyJkZHMiLCJodHRwczovL2RvbWFpbi1zZXJ2ZXItdXMtZWFzdC0xLmF1a2l2ZXJzZS5jb20iXSwiZXhwIjoxNzQ4NTg5MDg0LCJpYXQiOjE3NDg1ODU0ODR9.jf6QBuWsydJ0GxIHLq3qjvzepnlGKhF9MZ44v3tQEZYhONXjrZckoANoWSsLgmkckdYCnHwzjmx6iu3EoOaO5A","domain_server":{"id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","organization_id":"00000000-0000-0000-0000-000000000001","name":"node-c1349ff69a9f4d46a6b","url":"https://domain-server-us-east-1.aukiverse.com","version":"v0.5.37","status":"online","created_at":"2024-01-18T09:08:31.358792Z","updated_at":"2025-05-26T09:17:22.865415Z","redirect_url":null,"mode":"public","variants":["auki"],"description":"","staking_status":"Staked","ip":"52.45.94.183","latitude":37.751,"longitude":-97.822,"asn":16509,"h3_cell_index":"8226e7fffffffff","cloud_region":""}}
-[2025-05-30 14:12:59.045] Re-authenticating with email: phil+aukilabs@aukilabs.com, domainId: 8093f9bf-c374-4162-ab74-ab61949627f1
-[2025-05-30 14:12:59.050] Posemesh user login URL: https://api.auki.network/user/login
-2025-05-30T06:12:59.123Z: Initial health check response: {
-  "deviceFound": true,
-  "status": "Robot health check successful",
-  "slamApiAvailable": true,
-  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
-  "responseCode": 200
-}
-2025-05-30T06:12:59.125Z: validateToken called (force=false)
-2025-05-30T06:12:59.126Z: Token validation already in progress, skipping
-2025-05-30T06:12:59.128Z: Initial health check response: {
-  "deviceFound": true,
-  "status": "Robot health check successful",
-  "slamApiAvailable": true,
-  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
-  "responseCode": 200
-}
-2025-05-30T06:12:59.130Z: Parsed health check response: {
-  "baseError": [],
-  "hasDepthCameraDisconnected": false,
-  "hasError": false,
-  "hasFatal": false,
-  "hasLidarDisconnected": false,
-  "hasSdpDisconnected": false,
-  "hasSystemEmergencyStop": false,
-  "hasWarning": false
-}
-2025-05-30T06:12:59.131Z: Initial health check successful
-2025-05-30T06:12:59.133Z: Initial POIs fetch: [{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"point1"},"id":"2bd8930e-affa-427e-b701-05d6e06e9682"},{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"point2"},"id":"4bbba4d6-b3f5-4317-8c88-b0a5ef6c5aae"},{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"point4"},"id":"b8c85a35-c74a-4f12-b143-7531ea384fb8"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"point3"},"id":"c2a7caca-9d29-4628-aeca-3379d9a60ddd"}]
-2025-05-30T06:12:59.142Z: Initial health check successful
-2025-05-30T06:12:59.243Z: Found POI names: ["point1","point2","point4","point3"]
-2025-05-30T06:12:59.247Z: Valid POI names: ["point1","point2","point4","point3"]
-2025-05-30T06:12:59.250Z: POI validation successful - all points match config
-[2025-05-30 14:12:59.846] Posemesh user login response code: 200
-[2025-05-30 14:12:59.852] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDg1ODkxNzksImlhdC...
-[2025-05-30 14:12:59.859] Posemesh token received (first 10 chars): eyJhbGciOi...
-[2025-05-30 14:12:59.866] DDS authentication URL: https://api.auki.network/service/domains-access-token
-2025-05-30T06:13:00.511Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-[2025-05-30 14:13:00.543] DDS authentication response code: 200
-[2025-05-30 14:13:00.550] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4NTg5MTgwLCJpYXQiOjE3NDg1ODU1ODAsImp0aSI6ImQyMzYzYTNiLWVjZDEtNGZkYy1iYzE1LWQzYTRhOTA4MjRhMiJ9.EWZpxNdHaETirbxy3sCofDCqIHAlqfpGPeSq2q0TyGMcak8vu6_m2Iff-0bcfMaKq-n_50A-co9qVk-p61TmUA"}
-[2025-05-30 14:13:00.559] DDS token received (first 10 chars): eyJhbGciOi...
-[2025-05-30 14:13:00.568] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
-2025-05-30T06:13:00.680Z: onTouchStart triggered. isPatrolling=false, navigationStatus=0
-2025-05-30T06:13:00.681Z: Touch detected outside patrol, resetting inactivity timer
-2025-05-30T06:13:00.682Z: Inactivity timer clear called, but no timer was running
-2025-05-30T06:13:00.702Z: Auto-promotion disabled, not starting inactivity timer after reset
-2025-05-30T06:13:00.712Z: Touch detected, reset inactivity timer processed
-[2025-05-30 14:13:00.920] Domain authentication response code: 200
-[2025-05-30 14:13:00.927] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
-[2025-05-30 14:13:00.933] Updated domain info after token validation
-[2025-05-30 14:13:00.940] Token validation successful via re-authentication
-2025-05-30T06:13:00.949Z: Token validation successful: {"message":"Token is valid","valid":true}
-2025-05-30T06:13:03.966Z: Polling for robot call data...
-2025-05-30T06:13:05.025Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T06:13:08.980Z: Polling for robot call data...
-2025-05-30T06:13:10.782Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T06:13:13.998Z: Polling for robot call data...
-2025-05-30T06:13:15.495Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T06:13:19.014Z: Polling for robot call data...
-2025-05-30T06:13:20.493Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T06:13:24.032Z: Polling for robot call data...
-2025-05-30T06:13:24.675Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T06:13:29.047Z: Polling for robot call data...
-2025-05-30T06:13:29.516Z: onTouchStart triggered. isPatrolling=false, navigationStatus=0
-2025-05-30T06:13:29.517Z: Touch detected outside patrol, resetting inactivity timer
-2025-05-30T06:13:29.524Z: Inactivity timer clear called, but no timer was running
-2025-05-30T06:13:29.541Z: Auto-promotion disabled, not starting inactivity timer after reset
-2025-05-30T06:13:29.550Z: Touch detected, reset inactivity timer processed
-2025-05-30T06:13:30.007Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T06:13:34.070Z: Polling for robot call data...
-2025-05-30T06:13:35.224Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T06:13:37.021Z: onTouchStart triggered. isPatrolling=false, navigationStatus=0
-2025-05-30T06:13:37.022Z: Touch detected outside patrol, resetting inactivity timer
-2025-05-30T06:13:37.023Z: Inactivity timer clear called, but no timer was running
-2025-05-30T06:13:37.057Z: Auto-promotion disabled, not starting inactivity timer after reset
-2025-05-30T06:13:37.075Z: Touch detected, reset inactivity timer processed
-2025-05-30T06:13:39.080Z: Polling for robot call data...
-2025-05-30T06:13:40.764Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T06:13:42.323Z: User confirmed app exit
-2025-05-30T06:13:42.389Z: App state changed from active to background
-2025-05-30T06:13:42.393Z: App state changed from active to background
-2025-05-30T06:13:43.190Z: Cleared token validation interval
-2025-05-30T06:13:43.193Z: Cleared token refresh interval
-2025-05-30T06:13:43.203Z: Cleaned up robot call polling
+2025-05-30T14:50:24.025Z: Starting navigation command...
+2025-05-30T14:50:57.291Z: Navigation command completed
+2025-05-30T14:50:57.300Z: Setting navigation status to ARRIVED
+2025-05-30T14:50:57.313Z: Auto-promotion disabled, not starting inactivity timer
+2025-05-30T14:50:57.430Z: Navigation completed, showing arrival screen
+2025-05-30T14:50:57.450Z: Robot pose polling stopped on cleanup
+2025-05-30T14:50:57.459Z: Navigation state changed to: ARRIVED
+2025-05-30T14:50:57.460Z: Navigation status updated to: ARRIVED
+2025-05-30T14:50:57.466Z: Polling stopped in ARRIVED state
+2025-05-30T14:51:02.462Z: Waypoint sequence cancelled
+2025-05-30T14:51:02.478Z: Robot movement stopped
+2025-05-30T14:51:02.485Z: Promotion inactive or cancelled, not starting inactivity timer
+2025-05-30T14:51:02.697Z: Polling for robot call data...
+2025-05-30T14:51:02.698Z: Started robot call polling
+2025-05-30T14:51:02.698Z: Navigation state changed to: IDLE
+2025-05-30T14:51:02.698Z: Navigation status updated to: IDLE
+2025-05-30T14:51:02.715Z: Polling stopped in IDLE state
+2025-05-30T14:51:04.424Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:51:07.712Z: Polling for robot call data...
+2025-05-30T14:51:09.159Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:51:12.729Z: Polling for robot call data...
+2025-05-30T14:51:13.832Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:51:17.745Z: Polling for robot call data...
+2025-05-30T14:51:19.259Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:51:22.762Z: Polling for robot call data...
+2025-05-30T14:51:23.560Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:51:27.772Z: Polling for robot call data...
+2025-05-30T14:51:29.298Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:51:32.779Z: Polling for robot call data...
+2025-05-30T14:51:34.340Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:51:37.795Z: Polling for robot call data...
+2025-05-30T14:51:38.846Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:51:42.806Z: Polling for robot call data...
+2025-05-30T14:51:43.341Z: Inactivity timer clear called, but no timer was running
+2025-05-30T14:51:43.342Z: resetInactivityTimer - promotionActive: false, promotionCancelled: false, isPatrolling: false
+2025-05-30T14:51:43.354Z: Not starting inactivity timer - promotion is inactive or cancelled
+2025-05-30T14:51:43.836Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:51:47.828Z: Polling for robot call data...
+2025-05-30T14:51:48.861Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:51:49.146Z: Inactivity timer clear called, but no timer was running
+2025-05-30T14:51:49.148Z: resetInactivityTimer - promotionActive: false, promotionCancelled: false, isPatrolling: false
+2025-05-30T14:51:49.162Z: Not starting inactivity timer - promotion is inactive or cancelled
+2025-05-30T14:51:52.841Z: Polling for robot call data...
+2025-05-30T14:51:53.641Z: Inactivity timer clear called, but no timer was running
+2025-05-30T14:51:53.642Z: resetInactivityTimer - promotionActive: false, promotionCancelled: false, isPatrolling: false
+2025-05-30T14:51:53.652Z: Not starting inactivity timer - promotion is inactive or cancelled
+2025-05-30T14:51:54.381Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:51:57.861Z: Polling for robot call data...
+2025-05-30T14:51:58.468Z: User confirmed app exit
+2025-05-30T14:51:58.592Z: App state changed from active to background
+2025-05-30T14:51:58.599Z: App state changed from active to background
+2025-05-30T14:51:58.890Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T14:51:59.425Z: Cleared token validation interval
+2025-05-30T14:51:59.428Z: Cleared token refresh interval
+2025-05-30T14:51:59.435Z: Cleaned up robot call polling

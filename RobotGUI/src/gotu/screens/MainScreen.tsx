@@ -247,20 +247,11 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   
   // Function to start the inactivity timer
   const startInactivityTimer = () => {
-    // Clear any existing timer first
     clearInactivityTimer();
-    LogUtils.writeDebugToFile('startInactivityTimer called');
-    // Log that we're starting the timer
-    LogUtils.writeDebugToFile(`Starting inactivity timer (${INACTIVITY_TIMEOUT/1000} seconds)`);
-    // Set a new timer
+    
     inactivityTimerRef.current = setTimeout(() => {
-      LogUtils.writeDebugToFile('Inactivity timer expired');
-      // Only restart promotion if we're not in config screen and not already in promotion
-      if (!isPatrollingRef.current && isMountedRef.current) {
-        LogUtils.writeDebugToFile('Inactivity timer expired, restarting promotion');
+      if (promotionActive && !promotionCancelled && isMountedRef.current) {
         restartPromotion();
-      } else {
-        LogUtils.writeDebugToFile(`Inactivity timer expired, but not restarting: isPatrolling=${isPatrollingRef.current}, isMounted=${isMountedRef.current}`);
       }
     }, INACTIVITY_TIMEOUT);
   };
@@ -682,8 +673,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     
     // Cancel any ongoing patrol
     setIsPatrolling(false);
-    promotionActive = false;
-    promotionCancelled = true;
+    //promotionActive = false;
+    //promotionCancelled = true;
     await LogUtils.writeDebugToFile('Waypoint sequence cancelled due to product selection');
     
     // Reset navigation cancelled flag
@@ -922,8 +913,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     try {
       // Mark navigation as cancelled
       navigationCancelledRef.current = true;
-      promotionCancelled = true;
-      promotionActive = false;
+      //promotionCancelled = true;
+      //promotionActive = false;  // Don't force this to false as we might not be in patrol mode
       
       // Stop heartbeat checks
       // stopHeartbeatCheck();
@@ -950,23 +941,17 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         // Will be reset in the useEffect
       }
       
-      // Only start inactivity timer if auto-promotion is enabled
-      try {
-        const autoPromotionEnabled = await NativeModules.ConfigManagerModule.getAutoPromotionEnabled();
-        if (autoPromotionEnabled) {
-          await LogUtils.writeDebugToFile('Auto-promotion enabled, starting inactivity timer after returning to list');
-          startInactivityTimer();
-        } else {
-          await LogUtils.writeDebugToFile('Auto-promotion disabled, not starting inactivity timer');
-        }
-      } catch (error) {
-        // Default to not starting promotion if we can't check the config
-        await LogUtils.writeDebugToFile('Error checking auto-promotion config, defaulting to not starting timer');
+      // Only start inactivity timer if promotion is active and not cancelled
+      if (promotionActive && !promotionCancelled) {
+        await LogUtils.writeDebugToFile('Promotion active, starting inactivity timer after returning to list');
+        startInactivityTimer();
+      } else {
+        await LogUtils.writeDebugToFile('Promotion inactive or cancelled, not starting inactivity timer');
       }
     } catch (error) {
       // Even if stopping fails, still cancel patrol and return to list
       navigationCancelledRef.current = true;
-      promotionCancelled = true;
+      //promotionCancelled = true;
       promotionActive = false;
       setIsPatrolling(false);
       isPatrollingRef.current = false;
@@ -974,17 +959,11 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       setNavigationStatus(NavigationStatus.IDLE);
       
       // Only start inactivity timer if auto-promotion is enabled
-      try {
-        const autoPromotionEnabled = await NativeModules.ConfigManagerModule.getAutoPromotionEnabled();
-        if (autoPromotionEnabled) {
-          await LogUtils.writeDebugToFile('Auto-promotion enabled, starting inactivity timer after error');
-          startInactivityTimer();
-        } else {
-          await LogUtils.writeDebugToFile('Auto-promotion disabled, not starting inactivity timer after error');
-        }
-      } catch (error) {
-        // Default to not starting promotion if we can't check the config
-        await LogUtils.writeDebugToFile('Error checking auto-promotion config, defaulting to not starting timer');
+      if (promotionActive && !promotionCancelled) {
+        await LogUtils.writeDebugToFile('Promotion active, starting inactivity timer after error');
+        startInactivityTimer();
+      } else {
+        await LogUtils.writeDebugToFile('Promotion inactive or cancelled, not starting inactivity timer after error');
       }
     }
   };
@@ -1279,18 +1258,15 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   const resetInactivityTimer = async () => {
     clearInactivityTimer();
     
-    // Only start inactivity timer if auto-promotion is enabled
-    try {
-      const autoPromotionEnabled = await NativeModules.ConfigManagerModule.getAutoPromotionEnabled();
-      if (autoPromotionEnabled) {
-        await LogUtils.writeDebugToFile('Auto-promotion enabled, starting inactivity timer after reset');
-        startInactivityTimer();
-      } else {
-        await LogUtils.writeDebugToFile('Auto-promotion disabled, not starting inactivity timer after reset');
-      }
-    } catch (error) {
-      // Default to not starting promotion if we can't check the config
-      await LogUtils.writeDebugToFile('Error checking auto-promotion config, defaulting to not starting timer after reset');
+    // Log the state of promotion flags
+    await LogUtils.writeDebugToFile(`resetInactivityTimer - promotionActive: ${promotionActive}, promotionCancelled: ${promotionCancelled}, isPatrolling: ${isPatrollingRef.current}`);
+    
+    // Only start inactivity timer if promotion is active and not cancelled
+    if (promotionActive && !promotionCancelled) {
+      await LogUtils.writeDebugToFile('Starting inactivity timer - promotion is active and not cancelled');
+      startInactivityTimer();
+    } else {
+      await LogUtils.writeDebugToFile('Not starting inactivity timer - promotion is inactive or cancelled');
     }
   };
 
@@ -1907,22 +1883,24 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     loadPatrolPoints();
   }, []);
 
+  // Add with other refs at the top of the component:
+  const isTouchDebouncedRef = useRef(false);
+
   return (
     <SafeAreaView 
       style={styles.container}
       onTouchStart={async () => {
-        LogUtils.writeDebugToFile(`onTouchStart triggered. isPatrolling=${isPatrollingRef.current}, navigationStatus=${navigationStatus}`);
-        // Only reset timer if we're not in promotion mode
+        // Debounce touch events to prevent rapid firing
+        if (isTouchDebouncedRef.current) return;
+        isTouchDebouncedRef.current = true;
+        setTimeout(() => { isTouchDebouncedRef.current = false; }, 1000);
+
+        // Only log essential information
         if (!isPatrollingRef.current && navigationStatus !== NavigationStatus.PATROL) {
-          LogUtils.writeDebugToFile('Touch detected outside patrol, resetting inactivity timer');
           resetInactivityTimer()
-            .then(() => LogUtils.writeDebugToFile('Touch detected, reset inactivity timer processed'))
-            .catch(err => LogUtils.writeDebugToFile(`Error resetting inactivity timer: ${err.message || err}`));
+            .catch(err => console.error('Error resetting inactivity timer:', err));
         } else if (isPatrollingRef.current && navigationStatus === NavigationStatus.PATROL) {
-          LogUtils.writeDebugToFile('Touch detected during patrol, starting inactivity timer');
           startInactivityTimer();
-        } else {
-          LogUtils.writeDebugToFile('Touch detected, but no action taken');
         }
       }}
     >
