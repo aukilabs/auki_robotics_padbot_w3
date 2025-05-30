@@ -1270,50 +1270,58 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     }
   };
 
-  // Refactor pose polling to match Cactus
-  const startPosePolling = async () => {
-    // Always clear any existing interval first
-    await stopPosePolling();
-    await LogUtils.writeDebugToFile('Starting robot pose polling at 2 times per second');
+  // Add a counter and flag for pose polling debug
+  let posePollingActiveCount = 0;
+  let posePollingInProgress = false;
 
-    // Only set up interval if we're in NAVIGATING or PATROL states
-    if (currentNavigationStatusRef.current === NavigationStatus.NAVIGATING || 
-        currentNavigationStatusRef.current === NavigationStatus.PATROL) {
-      posePollingRef.current = setInterval(() => {
-        readRobotPose();
-      }, 500);
-      await LogUtils.writeDebugToFile('Robot pose polling started successfully');
-    } else {
-      await LogUtils.writeDebugToFile(`Not starting polling interval - not in NAVIGATING/PATROL state`);
-    }
+  // Refactor pose polling to use a wait-for-completion loop
+  let posePollingShouldRun = false;
+
+  const startPosePolling = async () => {
+    await stopPosePolling();
+    posePollingShouldRun = true;
+    await LogUtils.writeDebugToFile('[POSE POLLING] Wait-for-completion polling started');
+    pollPoseLoop();
   };
 
   const stopPosePolling = async () => {
-    if (posePollingRef.current) {
-      clearInterval(posePollingRef.current);
-      posePollingRef.current = null;
-      await LogUtils.writeDebugToFile('Robot pose polling stopped explicitly');
-      return true;
-    }
-    return false;
+    posePollingShouldRun = false;
+    await LogUtils.writeDebugToFile('[POSE POLLING] Wait-for-completion polling stopped');
+    return true;
   };
 
-  // Function to read the pose and log it
+  const pollPoseLoop = async () => {
+    while (posePollingShouldRun) {
+      await readRobotPose();
+      await new Promise(resolve => setTimeout(resolve, 1000)); // 1s between polls
+    }
+    await LogUtils.writeDebugToFile('[POSE POLLING] Polling loop exited');
+  };
+
   const readRobotPose = async () => {
+    if (posePollingInProgress) {
+      await LogUtils.writeDebugToFile('[POSE POLLING] Overlapping readRobotPose call detected!');
+    }
+    posePollingInProgress = true;
+    await LogUtils.writeDebugToFile('[POSE POLLING] readRobotPose started');
     try {
-      // Only continue polling if we're in NAVIGATING or PATROL states
       if (currentNavigationStatusRef.current !== NavigationStatus.NAVIGATING && 
           currentNavigationStatusRef.current !== NavigationStatus.PATROL) {
         await stopPosePolling();
-        await LogUtils.writeDebugToFile(`[POSE] Auto-stopped polling - not in NAVIGATING/PATROL state`);
+        await LogUtils.writeDebugToFile(`[POSE POLLING] Auto-stopped polling - not in NAVIGATING/PATROL state`);
+        posePollingInProgress = false;
         return;
       }
-      
-      // If in cooldown, skip reporting
       if (poseReportingCooldownRef.current) {
+        posePollingInProgress = false;
         return;
       }
-      
+      if (poseUploadInProgress) {
+        await LogUtils.writeDebugToFile('[POSE POLLING] Skipping pose upload: previous upload still in progress');
+        posePollingInProgress = false;
+        return;
+      }
+      poseUploadInProgress = true;
       const pose = await NativeModules.SlamtecUtils.getCurrentPose();
       if (pose) {
         const timestamp = Date.now();
@@ -1362,14 +1370,17 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
             setTimeout(() => {
               poseReportingCooldownRef.current = false;
             }, 10000); // Back to 10 seconds
-            await LogUtils.writeDebugToFile(`[POSE] Error sending pose data: ${error.message}`);
+            await LogUtils.writeDebugToFile(`[POSE POLLING] Error sending pose data: ${error.message}`);
           }
         }
       }
+      poseUploadInProgress = false;
     } catch (error: any) {
-      // Only log errors
-      await LogUtils.writeDebugToFile(`[POSE] Error in readRobotPose: ${error.message}`);
+      await LogUtils.writeDebugToFile(`[POSE POLLING] Error in readRobotPose: ${error.message}`);
+      poseUploadInProgress = false;
     }
+    await LogUtils.writeDebugToFile('[POSE POLLING] readRobotPose finished');
+    posePollingInProgress = false;
   };
 
   // Watch for navigation status changes and manage polling based on NavigationStatus
@@ -1885,6 +1896,9 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
 
   // Add with other refs at the top of the component:
   const isTouchDebouncedRef = useRef(false);
+
+  // Add a flag to prevent overlapping pose uploads
+  let poseUploadInProgress = false;
 
   return (
     <SafeAreaView 

@@ -44,6 +44,9 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
     // Flag to prevent concurrent map downloads
     private val isDownloadingMap = AtomicBoolean(false)
 
+    // Add singleton OkHttpClient at the top of the class
+    private val httpClient: OkHttpClient by lazy { OkHttpClient() }
+
     private var posemeshToken: String?
         get() = sharedPreferences.getString("posemesh_token", null)
         set(value) = sharedPreferences.edit().putString("posemesh_token", value).apply()
@@ -1859,7 +1862,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 //logToFile("Sending $method request to: $url")
                 
                 // Create and execute the request
-                val client = OkHttpClient()
+                val client = httpClient
                 val request = Request.Builder()
                     .url(url)
                     .method(method, requestBody)
@@ -1929,7 +1932,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 
                 // Step 1: Get metadata
                 val metadataUrl = "$domainServerUrl/api/v1/domains/$domainId/data?name=$name&data_type=$dataType"
-                val client = OkHttpClient()
+                val client = httpClient
                 val metadataRequest = okhttp3.Request.Builder()
                     .url(metadataUrl)
                     .addHeader("Authorization", "Bearer $accessToken")
@@ -2101,7 +2104,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 val url = "$domainServerUrl/api/v1/domains/$domainId/data?name=$deviceId&data_type=$dataType"
                 logToFile("Fetching data from: $url")
                 
-                val client = OkHttpClient()
+                val client = httpClient
                 val request = Request.Builder()
                     .url(url)
                     .addHeader("Authorization", "Bearer $accessToken")
@@ -2190,7 +2193,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 //logToFile("Sending $method request to: $url")
                 
                 // Create and execute the request
-                val client = OkHttpClient()
+                val client = httpClient
                 val request = Request.Builder()
                     .url(url)
                     .method(method, requestBody)
