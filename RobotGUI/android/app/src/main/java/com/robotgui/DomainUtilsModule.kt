@@ -1834,7 +1834,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 val domainId = domainInfoObj.getString("id")
                 
                 Log.d(TAG, "Writing robot call data with method: $method, data: $jsonData")
-                logToFile("Writing robot call data with method: $method, data: $jsonData")
+                //logToFile("Writing robot call data with method: $method, data: $jsonData")
                 
                 // Create the multipart form data with data_id if provided
                 val dataName = if (method == "PUT" && dataId != null) {
@@ -1844,7 +1844,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 }
                 val dataType = "robot_pose_json"
                 
-                logToFile("Using name as dataName: $dataName")
+                //logToFile("Using name as dataName: $dataName")
                 
                 // Set up the multipart request body
                 val requestBody = MultipartBody.Builder()
@@ -1856,7 +1856,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 // API endpoint URL
                 val url = "$domainServerUrl/api/v1/domains/$domainId/data?data_type=$dataType"
                 Log.d(TAG, "Sending $method request to: $url")
-                logToFile("Sending $method request to: $url")
+                //logToFile("Sending $method request to: $url")
                 
                 // Create and execute the request
                 val client = OkHttpClient()
@@ -1868,7 +1868,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 
                 val response = client.newCall(request).execute()
                 val responseCode = response.code
-                logToFile("Robot call write response code: $responseCode")
+                //logToFile("Robot call write response code: $responseCode")
                 
                 if (!response.isSuccessful) {
                     throw Exception("Failed to write robot call data: $responseCode")
@@ -1888,7 +1888,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 promise.resolve(result)
             } catch (e: Exception) {
                 Log.e(TAG, "Error in writeRobotCall: ${e.message}", e)
-                logToFile("Error in writeRobotCall: ${e.message}")
+                //logToFile("Error in writeRobotCall: ${e.message}")
                 promise.reject("ROBOT_CALL_ERROR", "Error writing robot call data: ${e.message}")
             }
         }
@@ -2165,7 +2165,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 val domainId = domainInfoObj.getString("id")
                 
                 Log.d(TAG, "Writing robot pose data with method: $method, data: $jsonData")
-                logToFile("Writing robot pose data with method: $method, data: $jsonData")
+                //logToFile("Writing robot pose data with method: $method, data: $jsonData")
                 
                 // Create the multipart form data with unique device ID or data ID
                 val dataName = if (method == "PUT" && dataId != null) {
@@ -2175,7 +2175,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 }
                 val dataType = "reported_pose_json"
                 
-                logToFile("Using name as dataName: $dataName")
+                //logToFile("Using name as dataName: $dataName")
                 
                 // Set up the multipart request body
                 val requestBody = MultipartBody.Builder()
@@ -2187,7 +2187,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 // API endpoint URL
                 val url = "$domainServerUrl/api/v1/domains/$domainId/data?data_type=$dataType"
                 Log.d(TAG, "Sending $method request to: $url")
-                logToFile("Sending $method request to: $url")
+                //logToFile("Sending $method request to: $url")
                 
                 // Create and execute the request
                 val client = OkHttpClient()
@@ -2198,7 +2198,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     .build()
                 
                 val response = client.newCall(request).execute()
-                logToFile("Write response code: ${response.code}")
+                //logToFile("Write response code: ${response.code}")
                 
                 if (!response.isSuccessful) {
                     val errorMsg = "Failed to write robot pose data: ${response.code}"
@@ -2208,7 +2208,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 
                 val responseBody = response.body?.string() ?: ""
                 Log.d(TAG, "Write response: $responseBody")
-                logToFile("Write response: $responseBody")
+                //logToFile("Write response: $responseBody")
                 
                 // Return success result
                 val result = Arguments.createMap()
@@ -2236,7 +2236,7 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                     }
                 }
                 
-                logToFile("writeRobotPose completed successfully")
+                //logToFile("writeRobotPose completed successfully")
                 promise.resolve(result)
             } catch (e: Exception) {
                 Log.e(TAG, "Error writing robot pose data: ${e.message}", e)
