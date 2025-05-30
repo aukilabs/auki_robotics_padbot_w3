@@ -1,434 +1,355 @@
 
-2025-05-29T09:39:32.351Z: Token validation already in progress, skipping
-2025-05-29T09:39:32.496Z: Started battery monitoring
-2025-05-29T09:39:32.497Z: Initial health check successful
-[2025-05-29 17:39:33.099] Posemesh user login response code: 200
-[2025-05-29 17:39:33.105] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDg1MTUxNzIsImlhdC...
-[2025-05-29 17:39:33.111] Posemesh token received (first 10 chars): eyJhbGciOi...
-[2025-05-29 17:39:33.117] DDS authentication URL: https://api.auki.network/service/domains-access-token
-[2025-05-29 17:39:33.797] DDS authentication response code: 200
-[2025-05-29 17:39:33.803] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4NTE1MTczLCJpYXQiOjE3NDg1MTE1NzMsImp0aSI6ImM0M2FhZDQyLTRmODctNGNlZC04MjdmLWM2OWMxNTQ0NmQzMyJ9.-kg9dNWjbV6xMVKOutY6PBzrQlH4NxkxGV8BCpWdhto3VH2MS1jByvtB6Bwuz21s5yPUZCaqzFtl8ZzfUJleJw"}
-[2025-05-29 17:39:33.811] DDS token received (first 10 chars): eyJhbGciOi...
-[2025-05-29 17:39:33.819] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
-2025-05-29T09:39:33.945Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-29T09:39:34.302Z: Auto-promotion disabled, not starting inactivity timer after reset
-2025-05-29T09:39:34.308Z: Touch detected, reset inactivity timer processed
-[2025-05-29 17:39:34.515] Domain authentication response code: 200
-[2025-05-29 17:39:34.526] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
-[2025-05-29 17:39:34.541] Updated domain info after token validation
-[2025-05-29 17:39:34.551] Token validation successful via re-authentication
-2025-05-29T09:39:34.554Z: Token validation successful: {"message":"Token is valid","valid":true}
-2025-05-29T09:39:35.538Z: Auto-promotion disabled, not starting inactivity timer after reset
-2025-05-29T09:39:35.544Z: Touch detected, reset inactivity timer processed
-2025-05-29T09:39:35.624Z: Waypoint sequence cancelled due to product selection
-2025-05-29T09:39:35.629Z: Starting navigation to: Auki Merch
-2025-05-29T09:39:35.737Z: Cleaned up robot call polling
-2025-05-29T09:39:35.737Z: Navigation state changed to: NAVIGATING
-2025-05-29T09:39:35.738Z: Navigation status updated to: NAVIGATING
-2025-05-29T09:39:35.741Z: Set robot speed to product search mode: 0.7 m/s
-2025-05-29T09:39:35.752Z: Starting polling in NAVIGATING state
-2025-05-29T09:39:35.764Z: Token validation was performed recently, skipping
-2025-05-29T09:39:35.769Z: Starting robot pose polling at 2 times per second
-2025-05-29T09:39:35.776Z: Attempting to fetch new coordinates for product srb3u3ap52n9whr
-2025-05-29T09:39:35.811Z: Failed to fetch new coordinates, falling back to existing pose: Cannot read property 'requestProductPosition' of null
-2025-05-29T09:39:35.819Z: ROBOT_POSE: 1748511575819 - pos=[-0.0764, 0.0000, 1.9287], quat=[0.0008, 0.0000, 0.0000, 1.0000], original=[-0.0764, 1.9287, 3.1400]
-2025-05-29T09:39:35.821Z: Requesting navmesh coordinates for: {"x":-12.57741,"y":0,"z":6.14438772}
-2025-05-29T09:39:35.831Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:35.842Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511575819000000","pose":{"px":-0.07640634868845692,"py":0,"pz":1.928668361389262,"rx":0,"ry":0.9999996829318346,"rz":0,"rw":0.0007963267107328193},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:35.856Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:35.863Z: Robot pose polling started successfully
-2025-05-29T09:39:36.393Z: ROBOT_POSE: 1748511576392 - pos=[-0.0764, 0.0000, 1.9287], quat=[0.0008, 0.0000, 0.0000, 1.0000], original=[-0.0764, 1.9287, 3.1400]
-2025-05-29T09:39:36.405Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:36.420Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511576392000000","pose":{"px":-0.07640634868845692,"py":0,"pz":1.928668361389262,"rx":0,"ry":0.9999996829318346,"rz":0,"rw":0.0007963267107328193},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:36.434Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:36.913Z: ROBOT_POSE: 1748511576913 - pos=[-0.0764, 0.0000, 1.9287], quat=[0.0008, 0.0000, 0.0000, 1.0000], original=[-0.0764, 1.9287, 3.1400]
-2025-05-29T09:39:36.920Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:36.926Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511576913000000","pose":{"px":-0.07640634868845692,"py":0,"pz":1.928668361389262,"rx":0,"ry":0.9999996829318346,"rz":0,"rw":0.0007963267107328193},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:36.951Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:37.432Z: ROBOT_POSE: 1748511577432 - pos=[-0.0764, 0.0000, 1.9287], quat=[0.0008, 0.0000, 0.0000, 1.0000], original=[-0.0764, 1.9287, 3.1400]
-2025-05-29T09:39:37.445Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:37.459Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511577432000000","pose":{"px":-0.07640634868845692,"py":0,"pz":1.928668361389262,"rx":0,"ry":0.9999996829318346,"rz":0,"rw":0.0007963267107328193},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:37.465Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:37.942Z: ROBOT_POSE: 1748511577942 - pos=[-0.0764, 0.0000, 1.9287], quat=[0.0008, 0.0000, 0.0000, 1.0000], original=[-0.0764, 1.9287, 3.1400]
-2025-05-29T09:39:37.957Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:37.969Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511577942000000","pose":{"px":-0.07640634868845692,"py":0,"pz":1.928668361389262,"rx":0,"ry":0.9999996829318346,"rz":0,"rw":0.0007963267107328193},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:37.977Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:38.465Z: ROBOT_POSE: 1748511578465 - pos=[-0.0764, 0.0000, 1.9287], quat=[0.0008, 0.0000, 0.0000, 1.0000], original=[-0.0764, 1.9287, 3.1400]
-2025-05-29T09:39:38.471Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:38.480Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511578465000000","pose":{"px":-0.07640634868845692,"py":0,"pz":1.928668361389262,"rx":0,"ry":0.9999996829318346,"rz":0,"rw":0.0007963267107328193},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:38.489Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:38.977Z: ROBOT_POSE: 1748511578976 - pos=[-0.0764, 0.0000, 1.9287], quat=[0.0008, 0.0000, 0.0000, 1.0000], original=[-0.0764, 1.9287, 3.1400]
-2025-05-29T09:39:38.982Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:38.989Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511578976000000","pose":{"px":-0.07640634868845692,"py":0,"pz":1.928668361389262,"rx":0,"ry":0.9999996829318346,"rz":0,"rw":0.0007963267107328193},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:38.993Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:39.290Z: Received navTarget: {"debug":{"navmeshResult":{"deltaZ":2.015380751174689e-9,"deltaX":-0.5163595849609379,"yaw":0.0015926535897929917,"z":6.144387722015381,"x":-12.061050415039062},"transformedCoords":{"z":-6.14438772,"x":-12.57741},"productCoords":{"z":6.14438772,"x":-12.57741}},"yaw":0.0015926535897929917,"z":6.144387722015381,"x":-12.061050415039062}
-2025-05-29T09:39:39.297Z: Raw targetCoords: {
-  "debug": {
-    "navmeshResult": {
-      "deltaZ": 2.015380751174689e-9,
-      "deltaX": -0.5163595849609379,
-      "yaw": 0.0015926535897929917,
-      "z": 6.144387722015381,
-      "x": -12.061050415039062
-    },
-    "transformedCoords": {
-      "z": -6.14438772,
-      "x": -12.57741
-    },
-    "productCoords": {
-      "z": 6.14438772,
-      "x": -12.57741
-    }
-  },
-  "yaw": 0.0015926535897929917,
-  "z": 6.144387722015381,
-  "x": -12.061050415039062
+2025-05-30T06:11:36.728Z: onTouchStart triggered. isPatrolling=true, navigationStatus=4
+2025-05-30T06:11:36.729Z: Touch detected during patrol, stopping patrol
+2025-05-30T06:11:36.730Z: Waypoint sequence cancelled (reason: user touch during patrol)
+2025-05-30T06:11:36.777Z: Patrol state changed to: inactive
+2025-05-30T06:11:36.791Z: Auto-promotion disabled, not starting inactivity timer after patrol stop
+2025-05-30T06:11:36.830Z: Waypoint sequence cancelled
+[2025-05-30 14:11:36.857] Write response code: 200
+[2025-05-30 14:11:36.869] Write response: {"data":[{"id":"195809dd-6e7e-4f1e-a20c-be15e8d31a0e","domain_id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"padbot-b44bd65d7d6d","data_type":"reported_pose_json","size":273,"created_at":"2025-05-29T10:19:56.182438Z","updated_at":"2025-05-30T06:11:36.705954Z"}]}
+[2025-05-30 14:11:36.875] writeRobotPose completed successfully
+2025-05-30T06:11:36.880Z: Robot movement stopped
+2025-05-30T06:11:37.026Z: Robot pose polling stopped on cleanup
+2025-05-30T06:11:37.027Z: Polling for robot call data...
+2025-05-30T06:11:37.028Z: Started robot call polling
+2025-05-30T06:11:37.028Z: Navigation state changed to: IDLE
+2025-05-30T06:11:37.028Z: Navigation status updated to: IDLE
+2025-05-30T06:11:37.032Z: Auto-promotion disabled, not starting inactivity timer
+2025-05-30T06:11:37.051Z: Polling stopped in IDLE state
+2025-05-30T06:11:37.290Z: Patrol conditions changed after navigation, not proceeding to next point
+2025-05-30T06:11:38.076Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T06:11:42.036Z: Polling for robot call data...
+2025-05-30T06:11:43.504Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T06:11:47.050Z: Polling for robot call data...
+2025-05-30T06:11:47.703Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T06:11:52.066Z: Polling for robot call data...
+2025-05-30T06:11:53.131Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T06:11:57.073Z: Polling for robot call data...
+2025-05-30T06:11:58.571Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T06:12:02.083Z: Polling for robot call data...
+2025-05-30T06:12:03.173Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T06:12:07.103Z: Polling for robot call data...
+2025-05-30T06:12:08.696Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T06:12:12.117Z: Polling for robot call data...
+2025-05-30T06:12:13.610Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T06:12:14.143Z: onTouchStart triggered. isPatrolling=false, navigationStatus=0
+2025-05-30T06:12:14.144Z: Touch detected outside patrol, resetting inactivity timer
+2025-05-30T06:12:14.145Z: Inactivity timer clear called, but no timer was running
+2025-05-30T06:12:14.168Z: Auto-promotion disabled, not starting inactivity timer after reset
+2025-05-30T06:12:14.187Z: Touch detected, reset inactivity timer processed
+2025-05-30T06:12:17.135Z: Polling for robot call data...
+2025-05-30T06:12:17.150Z: Inactivity timer clear called, but no timer was running
+2025-05-30T06:12:17.151Z: Config screen opened, cleared inactivity timer
+2025-05-30T06:12:17.309Z: Cleared token validation interval
+2025-05-30T06:12:17.310Z: Cleared token refresh interval
+2025-05-30T06:12:17.310Z: Cleaned up robot call polling
+Starting health check...
+
+Health check response: {
+  "deviceFound": true,
+  "status": "Robot health check successful",
+  "slamApiAvailable": true,
+  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
+  "responseCode": 200
 }
-2025-05-29T09:39:39.307Z: Calling navigateProduct with exact params: {
-  "x": -12.061050415039062,
-  "y": 6.144387722015381,
-  "yaw": 0.0015926535897929917
+
+Parsed health check response: {
+  "baseError": [],
+  "hasDepthCameraDisconnected": false,
+  "hasError": false,
+  "hasFatal": false,
+  "hasLidarDisconnected": false,
+  "hasSdpDisconnected": false,
+  "hasSystemEmergencyStop": false,
+  "hasWarning": false
 }
-2025-05-29T09:39:39.312Z: Starting navigation command...
-2025-05-29T09:39:39.495Z: ROBOT_POSE: 1748511579495 - pos=[-0.0764, 0.0000, 1.9287], quat=[0.0008, 0.0000, 0.0000, 1.0000], original=[-0.0764, 1.9287, 3.1400]
-2025-05-29T09:39:39.500Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:39.510Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511579495000000","pose":{"px":-0.07640634868845692,"py":0,"pz":1.928668361389262,"rx":0,"ry":0.9999996829318346,"rz":0,"rw":0.0007963267107328193},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:39.517Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:40.009Z: ROBOT_POSE: 1748511580009 - pos=[-0.1098, 0.0000, 1.9287], quat=[0.0008, 0.0000, 0.0000, 1.0000], original=[-0.1098, 1.9287, 3.1400]
-2025-05-29T09:39:40.021Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:40.027Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511580009000000","pose":{"px":-0.109845906465724,"py":0,"pz":1.928721919066617,"rx":0,"ry":0.9999996829318346,"rz":0,"rw":0.0007963267107328193},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:40.036Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:40.535Z: ROBOT_POSE: 1748511580534 - pos=[-0.1880, 0.0000, 1.9289], quat=[0.0026, 0.0000, 0.0000, 1.0000], original=[-0.1880, 1.9289, 3.1363]
-2025-05-29T09:39:40.540Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:40.548Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511580534000000","pose":{"px":-0.1880061952594528,"py":0,"pz":1.928887818183519,"rx":0,"ry":0.999996521405162,"rz":0,"rw":0.002637646218737656},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:40.556Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:41.042Z: ROBOT_POSE: 1748511581042 - pos=[-0.2685, 0.0000, 1.9292], quat=[0.0013, 0.0000, 0.0000, 1.0000], original=[-0.2685, 1.9292, 3.1389]
-2025-05-29T09:39:41.052Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:41.059Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511581042000000","pose":{"px":-0.2684728382241357,"py":0,"pz":1.929216483223036,"rx":0,"ry":0.9999990986927436,"rz":0,"rw":0.001342614501756623},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:41.064Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:41.554Z: ROBOT_POSE: 1748511581554 - pos=[-0.3467, 0.0000, 1.9294], quat=[0.0015, 0.0000, 0.0000, 1.0000], original=[-0.3467, 1.9294, 3.1385]
-2025-05-29T09:39:41.558Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:41.568Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511581554000000","pose":{"px":-0.3466973147619304,"py":0,"pz":1.929403506513484,"rx":0,"ry":0.9999988117619997,"rz":0,"rw":0.0015415818462835864},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:41.573Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:42.075Z: ROBOT_POSE: 1748511582075 - pos=[-0.3582, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3582, 1.9295, 3.1349]
-2025-05-29T09:39:42.085Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:42.089Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511582075000000","pose":{"px":-0.3582264654973651,"py":0,"pz":1.929460554248336,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:42.096Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:42.587Z: ROBOT_POSE: 1748511582587 - pos=[-0.3579, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3579, 1.9295, 3.1349]
-2025-05-29T09:39:42.591Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:42.595Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511582587000000","pose":{"px":-0.3579054726306083,"py":0,"pz":1.929458413253001,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:42.601Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:43.107Z: ROBOT_POSE: 1748511583107 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:43.115Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:43.123Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511583107000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:43.128Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:43.625Z: ROBOT_POSE: 1748511583624 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:43.628Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:43.633Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511583624000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:43.638Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:44.140Z: ROBOT_POSE: 1748511584140 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:44.145Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:44.153Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511584140000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:44.158Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:44.653Z: ROBOT_POSE: 1748511584653 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:44.658Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:44.665Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511584653000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:44.672Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:45.172Z: ROBOT_POSE: 1748511585172 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:45.177Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:45.183Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511585172000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:45.192Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:45.687Z: ROBOT_POSE: 1748511585686 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:45.690Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:45.695Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511585686000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:45.702Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:46.210Z: ROBOT_POSE: 1748511586210 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:46.215Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:46.221Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511586210000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:46.225Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:46.726Z: ROBOT_POSE: 1748511586726 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:46.739Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:46.749Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511586726000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:46.758Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:47.240Z: ROBOT_POSE: 1748511587240 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:47.248Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:47.257Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511587240000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:47.261Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:47.759Z: ROBOT_POSE: 1748511587759 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:47.770Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:47.777Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511587759000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:47.787Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:48.274Z: ROBOT_POSE: 1748511588274 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:48.278Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:48.282Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511588274000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:48.288Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:48.795Z: ROBOT_POSE: 1748511588795 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:48.804Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:48.812Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511588795000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:48.821Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:49.305Z: ROBOT_POSE: 1748511589305 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:49.311Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:49.315Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511589305000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:49.320Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:49.829Z: ROBOT_POSE: 1748511589829 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:49.836Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:49.843Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511589829000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:49.849Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:50.342Z: ROBOT_POSE: 1748511590342 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:50.345Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:50.354Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511590342000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:50.360Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:50.860Z: ROBOT_POSE: 1748511590859 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:50.868Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:50.878Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511590859000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:50.884Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:51.373Z: ROBOT_POSE: 1748511591372 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:51.377Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:51.385Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511591372000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:51.390Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:51.895Z: ROBOT_POSE: 1748511591895 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:51.900Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:51.908Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511591895000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:51.911Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:52.408Z: ROBOT_POSE: 1748511592408 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:52.417Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:52.422Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511592408000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:52.429Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:52.927Z: ROBOT_POSE: 1748511592927 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:52.934Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:52.943Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511592927000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:52.959Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:53.438Z: ROBOT_POSE: 1748511593438 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:53.442Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:53.445Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511593438000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:53.459Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:53.953Z: ROBOT_POSE: 1748511593953 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:53.957Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:53.963Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511593953000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:53.973Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:54.472Z: ROBOT_POSE: 1748511594472 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:54.477Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:54.484Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511594472000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:54.489Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:54.990Z: ROBOT_POSE: 1748511594990 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:54.995Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:55.002Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511594990000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:55.007Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:55.517Z: ROBOT_POSE: 1748511595517 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:55.522Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:55.528Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511595517000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:55.535Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:56.020Z: ROBOT_POSE: 1748511596020 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:56.024Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:56.027Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511596020000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:56.033Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:56.541Z: ROBOT_POSE: 1748511596540 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:56.546Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:56.553Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511596540000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:56.557Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:57.037Z: ROBOT_POSE: 1748511597037 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:57.043Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:57.052Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511597037000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:57.058Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:57.557Z: ROBOT_POSE: 1748511597556 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:57.562Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:57.571Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511597556000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:57.581Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:58.085Z: ROBOT_POSE: 1748511598084 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:58.106Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:58.122Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511598084000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:58.139Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:58.605Z: ROBOT_POSE: 1748511598605 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:58.612Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:58.619Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511598605000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:58.630Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:59.114Z: ROBOT_POSE: 1748511599114 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:59.123Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:59.136Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511599114000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:59.142Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:39:59.635Z: ROBOT_POSE: 1748511599635 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:39:59.644Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:39:59.658Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511599635000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:39:59.666Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:00.140Z: ROBOT_POSE: 1748511600140 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:00.151Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:00.159Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511600140000000","pose":{"px":-0.3579693712083483,"py":0,"pz":1.929458839451122,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:00.166Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:00.658Z: ROBOT_POSE: 1748511600658 - pos=[-0.3579, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3579, 1.9295, 3.1349]
-2025-05-29T09:40:00.665Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:00.677Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511600658000000","pose":{"px":-0.3579052726335341,"py":0,"pz":1.929458411919037,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:00.685Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:00.984Z: Waypoint sequence cancelled
-2025-05-29T09:40:01.031Z: Robot movement stopped
-2025-05-29T09:40:01.187Z: Robot pose polling stopped on cleanup
-2025-05-29T09:40:01.189Z: Polling for robot call data...
-2025-05-29T09:40:01.189Z: Started robot call polling
-2025-05-29T09:40:01.192Z: Navigation state changed to: IDLE
-2025-05-29T09:40:01.193Z: Navigation status updated to: IDLE
-2025-05-29T09:40:01.197Z: Auto-promotion disabled, not starting inactivity timer
-2025-05-29T09:40:01.218Z: Polling stopped in IDLE state
-2025-05-29T09:40:01.385Z: Navigation was cancelled during product navigation, not updating status
-2025-05-29T09:40:02.926Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-29T09:40:03.167Z: Auto-promotion disabled, not starting inactivity timer after reset
-2025-05-29T09:40:03.174Z: Touch detected, reset inactivity timer processed
-2025-05-29T09:40:04.564Z: Auto-promotion disabled, not starting inactivity timer after reset
-2025-05-29T09:40:04.570Z: Touch detected, reset inactivity timer processed
-2025-05-29T09:40:04.648Z: Waypoint sequence cancelled due to product selection
-2025-05-29T09:40:04.657Z: Starting navigation to: Auki Merch
-2025-05-29T09:40:04.731Z: Cleaned up robot call polling
-2025-05-29T09:40:04.732Z: Navigation state changed to: NAVIGATING
-2025-05-29T09:40:04.733Z: Navigation status updated to: NAVIGATING
-2025-05-29T09:40:04.741Z: Set robot speed to product search mode: 0.7 m/s
-2025-05-29T09:40:04.746Z: Starting polling in NAVIGATING state
-2025-05-29T09:40:04.760Z: Token validation was performed recently, skipping
-2025-05-29T09:40:04.764Z: Starting robot pose polling at 2 times per second
-2025-05-29T09:40:04.770Z: Attempting to fetch new coordinates for product srb3u3ap52n9whr
-2025-05-29T09:40:04.781Z: Failed to fetch new coordinates, falling back to existing pose: Cannot read property 'requestProductPosition' of null
-2025-05-29T09:40:04.787Z: Requesting navmesh coordinates for: {"x":-12.57741,"y":0,"z":6.14438772}
-2025-05-29T09:40:04.789Z: ROBOT_POSE: 1748511604789 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:04.797Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:04.805Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511604789000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:04.814Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:04.822Z: Robot pose polling started successfully
-2025-05-29T09:40:05.338Z: ROBOT_POSE: 1748511605337 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:05.348Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:05.358Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511605337000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:05.368Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:05.855Z: ROBOT_POSE: 1748511605855 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:05.861Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:05.866Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511605855000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:05.876Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:06.376Z: ROBOT_POSE: 1748511606376 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:06.386Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:06.394Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511606376000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:06.401Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:06.898Z: ROBOT_POSE: 1748511606898 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:06.905Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:06.923Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511606898000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:06.932Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:07.425Z: ROBOT_POSE: 1748511607425 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:07.431Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:07.438Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511607425000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:07.445Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:07.943Z: ROBOT_POSE: 1748511607942 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:07.953Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:07.963Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511607942000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:07.974Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:08.443Z: ROBOT_POSE: 1748511608443 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:08.450Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:08.460Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511608443000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:08.467Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:08.494Z: Received navTarget: {"debug":{"navmeshResult":{"deltaZ":2.015380751174689e-9,"deltaX":-0.5163595849609379,"yaw":0.0015926535897929917,"z":6.144387722015381,"x":-12.061050415039062},"transformedCoords":{"z":-6.14438772,"x":-12.57741},"productCoords":{"z":6.14438772,"x":-12.57741}},"yaw":0.0015926535897929917,"z":6.144387722015381,"x":-12.061050415039062}
-2025-05-29T09:40:08.501Z: Raw targetCoords: {
-  "debug": {
-    "navmeshResult": {
-      "deltaZ": 2.015380751174689e-9,
-      "deltaX": -0.5163595849609379,
-      "yaw": 0.0015926535897929917,
-      "z": 6.144387722015381,
-      "x": -12.061050415039062
-    },
-    "transformedCoords": {
-      "z": -6.14438772,
-      "x": -12.57741
-    },
-    "productCoords": {
-      "z": 6.14438772,
-      "x": -12.57741
-    }
-  },
-  "yaw": 0.0015926535897929917,
-  "z": 6.144387722015381,
-  "x": -12.061050415039062
+
+Connection status: Health Check OK, Message: Health Check OK
+
+2025-05-30T06:12:18.627Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+Starting health check...
+
+Health check response: {
+  "deviceFound": true,
+  "status": "Robot health check successful",
+  "slamApiAvailable": true,
+  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
+  "responseCode": 200
 }
-2025-05-29T09:40:08.510Z: Calling navigateProduct with exact params: {
-  "x": -12.061050415039062,
-  "y": 6.144387722015381,
-  "yaw": 0.0015926535897929917
+
+Parsed health check response: {
+  "baseError": [],
+  "hasDepthCameraDisconnected": false,
+  "hasError": false,
+  "hasFatal": false,
+  "hasLidarDisconnected": false,
+  "hasSdpDisconnected": false,
+  "hasSystemEmergencyStop": false,
+  "hasWarning": false
 }
-2025-05-29T09:40:08.519Z: Starting navigation command...
-2025-05-29T09:40:08.953Z: ROBOT_POSE: 1748511608953 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:08.959Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:08.966Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511608953000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:08.970Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:09.477Z: ROBOT_POSE: 1748511609477 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:09.487Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:09.493Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511609477000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:09.499Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:09.989Z: ROBOT_POSE: 1748511609989 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:09.998Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:10.007Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511609989000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:10.016Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:10.504Z: ROBOT_POSE: 1748511610504 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:10.508Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:10.518Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511610504000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:10.526Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:11.022Z: ROBOT_POSE: 1748511611022 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:11.029Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:11.036Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511611022000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:11.045Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:11.537Z: ROBOT_POSE: 1748511611537 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:11.542Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:11.546Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511611537000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:11.553Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:12.053Z: ROBOT_POSE: 1748511612053 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:12.060Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:12.070Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511612053000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:12.081Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:12.568Z: ROBOT_POSE: 1748511612568 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:12.578Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:12.590Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511612568000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:12.597Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:13.087Z: ROBOT_POSE: 1748511613087 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:13.097Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:13.104Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511613087000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:13.113Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:13.600Z: ROBOT_POSE: 1748511613600 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:13.605Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:13.614Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511613600000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:13.620Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:14.119Z: ROBOT_POSE: 1748511614119 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:14.122Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:14.127Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511614119000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:14.134Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:14.634Z: ROBOT_POSE: 1748511614633 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:14.641Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:14.649Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511614633000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:14.653Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:15.149Z: ROBOT_POSE: 1748511615149 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:15.156Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:15.165Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511615149000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:15.171Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:15.668Z: ROBOT_POSE: 1748511615668 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:15.674Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:15.682Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511615668000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:15.697Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:16.183Z: ROBOT_POSE: 1748511616183 - pos=[-0.3580, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3580, 1.9295, 3.1349]
-2025-05-29T09:40:16.187Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:16.197Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511616183000000","pose":{"px":-0.3579685712200513,"py":0,"pz":1.929458834115268,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:16.205Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:16.676Z: Waypoint sequence cancelled
-2025-05-29T09:40:16.705Z: ROBOT_POSE: 1748511616704 - pos=[-0.3579, 0.0000, 1.9295], quat=[0.0033, 0.0000, 0.0000, 1.0000], original=[-0.3579, 1.9295, 3.1349]
-2025-05-29T09:40:16.716Z: Robot movement stopped
-2025-05-29T09:40:16.718Z: Error: Device identifiers not found in global storage!
-2025-05-29T09:40:16.854Z: Robot pose polling stopped on cleanup
-2025-05-29T09:40:16.855Z: Polling for robot call data...
-2025-05-29T09:40:16.856Z: Started robot call polling
-2025-05-29T09:40:16.856Z: Navigation state changed to: IDLE
-2025-05-29T09:40:16.857Z: Navigation status updated to: IDLE
-2025-05-29T09:40:16.862Z: {"name":"PadBot","device_id":"unknown_device_id","device_type":"padbot-robot-w3","timestamp":"1748511616704000000","pose":{"px":-0.3579045726437742,"py":0,"pz":1.929458407250165,"rx":0,"ry":0.999994439198285,"rz":0,"rw":0.0033349021736118513},"mac_address":"unknown_mac_address"}
-2025-05-29T09:40:16.862Z: Auto-promotion disabled, not starting inactivity timer
-2025-05-29T09:40:16.884Z: Polling stopped in IDLE state
-2025-05-29T09:40:16.898Z: Error sending pose data to domain: undefined is not a function
-2025-05-29T09:40:17.253Z: Navigation was cancelled during product navigation, not updating status
-2025-05-29T09:40:18.158Z: Auto-promotion disabled, not starting inactivity timer after reset
-2025-05-29T09:40:18.167Z: Touch detected, reset inactivity timer processed
-2025-05-29T09:40:18.590Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-29T09:40:21.871Z: Polling for robot call data...
-2025-05-29T09:40:22.513Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-29T09:40:22.771Z: User confirmed app exit
-2025-05-29T09:40:22.832Z: App state changed from active to background
-2025-05-29T09:40:22.833Z: App state changed from active to background
-2025-05-29T09:40:23.706Z: Cleared token validation interval
-2025-05-29T09:40:23.716Z: Cleared token refresh interval
-2025-05-29T09:40:23.729Z: Cleaned up robot call polling
+
+Connection status: Health Check OK, Message: Health Check OK
+
+Starting health check...
+
+Health check response: {
+  "deviceFound": true,
+  "status": "Robot health check successful",
+  "slamApiAvailable": true,
+  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
+  "responseCode": 200
+}
+
+Parsed health check response: {
+  "baseError": [],
+  "hasDepthCameraDisconnected": false,
+  "hasError": false,
+  "hasFatal": false,
+  "hasLidarDisconnected": false,
+  "hasSdpDisconnected": false,
+  "hasSystemEmergencyStop": false,
+  "hasWarning": false
+}
+
+Connection status: Health Check OK, Message: Health Check OK
+
+Starting health check...
+
+Health check response: {
+  "deviceFound": true,
+  "status": "Robot health check successful",
+  "slamApiAvailable": true,
+  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
+  "responseCode": 200
+}
+
+Parsed health check response: {
+  "baseError": [],
+  "hasDepthCameraDisconnected": false,
+  "hasError": false,
+  "hasFatal": false,
+  "hasLidarDisconnected": false,
+  "hasSdpDisconnected": false,
+  "hasSystemEmergencyStop": false,
+  "hasWarning": false
+}
+
+Connection status: Health Check OK, Message: Health Check OK
+
+Starting health check...
+
+Health check response: {
+  "deviceFound": true,
+  "status": "Robot health check successful",
+  "slamApiAvailable": true,
+  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
+  "responseCode": 200
+}
+
+Parsed health check response: {
+  "baseError": [],
+  "hasDepthCameraDisconnected": false,
+  "hasError": false,
+  "hasFatal": false,
+  "hasLidarDisconnected": false,
+  "hasSdpDisconnected": false,
+  "hasSystemEmergencyStop": false,
+  "hasWarning": false
+}
+
+Connection status: Health Check OK, Message: Health Check OK
+
+Starting health check...
+
+Health check response: {
+  "deviceFound": true,
+  "status": "Robot health check successful",
+  "slamApiAvailable": true,
+  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
+  "responseCode": 200
+}
+
+Parsed health check response: {
+  "baseError": [],
+  "hasDepthCameraDisconnected": false,
+  "hasError": false,
+  "hasFatal": false,
+  "hasLidarDisconnected": false,
+  "hasSdpDisconnected": false,
+  "hasSystemEmergencyStop": false,
+  "hasWarning": false
+}
+
+Connection status: Health Check OK, Message: Health Check OK
+
+Starting health check...
+
+Health check response: {
+  "deviceFound": true,
+  "status": "Robot health check successful",
+  "slamApiAvailable": true,
+  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
+  "responseCode": 200
+}
+
+Parsed health check response: {
+  "baseError": [],
+  "hasDepthCameraDisconnected": false,
+  "hasError": false,
+  "hasFatal": false,
+  "hasLidarDisconnected": false,
+  "hasSdpDisconnected": false,
+  "hasSystemEmergencyStop": false,
+  "hasWarning": false
+}
+
+Connection status: Health Check OK, Message: Health Check OK
+
+Starting health check...
+
+Health check response: {
+  "deviceFound": true,
+  "status": "Robot health check successful",
+  "slamApiAvailable": true,
+  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
+  "responseCode": 200
+}
+
+Parsed health check response: {
+  "baseError": [],
+  "hasDepthCameraDisconnected": false,
+  "hasError": false,
+  "hasFatal": false,
+  "hasLidarDisconnected": false,
+  "hasSdpDisconnected": false,
+  "hasSystemEmergencyStop": false,
+  "hasWarning": false
+}
+
+Connection status: Health Check OK, Message: Health Check OK
+
+Starting health check...
+
+Health check response: {
+  "deviceFound": true,
+  "status": "Robot health check successful",
+  "slamApiAvailable": true,
+  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
+  "responseCode": 200
+}
+
+Parsed health check response: {
+  "baseError": [],
+  "hasDepthCameraDisconnected": false,
+  "hasError": false,
+  "hasFatal": false,
+  "hasLidarDisconnected": false,
+  "hasSdpDisconnected": false,
+  "hasSystemEmergencyStop": false,
+  "hasWarning": false
+}
+
+Connection status: Health Check OK, Message: Health Check OK
+
+2025-05-30T06:12:58.928Z: Patrol state changed to: inactive
+2025-05-30T06:12:58.928Z: MainScreen mounted. Promotion state: active=false, cancelled=true, currentPointIndex=1, remountFromConfig=false
+2025-05-30T06:12:58.953Z: Performing initial token validation
+2025-05-30T06:12:58.954Z: Polling for robot call data...
+2025-05-30T06:12:58.954Z: Started robot call polling
+2025-05-30T06:12:58.955Z: Navigation state changed to: IDLE
+2025-05-30T06:12:58.955Z: Navigation status updated to: IDLE
+2025-05-30T06:12:58.955Z: Performing initial health check in MainScreen...
+2025-05-30T06:12:58.956Z: Performing initial health check in MainScreen...
+2025-05-30T06:12:58.958Z: Starting robot pose polling at 2 times per second
+2025-05-30T06:12:58.959Z: validateToken called (force=true)
+2025-05-30T06:12:58.959Z: Proactively validating authentication token
+2025-05-30T06:12:59.019Z: Polling stopped in IDLE state
+2025-05-30T06:12:59.019Z: Loaded patrol points: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"point1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"point2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"point3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"point4"}]
+2025-05-30T06:12:59.020Z: Not starting polling interval - not in NAVIGATING/PATROL state
+[2025-05-30 14:12:59.034] Starting token validation...
+[2025-05-30 14:12:59.039] Domain info from storage: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","created_at":"2024-02-02T00:35:47.24977Z","updated_at":"2025-05-02T06:00:55.444308Z","claimed_by_kazm_id":null,"owner_wallet_address":"","access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsiZG9tYWluOnJ3Il0sImRvbWFpbl9pZCI6IjgwOTNmOWJmLWMzNzQtNDE2Mi1hYjc0LWFiNjE5NDk2MjdmMSIsIm9yZyI6ImNiYWM0MGVmLTc0NTItNDA4ZS04MTdiLWFmZDRlOTEzYWQwYyIsInR5cGUiOiJ1c2VyLWFjY2VzcyIsImlzcyI6ImRkcyIsInN1YiI6IjNlMDNlMjk4LWY0NzEtNDk4Ni05YjEwLTgzOTlmMzUzMDYyMCIsImF1ZCI6WyJkZHMiLCJodHRwczovL2RvbWFpbi1zZXJ2ZXItdXMtZWFzdC0xLmF1a2l2ZXJzZS5jb20iXSwiZXhwIjoxNzQ4NTg5MDg0LCJpYXQiOjE3NDg1ODU0ODR9.jf6QBuWsydJ0GxIHLq3qjvzepnlGKhF9MZ44v3tQEZYhONXjrZckoANoWSsLgmkckdYCnHwzjmx6iu3EoOaO5A","domain_server":{"id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","organization_id":"00000000-0000-0000-0000-000000000001","name":"node-c1349ff69a9f4d46a6b","url":"https://domain-server-us-east-1.aukiverse.com","version":"v0.5.37","status":"online","created_at":"2024-01-18T09:08:31.358792Z","updated_at":"2025-05-26T09:17:22.865415Z","redirect_url":null,"mode":"public","variants":["auki"],"description":"","staking_status":"Staked","ip":"52.45.94.183","latitude":37.751,"longitude":-97.822,"asn":16509,"h3_cell_index":"8226e7fffffffff","cloud_region":""}}
+[2025-05-30 14:12:59.045] Re-authenticating with email: phil+aukilabs@aukilabs.com, domainId: 8093f9bf-c374-4162-ab74-ab61949627f1
+[2025-05-30 14:12:59.050] Posemesh user login URL: https://api.auki.network/user/login
+2025-05-30T06:12:59.123Z: Initial health check response: {
+  "deviceFound": true,
+  "status": "Robot health check successful",
+  "slamApiAvailable": true,
+  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
+  "responseCode": 200
+}
+2025-05-30T06:12:59.125Z: validateToken called (force=false)
+2025-05-30T06:12:59.126Z: Token validation already in progress, skipping
+2025-05-30T06:12:59.128Z: Initial health check response: {
+  "deviceFound": true,
+  "status": "Robot health check successful",
+  "slamApiAvailable": true,
+  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
+  "responseCode": 200
+}
+2025-05-30T06:12:59.130Z: Parsed health check response: {
+  "baseError": [],
+  "hasDepthCameraDisconnected": false,
+  "hasError": false,
+  "hasFatal": false,
+  "hasLidarDisconnected": false,
+  "hasSdpDisconnected": false,
+  "hasSystemEmergencyStop": false,
+  "hasWarning": false
+}
+2025-05-30T06:12:59.131Z: Initial health check successful
+2025-05-30T06:12:59.133Z: Initial POIs fetch: [{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"point1"},"id":"2bd8930e-affa-427e-b701-05d6e06e9682"},{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"point2"},"id":"4bbba4d6-b3f5-4317-8c88-b0a5ef6c5aae"},{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"point4"},"id":"b8c85a35-c74a-4f12-b143-7531ea384fb8"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"point3"},"id":"c2a7caca-9d29-4628-aeca-3379d9a60ddd"}]
+2025-05-30T06:12:59.142Z: Initial health check successful
+2025-05-30T06:12:59.243Z: Found POI names: ["point1","point2","point4","point3"]
+2025-05-30T06:12:59.247Z: Valid POI names: ["point1","point2","point4","point3"]
+2025-05-30T06:12:59.250Z: POI validation successful - all points match config
+[2025-05-30 14:12:59.846] Posemesh user login response code: 200
+[2025-05-30 14:12:59.852] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDg1ODkxNzksImlhdC...
+[2025-05-30 14:12:59.859] Posemesh token received (first 10 chars): eyJhbGciOi...
+[2025-05-30 14:12:59.866] DDS authentication URL: https://api.auki.network/service/domains-access-token
+2025-05-30T06:13:00.511Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+[2025-05-30 14:13:00.543] DDS authentication response code: 200
+[2025-05-30 14:13:00.550] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4NTg5MTgwLCJpYXQiOjE3NDg1ODU1ODAsImp0aSI6ImQyMzYzYTNiLWVjZDEtNGZkYy1iYzE1LWQzYTRhOTA4MjRhMiJ9.EWZpxNdHaETirbxy3sCofDCqIHAlqfpGPeSq2q0TyGMcak8vu6_m2Iff-0bcfMaKq-n_50A-co9qVk-p61TmUA"}
+[2025-05-30 14:13:00.559] DDS token received (first 10 chars): eyJhbGciOi...
+[2025-05-30 14:13:00.568] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
+2025-05-30T06:13:00.680Z: onTouchStart triggered. isPatrolling=false, navigationStatus=0
+2025-05-30T06:13:00.681Z: Touch detected outside patrol, resetting inactivity timer
+2025-05-30T06:13:00.682Z: Inactivity timer clear called, but no timer was running
+2025-05-30T06:13:00.702Z: Auto-promotion disabled, not starting inactivity timer after reset
+2025-05-30T06:13:00.712Z: Touch detected, reset inactivity timer processed
+[2025-05-30 14:13:00.920] Domain authentication response code: 200
+[2025-05-30 14:13:00.927] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
+[2025-05-30 14:13:00.933] Updated domain info after token validation
+[2025-05-30 14:13:00.940] Token validation successful via re-authentication
+2025-05-30T06:13:00.949Z: Token validation successful: {"message":"Token is valid","valid":true}
+2025-05-30T06:13:03.966Z: Polling for robot call data...
+2025-05-30T06:13:05.025Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T06:13:08.980Z: Polling for robot call data...
+2025-05-30T06:13:10.782Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T06:13:13.998Z: Polling for robot call data...
+2025-05-30T06:13:15.495Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T06:13:19.014Z: Polling for robot call data...
+2025-05-30T06:13:20.493Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T06:13:24.032Z: Polling for robot call data...
+2025-05-30T06:13:24.675Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T06:13:29.047Z: Polling for robot call data...
+2025-05-30T06:13:29.516Z: onTouchStart triggered. isPatrolling=false, navigationStatus=0
+2025-05-30T06:13:29.517Z: Touch detected outside patrol, resetting inactivity timer
+2025-05-30T06:13:29.524Z: Inactivity timer clear called, but no timer was running
+2025-05-30T06:13:29.541Z: Auto-promotion disabled, not starting inactivity timer after reset
+2025-05-30T06:13:29.550Z: Touch detected, reset inactivity timer processed
+2025-05-30T06:13:30.007Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T06:13:34.070Z: Polling for robot call data...
+2025-05-30T06:13:35.224Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T06:13:37.021Z: onTouchStart triggered. isPatrolling=false, navigationStatus=0
+2025-05-30T06:13:37.022Z: Touch detected outside patrol, resetting inactivity timer
+2025-05-30T06:13:37.023Z: Inactivity timer clear called, but no timer was running
+2025-05-30T06:13:37.057Z: Auto-promotion disabled, not starting inactivity timer after reset
+2025-05-30T06:13:37.075Z: Touch detected, reset inactivity timer processed
+2025-05-30T06:13:39.080Z: Polling for robot call data...
+2025-05-30T06:13:40.764Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-30T06:13:42.323Z: User confirmed app exit
+2025-05-30T06:13:42.389Z: App state changed from active to background
+2025-05-30T06:13:42.393Z: App state changed from active to background
+2025-05-30T06:13:43.190Z: Cleared token validation interval
+2025-05-30T06:13:43.193Z: Cleared token refresh interval
+2025-05-30T06:13:43.203Z: Cleaned up robot call polling

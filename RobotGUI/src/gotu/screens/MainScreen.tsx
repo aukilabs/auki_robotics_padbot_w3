@@ -237,6 +237,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       clearTimeout(inactivityTimerRef.current);
       inactivityTimerRef.current = null;
       LogUtils.writeDebugToFile('Inactivity timer cleared');
+    } else {
+      LogUtils.writeDebugToFile('Inactivity timer clear called, but no timer was running');
     }
   };
   
@@ -247,16 +249,18 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   const startInactivityTimer = () => {
     // Clear any existing timer first
     clearInactivityTimer();
-    
+    LogUtils.writeDebugToFile('startInactivityTimer called');
     // Log that we're starting the timer
     LogUtils.writeDebugToFile(`Starting inactivity timer (${INACTIVITY_TIMEOUT/1000} seconds)`);
-    
     // Set a new timer
     inactivityTimerRef.current = setTimeout(() => {
+      LogUtils.writeDebugToFile('Inactivity timer expired');
       // Only restart promotion if we're not in config screen and not already in promotion
       if (!isPatrollingRef.current && isMountedRef.current) {
         LogUtils.writeDebugToFile('Inactivity timer expired, restarting promotion');
         restartPromotion();
+      } else {
+        LogUtils.writeDebugToFile(`Inactivity timer expired, but not restarting: isPatrolling=${isPatrollingRef.current}, isMounted=${isMountedRef.current}`);
       }
     }, INACTIVITY_TIMEOUT);
   };
@@ -264,6 +268,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   // Function to restart the promotion
   const restartPromotion = async () => {
     try {
+      LogUtils.writeDebugToFile('restartPromotion called');
       // Only restart if we're not already in promotion mode
       if (!isPatrollingRef.current && isMountedRef.current) {
         await LogUtils.writeDebugToFile('Auto-restarting promotion after inactivity');
@@ -302,6 +307,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
             LogUtils.writeDebugToFile(`Navigation not starting after auto-restart: isMounted=${isMountedRef.current}, navigationCancelled=${navigationCancelledRef.current}`);
           }
         }, 1000); // Increased delay to 1 second for more reliable startup
+      } else {
+        await LogUtils.writeDebugToFile(`restartPromotion: Not restarting because isPatrolling=${isPatrollingRef.current}, isMounted=${isMountedRef.current}`);
       }
     } catch (error: any) {
       await LogUtils.writeDebugToFile(`Error auto-restarting promotion: ${error.message}`);
@@ -505,6 +512,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   
   // Add proactive token validation function
   const validateToken = async (force = false): Promise<boolean> => {
+    LogUtils.writeDebugToFile(`validateToken called (force=${force})`);
     // Skip validation if already in progress or if not enough time has passed
     if (AuthState.validationInProgress) {
       await LogUtils.writeDebugToFile('Token validation already in progress, skipping');
@@ -981,82 +989,6 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     }
   };
   
-  const handleGoHome = async () => {
-    // Cancel any ongoing patrol unless it's the final step of patrol
-    setIsPatrolling(false);
-    promotionActive = false;
-    promotionCancelled = true;
-    await LogUtils.writeDebugToFile('Waypoint sequence cancelled due to manual Go Home');
-    
-    // Reset navigation cancelled flag
-    navigationCancelledRef.current = false;
-    
-    // Reset recovery attempts counter
-    setRecoveryAttempts(0);
-    
-    // Set navigation status to NAVIGATING immediately
-    setNavigationStatus(NavigationStatus.NAVIGATING);
-    setSelectedProduct(null);
-    
-    // Reset robot speed to default
-    try {
-      await NativeModules.SlamtecUtils.setMaxLineSpeed(SPEEDS.default.toString());
-      await LogUtils.writeDebugToFile(`Reset robot speed to default: ${SPEEDS.default} m/s`);
-    } catch (error: any) {
-      await LogUtils.writeDebugToFile(`Failed to reset robot speed: ${error.message}`);
-    }
-    
-    try {
-      // Validate token before attempting navigation
-      if (!await validateToken()) {
-        await LogUtils.writeDebugToFile('Token validation failed before going home, attempting refresh');
-        
-        if (!await refreshToken()) {
-          // If token refresh fails, show error dialog
-          await LogUtils.writeDebugToFile('Token refresh failed, cannot proceed with navigation');
-          
-          Alert.alert(
-            'Authentication Error',
-            'Your session has expired and automatic renewal failed. Please try again or restart the application.',
-            [
-              { 
-                text: 'Return to List', 
-                onPress: () => {
-                  setNavigationStatus(NavigationStatus.ERROR);
-                  setNavigationError('Session expired. Please try again.');
-                }
-              }
-            ]
-          );
-          return;
-        }
-      }
-      
-      // Start pose polling for this navigation
-      await startPosePolling();
-      
-      // Call the native module to go home
-      await LogUtils.writeDebugToFile('Starting navigation to home');
-      await NativeModules.SlamtecUtils.goHome();
-      
-      // Only update state if navigation wasn't cancelled
-      if (!navigationCancelledRef.current) {
-        await LogUtils.writeDebugToFile('Navigation to home completed');
-        // Skip ARRIVED state and go directly to IDLE
-        setNavigationStatus(NavigationStatus.IDLE);
-        stopPosePolling();
-      }
-    } catch (error: any) {
-      // Only update error state if navigation wasn't cancelled
-      if (!navigationCancelledRef.current) {
-        const errorMsg = error.message || 'Navigation to home failed. Please try again.';
-        await LogUtils.writeDebugToFile(`Go Home error: ${errorMsg}`);
-        setNavigationStatus(NavigationStatus.ERROR);
-        setNavigationError(errorMsg);
-      }
-    }
-  };
-  
   const renderProductItem = ({ item }: { item: Product }) => {
     // Create the image URL if both id and image are available
     const imageUrl = item.id && item.image ? 
@@ -1264,16 +1196,6 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
                   contentContainerStyle={[styles.productListContent, { paddingBottom: 100 }]}
                   keyboardShouldPersistTaps="handled"
                 />
-                {!isInputFocused && (
-                  <View style={styles.homeButtonContainer}>
-                    <TouchableOpacity
-                      style={styles.homeButton}
-                      onPress={handleGoHome}
-                    >
-                      <Text style={styles.homeButtonText}>Go Home</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
               </>
             )}
           </View>
@@ -1407,43 +1329,27 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       if (currentNavigationStatusRef.current !== NavigationStatus.NAVIGATING && 
           currentNavigationStatusRef.current !== NavigationStatus.PATROL) {
         await stopPosePolling();
-        await LogUtils.writeDebugToFile(`Auto-stopped polling - not in NAVIGATING/PATROL state`);
+        await LogUtils.writeDebugToFile(`[POSE] Auto-stopped polling - not in NAVIGATING/PATROL state`);
         return;
       }
       
       // If in cooldown, skip reporting
       if (poseReportingCooldownRef.current) {
-        await LogUtils.writeDebugToFile('Pose reporting is in cooldown, skipping this cycle');
         return;
       }
       
       const pose = await NativeModules.SlamtecUtils.getCurrentPose();
       if (pose) {
         const timestamp = Date.now();
-        
-        // Transform coordinates and add quaternion
         const transformedPose = transformCoordinates(pose.x, pose.y, pose.yaw);
         
-        // Create formatted log string with the transformed pose including quaternion
-        const logString = 
-          `ROBOT_POSE: ${timestamp} - ` +
-          `pos=[${transformedPose.x.toFixed(4)}, ${transformedPose.y.toFixed(4)}, ${transformedPose.z.toFixed(4)}], ` +
-          `quat=[${transformedPose.quaternion.w.toFixed(4)}, ${transformedPose.quaternion.x.toFixed(4)}, ` +
-          `${transformedPose.quaternion.y.toFixed(4)}, ${transformedPose.quaternion.z.toFixed(4)}], ` +
-          `original=[${transformedPose.originalX.toFixed(4)}, ${transformedPose.originalY.toFixed(4)}, ${transformedPose.originalYaw.toFixed(4)}]`;
-          
-        await LogUtils.writeDebugToFile(logString);
-        
-        // Create JSON payload in the requested format
-        // Convert millisecond timestamp to nanoseconds by multiplying by 1,000,000
+        // Create JSON payload
         const timestampNano = BigInt(timestamp) * BigInt(1000000);
-        
-        // Get device identifiers from global storage
         const identifiers = DeviceStorage.getIdentifiers();
         
         // If identifiers are not in global storage, log an error
         if (!DeviceStorage.hasIdentifiers()) {
-          await LogUtils.writeDebugToFile("Error: Device identifiers not found in global storage!");
+          await LogUtils.writeDebugToFile("[POSE] Error: Device identifiers not found in global storage!");
         }
         
         const poseData = {
@@ -1462,56 +1368,31 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           },
           mac_address: identifiers.macAddress || "unknown_mac_address"
         };
-        
-        // Log the JSON format to debug
-        await LogUtils.writeDebugToFile(JSON.stringify(poseData));
 
-        // Send the pose data to the domain
+        // Send the pose data to the domain without logging
         try {
-          // Always use PUT when a data ID exists, otherwise use POST to create one
           const robotPoseDataId = DeviceStorage.getIdentifiers().robotPoseDataId;
           if (robotPoseDataId) {
-            // If we have a stored data ID, use PUT
-            await LogUtils.writeDebugToFile(`Using PUT with existing data ID: ${robotPoseDataId}`);
-            const result = await NativeModules.DomainUtils.writeRobotPose(JSON.stringify(poseData), "PUT", robotPoseDataId);
-            await LogUtils.writeDebugToFile(`Pose data sent successfully with PUT: ${JSON.stringify(result)}`);
+            await NativeModules.DomainUtils.writeRobotPose(JSON.stringify(poseData), "PUT", robotPoseDataId);
           } else {
-            // If no data ID yet, use POST to create one
-            await LogUtils.writeDebugToFile(`Using POST to create new robot pose data`);
             const result = await NativeModules.DomainUtils.writeRobotPose(JSON.stringify(poseData), "POST", null);
-            await LogUtils.writeDebugToFile(`Pose data sent successfully with POST: ${JSON.stringify(result)}`);
-            
-            // If this was a POST and we got a data ID back, store it for future updates
             if (result.dataId) {
               DeviceStorage.setRobotPoseDataId(result.dataId);
-              await LogUtils.writeDebugToFile(`Stored new robot pose data ID: ${result.dataId}`);
             }
           }
         } catch (error: any) {
-          // Robust error handling: if critical error, pause reporting for 1 minute
-          const errorMsg = error.message || String(error);
-          await LogUtils.writeDebugToFile(`Error sending pose data: ${errorMsg}`);
-          if (
-            errorMsg.includes('Unable to create application data') ||
-            errorMsg.includes('System resource limit reached') ||
-            errorMsg.includes('Failed to connect') ||
-            errorMsg.includes('Failed to write robot pose data')
-          ) {
-            if (!poseReportingCooldownRef.current) {
-              poseReportingCooldownRef.current = true;
-              await LogUtils.writeDebugToFile('Critical pose reporting error detected. Pausing pose reporting for 1 minute.');
-              setTimeout(() => {
-                poseReportingCooldownRef.current = false;
-                LogUtils.writeDebugToFile('Pose reporting cooldown ended. Resuming pose reporting.');
-              }, 10000); // 10 second cooldown
-            }
+          if (!poseReportingCooldownRef.current) {
+            poseReportingCooldownRef.current = true;
+            setTimeout(() => {
+              poseReportingCooldownRef.current = false;
+            }, 10000); // Back to 10 seconds
+            await LogUtils.writeDebugToFile(`[POSE] Error sending pose data: ${error.message}`);
           }
-          // Do not throw or crash
         }
       }
     } catch (error: any) {
-      await LogUtils.writeDebugToFile(`Error getting robot pose: ${error.message}`);
-      // Do not throw or crash
+      // Only log errors
+      await LogUtils.writeDebugToFile(`[POSE] Error in readRobotPose: ${error.message}`);
     }
   };
 
@@ -1907,11 +1788,11 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   const [isInputFocused, setIsInputFocused] = useState(false);
 
   // Add this function before handleGoHome
-  const cancelPatrol = async () => {
+  const cancelPatrol = async (reason = 'unknown') => {
     setIsPatrolling(false);
     promotionActive = false;
     promotionCancelled = true;
-    await LogUtils.writeDebugToFile('Waypoint sequence cancelled');
+    await LogUtils.writeDebugToFile(`Waypoint sequence cancelled (reason: ${reason})`);
   };
 
   // Add a ref to track pose reporting cooldown
@@ -2029,13 +1910,19 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   return (
     <SafeAreaView 
       style={styles.container}
-      onTouchStart={() => {
+      onTouchStart={async () => {
+        LogUtils.writeDebugToFile(`onTouchStart triggered. isPatrolling=${isPatrollingRef.current}, navigationStatus=${navigationStatus}`);
         // Only reset timer if we're not in promotion mode
         if (!isPatrollingRef.current && navigationStatus !== NavigationStatus.PATROL) {
-          // We can't use await in the onTouchStart handler, so we handle it with a promise
+          LogUtils.writeDebugToFile('Touch detected outside patrol, resetting inactivity timer');
           resetInactivityTimer()
             .then(() => LogUtils.writeDebugToFile('Touch detected, reset inactivity timer processed'))
             .catch(err => LogUtils.writeDebugToFile(`Error resetting inactivity timer: ${err.message || err}`));
+        } else if (isPatrollingRef.current && navigationStatus === NavigationStatus.PATROL) {
+          LogUtils.writeDebugToFile('Touch detected during patrol, starting inactivity timer');
+          startInactivityTimer();
+        } else {
+          LogUtils.writeDebugToFile('Touch detected, but no action taken');
         }
       }}
     >
@@ -2279,27 +2166,6 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: 'bold',
     color: '#FFFFFF',
-    fontFamily: 'DM Sans',
-  },
-  homeButtonContainer: {
-    position: 'absolute',
-    bottom: 16,
-    left: 16,
-    right: 16,
-    backgroundColor: 'transparent',
-    zIndex: 10,
-    elevation: 5,
-  },
-  homeButton: {
-    backgroundColor: '#2670F8',
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  homeButtonText: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontWeight: '500',
     fontFamily: 'DM Sans',
   },
   productImageContainer: {
