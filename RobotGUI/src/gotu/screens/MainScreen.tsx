@@ -232,6 +232,10 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   const [robotBaseStatus, setRobotBaseStatus] = useState<string>('ok');
   const [recoveryAttempts, setRecoveryAttempts] = useState<number>(0);
   
+  // Add these near the top of the file with other state declarations
+  const [robotSpeed, setRobotSpeed] = useState(SPEEDS.default);
+  const defaultSpeed = SPEEDS.default;
+  
   // Function to clear the inactivity timer
   const clearInactivityTimer = () => {
     if (inactivityTimerRef.current) {
@@ -975,90 +979,49 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   };
   
   const handleGoHome = async () => {
-    // Cancel any ongoing patrol unless it's the final step of patrol
-    setIsPatrolling(false);
-    promotionActive = false;
-    promotionCancelled = true;
-    await LogUtils.writeDebugToFile('Waypoint sequence cancelled due to manual Go Home');
-    
-    // Reset navigation cancelled flag
-    navigationCancelledRef.current = false;
-    
-    // Reset recovery attempts counter
-    setRecoveryAttempts(0);
-    
-    // Set navigation status to NAVIGATING immediately
-    setNavigationStatus(NavigationStatus.NAVIGATING);
-    setSelectedProduct(null);
-    
-    // Reset robot speed to default
     try {
-      await NativeModules.SlamtecUtils.setMaxLineSpeed(SPEEDS.default.toString());
-      await LogUtils.writeDebugToFile(`Reset robot speed to default: ${SPEEDS.default} m/s`);
-    } catch (error: any) {
-      await LogUtils.writeDebugToFile(`Failed to reset robot speed: ${error.message}`);
-    }
-    
-    try {
-      // Validate token before attempting navigation
-      if (!await validateToken()) {
-        await LogUtils.writeDebugToFile('Token validation failed before going home, attempting refresh');
-        
-        if (!await refreshToken()) {
-          // If token refresh fails, show error dialog
-          await LogUtils.writeDebugToFile('Token refresh failed, cannot proceed with navigation');
-          
-          Alert.alert(
-            'Authentication Error',
-            'Your session has expired and automatic renewal failed. Please try again or restart the application.',
-            [
-              { 
-                text: 'Return to List', 
-                onPress: () => {
-                  setNavigationStatus(NavigationStatus.ERROR);
-                  setNavigationError('Session expired. Please try again.');
-                }
-              }
-            ]
-          );
+      // Cancel any ongoing patrol and reset speed
+      if (isPatrolling) {
+        await cancelPatrol();
+      }
+      setRobotSpeed(defaultSpeed);
+
+      // Reset navigation status
+      setNavigationStatus(NavigationStatus.IDLE);
+      setNavigationError('');
+
+      // Validate token before proceeding
+      const isValid = await validateToken();
+      if (!isValid) {
+        try {
+          await refreshToken();
+        } catch (error) {
+          await LogUtils.writeDebugToFile(`Failed to refresh token: ${error}`);
+          setNavigationError('Authentication failed. Please try again.');
           return;
         }
       }
-      
-      // Start pose polling for this navigation
+
+      // Start pose polling and navigate home
       await startPosePolling();
+      setNavigationStatus(NavigationStatus.NAVIGATING);
       
-      // Call the native module to go home
-      await LogUtils.writeDebugToFile('Starting navigation to home');
-      await NativeModules.SlamtecUtils.goHome();
-      
-      // Only update state if navigation wasn't cancelled
-      if (!navigationCancelledRef.current) {
-        await LogUtils.writeDebugToFile('Navigation to home completed');
-        setNavigationStatus(NavigationStatus.ARRIVED);
-        
-        // Only start inactivity timer if auto-promotion is enabled
-        try {
-          const autoPromotionEnabled = await NativeModules.ConfigManagerModule.getAutoPromotionEnabled();
-          if (autoPromotionEnabled) {
-            await LogUtils.writeDebugToFile('Auto-promotion enabled, starting inactivity timer after arriving home');
-            startInactivityTimer();
-          } else {
-            await LogUtils.writeDebugToFile('Auto-promotion disabled, not starting inactivity timer');
-          }
-        } catch (error) {
-          // Default to not starting promotion if we can't check the config
-          await LogUtils.writeDebugToFile('Error checking auto-promotion config, defaulting to not starting timer');
-        }
+      try {
+        await NativeModules.SlamtecUtils.goHome();
+        // Skip ARRIVED state and go directly to IDLE
+        setNavigationStatus(NavigationStatus.IDLE);
+        stopPosePolling();
+      } catch (error) {
+        await LogUtils.writeDebugToFile(`Navigation error: ${error}`);
+        setNavigationError('Failed to navigate home. Please try again.');
+        setNavigationStatus(NavigationStatus.IDLE);
+        stopPosePolling();
       }
-    } catch (error: any) {
-      // Only update error state if navigation wasn't cancelled
-      if (!navigationCancelledRef.current) {
-        const errorMsg = error.message || 'Navigation to home failed. Please try again.';
-        await LogUtils.writeDebugToFile(`Go Home error: ${errorMsg}`);
-        setNavigationStatus(NavigationStatus.ERROR);
-        setNavigationError(errorMsg);
-      }
+    } catch (error) {
+      await LogUtils.writeDebugToFile(`Error in handleGoHome: ${error}`);
+      setNavigationError('An unexpected error occurred. Please try again.');
+      setNavigationStatus(NavigationStatus.IDLE);
+      stopPosePolling();
     }
   };
   
@@ -1929,6 +1892,14 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   }, []);
 
   const [isInputFocused, setIsInputFocused] = useState(false);
+
+  // Add this function before handleGoHome
+  const cancelPatrol = async () => {
+    setIsPatrolling(false);
+    promotionActive = false;
+    promotionCancelled = true;
+    await LogUtils.writeDebugToFile('Waypoint sequence cancelled');
+  };
 
   return (
     <SafeAreaView 
