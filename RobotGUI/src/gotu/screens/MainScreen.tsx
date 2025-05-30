@@ -86,13 +86,8 @@ let navigatingToConfig = false; // Add flag to track if we're navigating to conf
 globalAny.clearInactivityTimer = null;
 globalAny.restartPromotion = null;
 
-// Define patrol points globally
-const patrolPoints = [
-  { name: "Patrol Point 1", x: -1.14, y: 2.21, yaw: 3.14 },
-  { name: "Patrol Point 2", x: -6.11, y: 2.35, yaw: -1.57 },
-  { name: "Patrol Point 3", x: -6.08, y: 0.05, yaw: 0 },
-  { name: "Patrol Point 4", x: -1.03, y: 0.01, yaw: 1.57 }
-];
+// Define patrol points as a state variable instead of a constant
+let patrolPoints: Array<{name: string, x: number, y: number, yaw: number}> = [];
 
 // Add token refresh interval (55 minutes to refresh before expiration)
 const TOKEN_REFRESH_INTERVAL = 55 * 60 * 1000;
@@ -324,6 +319,14 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     // Don't continue if patrol has been cancelled or component unmounted
     if (!isPatrollingRef.current || !isMountedRef.current || navigationCancelledRef.current || promotionCancelled) {
       await LogUtils.writeDebugToFile('Waypoint sequence cancelled or component unmounted, stopping sequence');
+      return;
+    }
+    
+    // Check if patrol points are loaded
+    if (patrolPoints.length === 0) {
+      await LogUtils.writeDebugToFile('No patrol points loaded, stopping patrol');
+      setNavigationStatus(NavigationStatus.ERROR);
+      setNavigationError('No patrol points configured');
       return;
     }
     
@@ -1945,6 +1948,83 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       originalYaw: yaw
     };
   };
+
+  // Add effect to load patrol points on mount
+  useEffect(() => {
+    const loadPatrolPoints = async () => {
+      try {
+        const patrolPointsContent = await NativeModules.FileUtils.readFile('patrol_points.json');
+        if (patrolPointsContent) {
+          const parsedPoints = JSON.parse(patrolPointsContent);
+          patrolPoints = parsedPoints.patrol_points.map((point: any) => ({
+            yaw: point.yaw,
+            y: point.y,
+            x: point.x,
+            name: point.name
+          }));
+          await LogUtils.writeDebugToFile(`Loaded patrol points: ${JSON.stringify(patrolPoints)}`);
+
+          // Validate against POIs
+          let pois = await NativeModules.SlamtecUtils.getPOIs();
+          await LogUtils.writeDebugToFile(`Initial POIs fetch: ${JSON.stringify(pois)}`);
+          
+          // If POIs is empty, wait a moment and try again as they might be initializing
+          if (Array.isArray(pois) && pois.length === 0) {
+            await LogUtils.writeDebugToFile('No POIs found, waiting for initialization...');
+            await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for POIs to initialize
+            pois = await NativeModules.SlamtecUtils.getPOIs();
+            await LogUtils.writeDebugToFile(`POIs after initialization: ${JSON.stringify(pois)}`);
+          }
+          
+          // POIs response is an array of POI objects with metadata.display_name
+          const poiNames = Array.isArray(pois) ? pois.map((poi: any) => poi.metadata?.display_name?.trim()) : [];
+          await LogUtils.writeDebugToFile(`Found POI names: ${JSON.stringify(poiNames)}`);
+          
+          // Filter out any undefined or empty names
+          const validPoiNames = poiNames.filter((name): name is string => 
+            typeof name === 'string' && name.length > 0
+          );
+          await LogUtils.writeDebugToFile(`Valid POI names: ${JSON.stringify(validPoiNames)}`);
+          
+          // Check for mismatches
+          const extraPOIs = validPoiNames.filter((name: string) => 
+            !patrolPoints.find((cp: { name: string }) => cp.name === name)
+          );
+          const missingPoints = patrolPoints.filter((cp: { name: string }) => 
+            !validPoiNames.includes(cp.name)
+          );
+          
+          if (extraPOIs.length > 0 || missingPoints.length > 0) {
+            let errorMsg = '';
+            if (extraPOIs.length > 0) {
+              errorMsg += `Unexpected POIs found: ${extraPOIs.join(', ')}\n`;
+            }
+            if (missingPoints.length > 0) {
+              errorMsg += `Missing waypoints: ${missingPoints.map((p: { name: string }) => p.name).join(', ')}`;
+            }
+            await LogUtils.writeDebugToFile(`POI validation error: ${errorMsg}`);
+            
+            // Clear and reinitialize POIs
+            await LogUtils.writeDebugToFile('Clearing and reinitializing POIs...');
+            await NativeModules.SlamtecUtils.clearAndInitializePOIs();
+            await LogUtils.writeDebugToFile('POIs have been reset and reinitialized');
+            
+            // Verify the POIs again
+            pois = await NativeModules.SlamtecUtils.getPOIs();
+            await LogUtils.writeDebugToFile(`POIs after reset: ${JSON.stringify(pois)}`);
+          } else {
+            await LogUtils.writeDebugToFile('POI validation successful - all points match config');
+          }
+        } else {
+          await LogUtils.writeDebugToFile('No patrol points configuration found');
+        }
+      } catch (error: any) {
+        await LogUtils.writeDebugToFile(`Error loading patrol points: ${error.message}`);
+      }
+    };
+
+    loadPatrolPoints();
+  }, []);
 
   return (
     <SafeAreaView 
