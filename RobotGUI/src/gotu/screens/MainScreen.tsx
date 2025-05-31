@@ -237,63 +237,75 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   const [isLowBatteryAlertShown, setIsLowBatteryAlertShown] = useState(false);
   const [isReturningToCharger, setIsReturningToCharger] = useState(false);
   const returnToChargerAlertRef = useRef<{ dismiss: () => void } | null>(null);
+  const [showPatrolDialog, setShowPatrolDialog] = useState(false);
+  const batteryMonitoringInitializedRef = useRef(false);
   
   // Function to handle battery status updates
   const handleBatteryStatusUpdate = async (event: any) => {
-    const { batteryPercentage, dockingStatus, isCharging } = event;
-    setBatteryLevel(batteryPercentage);
-    await LogUtils.writeDebugToFile(`Battery status update - Level: ${batteryPercentage}%, Docking: ${dockingStatus}, Charging: ${isCharging}`);
+    await LogUtils.writeDebugToFile(`[BATTERY] Battery status update event received`);
 
-    // Check if we should return to charger
-    if ((navigationStatus === NavigationStatus.IDLE || navigationStatus === NavigationStatus.PATROL) &&
-        !isReturningToCharger) {
+    // Get power status first as it's our source of truth
+    try {
+      const powerStatus = await NativeModules.SlamtecUtils.getPowerStatus();
+      await LogUtils.writeDebugToFile(`[BATTERY] Power status response: ${JSON.stringify(powerStatus)}`);
       
-      try {
-        // Get current power status to verify docking status
-        const powerStatus = await NativeModules.SlamtecUtils.getPowerStatus();
+      // Set battery level from power status immediately
+      setBatteryLevel(powerStatus.batteryPercentage);
+      await LogUtils.writeDebugToFile(`[BATTERY] Battery level updated to: ${powerStatus.batteryPercentage}%`);
+      
+      // Only proceed if not on dock AND battery is low
+      if (powerStatus.dockingStatus !== 'on_dock' && powerStatus.batteryPercentage <= 20 && !isReturningToCharger) {
+        setIsReturningToCharger(true);
+        LogUtils.writeDebugToFile('Initiating return to charger due to low battery');
         
-        // Only proceed if not on dock
-        if (powerStatus.dockingStatus !== 'on_dock') {
-          // Show dialog and start returning to charger
-          setIsReturningToCharger(true);
-
-          // Cancel any ongoing patrol
-          if (isPatrolling) {
-            await cancelPatrol('battery_return');
-          }
-
-          // Reset navigation status and start going home
-          setNavigationStatus(NavigationStatus.NAVIGATING);
-          await NativeModules.SlamtecUtils.goHome();
-          
-          // Wait for arrival at dock
-          const checkDockStatus = async () => {
-            try {
-              const powerStatus = await NativeModules.SlamtecUtils.getPowerStatus();
-              if (powerStatus.dockingStatus === 'on_dock') {
-                setIsReturningToCharger(false);
-                setNavigationStatus(NavigationStatus.IDLE);
-              } else {
-                // Check again in 5 seconds
-                setTimeout(checkDockStatus, 5000);
-              }
-            } catch (error) {
-              console.error('Error checking dock status:', error);
-            }
-          };
-          
-          // Start checking dock status
-          checkDockStatus();
+        // Cancel any ongoing patrol
+        if (isPatrolling) {
+          LogUtils.writeDebugToFile('Cancelling ongoing patrol due to low battery');
+          await cancelPatrol('battery_return');
         }
-      } catch (error) {
-        console.error('Error checking power status:', error);
+
+        // Reset navigation status and start going home
+        setNavigationStatus(NavigationStatus.NAVIGATING);
+        await NativeModules.SlamtecUtils.goHome();
+        
+        // Wait for arrival at dock
+        const checkDockStatus = async () => {
+          try {
+            const powerStatus = await NativeModules.SlamtecUtils.getPowerStatus();
+            LogUtils.writeDebugToFile('Checking dock status: ' + JSON.stringify(powerStatus));
+            
+            if (powerStatus.dockingStatus === 'on_dock') {
+              setIsReturningToCharger(false);
+              setNavigationStatus(NavigationStatus.IDLE);
+              LogUtils.writeDebugToFile('Robot docked successfully');
+            } else {
+              // Check again in 5 seconds
+              setTimeout(checkDockStatus, 5000);
+            }
+          } catch (error) {
+            console.error('Error checking dock status:', error);
+            LogUtils.writeDebugToFile('Error checking dock status: ' + error);
+          }
+        };
+        
+        // Start checking dock status
+        checkDockStatus();
       }
+    } catch (error) {
+      console.error('Error checking power status:', error);
+      LogUtils.writeDebugToFile('Error checking power status: ' + error);
     }
   };
 
   // Add effect to start battery monitoring
   useEffect(() => {
     const initializeBatteryMonitoring = async () => {
+      // Skip if already initialized
+      if (batteryMonitoringInitializedRef.current) {
+        await LogUtils.writeDebugToFile('Battery monitoring already initialized, skipping');
+        return;
+      }
+
       try {
         // Check if BatteryMonitor module exists
         if (!NativeModules.BatteryMonitor) {
@@ -310,7 +322,9 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         const subscription = eventEmitter.addListener('BatteryStatusUpdate', handleBatteryStatusUpdate);
         
         await LogUtils.writeDebugToFile('Battery monitoring initialized successfully');
+        batteryMonitoringInitializedRef.current = true;
         
+        // Return cleanup function
         return () => {
           // Clean up
           if (NativeModules.BatteryMonitor) {
@@ -318,13 +332,24 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           }
           subscription.remove();
           LogUtils.writeDebugToFile('Battery monitoring stopped');
+          batteryMonitoringInitializedRef.current = false;
         };
       } catch (error: any) {
         await LogUtils.writeDebugToFile(`Error initializing battery monitoring: ${error.message}`);
       }
     };
 
-    initializeBatteryMonitoring();
+    // Call initializeBatteryMonitoring and store the cleanup function
+    const cleanup = initializeBatteryMonitoring();
+    
+    // Return cleanup function from useEffect
+    return () => {
+      if (cleanup) {
+        cleanup.then(cleanupFn => {
+          if (cleanupFn) cleanupFn();
+        });
+      }
+    };
   }, []);
   
   // Function to clear the inactivity timer
@@ -1412,7 +1437,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       await LogUtils.writeDebugToFile('[POSE POLLING] Overlapping readRobotPose call detected!');
     }
     posePollingInProgress = true;
-    await LogUtils.writeDebugToFile('[POSE POLLING] readRobotPose started');
+    // await LogUtils.writeDebugToFile('[POSE POLLING] readRobotPose started');
     try {
       if (currentNavigationStatusRef.current !== NavigationStatus.NAVIGATING && 
           currentNavigationStatusRef.current !== NavigationStatus.PATROL) {
@@ -1488,7 +1513,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       await LogUtils.writeDebugToFile(`[POSE POLLING] Error in readRobotPose: ${error.message}`);
       poseUploadInProgress = false;
     }
-    await LogUtils.writeDebugToFile('[POSE POLLING] readRobotPose finished');
+    // await LogUtils.writeDebugToFile('[POSE POLLING] readRobotPose finished');
     posePollingInProgress = false;
   };
 
@@ -1777,7 +1802,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           try {
             parsedResponse = JSON.parse(response.response);
             LogUtils.writeDebugToFile('Parsed health check response: ' + JSON.stringify(parsedResponse, null, 2));
-          } catch (parseError) {
+          } catch (parseError: any) {
             LogUtils.writeDebugToFile('Failed to parse health check response: ' + parseError.message);
             throw new Error('Invalid health check response format');
           }
@@ -1885,10 +1910,19 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
 
   // Add this function before handleGoHome
   const cancelPatrol = async (reason = 'unknown') => {
+    LogUtils.writeDebugToFile(`Cancelling patrol - Reason: ${reason}`);
+    LogUtils.writeDebugToFile(`Current navigation status: ${navigationStatus}`);
+    LogUtils.writeDebugToFile(`Is patrolling: ${isPatrolling}`);
+    LogUtils.writeDebugToFile(`Is returning to charger: ${isReturningToCharger}`);
+    LogUtils.writeDebugToFile(`Current promotion state - Active: ${promotionActive}, Cancelled: ${promotionCancelled}`);
+    
     setIsPatrolling(false);
     promotionActive = false;
     promotionCancelled = true;
     await LogUtils.writeDebugToFile(`Waypoint sequence cancelled (reason: ${reason})`);
+    
+    LogUtils.writeDebugToFile('Patrol cancelled - Flags updated');
+    LogUtils.writeDebugToFile(`New promotion state - Active: ${promotionActive}, Cancelled: ${promotionCancelled}`);
   };
 
   // Add a ref to track pose reporting cooldown

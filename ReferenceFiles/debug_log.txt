@@ -1,48 +1,96 @@
-2025-05-30T14:49:10.270Z: === New Debug Session Started ===
-2025-05-30T14:49:10.278Z: App Version: unknown
-2025-05-30T14:49:10.283Z: Starting app initialization...
-[2025-05-30 22:49:10.306] Using existing stored device ID: padbot-b44bd65d7d6d
-[2025-05-30 22:49:10.316] Device identifiers retrieved: deviceId=padbot-b44bd65d7d6d, macAddress=b44bd65d7d6d
-2025-05-30T14:49:10.332Z: Device identifiers initialized: deviceId=padbot-b44bd65d7d6d, macAddress=b44bd65d7d6d
-2025-05-30T14:49:10.338Z: Attempting authentication...
-2025-05-30T14:49:10.352Z: Authentication attempt 1/3
-[2025-05-30 22:49:12.900] Authentication successful, initiating map download...
-2025-05-30T14:49:12.896Z: Authentication successful
-[2025-05-30 22:49:12.910] Starting downloadMapAfterAuth process
-2025-05-30T14:49:12.903Z: Checking for existing robot pose data ID...
-[2025-05-30 22:49:12.919] Using map endpoint: https://dsc.dev.aukiverse.com/spatial/crosssection
-[2025-05-30 22:49:12.925] Getting robot pose data ID
-[2025-05-30 22:49:12.926] Sending map request: {"domainId":"8093f9bf-c374-4162-ab74-ab61949627f1","domainServerUrl":"https:\/\/domain-server-us-east-1.aukiverse.com","height":0.1,"fileType":"stcm","pixelsPerMeter":20}
-[2025-05-30 22:49:12.929] Using existing stored device ID: padbot-b44bd65d7d6d
-[2025-05-30 22:49:12.937] Executing map download request
-[2025-05-30 22:49:12.939] Checking for existing pose data with deviceId: padbot-b44bd65d7d6d
-[2025-05-30 22:49:12.945] Fetching data from: https://domain-server-us-east-1.aukiverse.com/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/data?name=padbot-b44bd65d7d6d&data_type=reported_pose_json
-[2025-05-30 22:49:13.858] Get response: {"data":[{"id":"195809dd-6e7e-4f1e-a20c-be15e8d31a0e","domain_id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"padbot-b44bd65d7d6d","data_type":"reported_pose_json","size":273,"created_at":"2025-05-29T10:19:56.182438Z","updated_at":"2025-05-30T14:24:20.52729Z"}]}
-[2025-05-30 22:49:13.865] Found existing pose data with ID: 195809dd-6e7e-4f1e-a20c-be15e8d31a0e
-2025-05-30T14:49:13.868Z: Found existing robot pose data ID: 195809dd-6e7e-4f1e-a20c-be15e8d31a0e
-2025-05-30T14:49:13.874Z: Updating map...
-2025-05-30T14:49:13.880Z: Authentication successful - map download was triggered during authentication
-[2025-05-30 22:49:15.058] Response content type: multipart/form-data; boundary=----9046388118407530768180399594
-[2025-05-30 22:49:15.218] Processing multipart/form-data response
-[2025-05-30 22:49:15.226] Found boundary: ------9046388118407530768180399594
-[2025-05-30 22:49:15.249] Split response into 4 parts
-[2025-05-30 22:49:15.269] Found img part in multipart response
-[2025-05-30 22:49:15.284] Extracted base64 data of length: 459868
-[2025-05-30 22:49:15.304] Successfully decoded 459868 bytes of base64 data to 344901 bytes of binary STCM data
-[2025-05-30 22:49:15.314] STCM map saved to: /storage/emulated/0/Download/GoTu/map.stcm
-[2025-05-30 22:49:15.321] Using SLAM API base URL: http://127.0.0.1:1448
-[2025-05-30 22:49:15.324] Clearing old POIs and map data
-[2025-05-30 22:49:15.337] Clear POIs response code: 200
-[2025-05-30 22:49:15.656] Clear map response code: 200
-[2025-05-30 22:49:15.662] Uploading new map: /storage/emulated/0/Download/GoTu/map.stcm
-[2025-05-30 22:49:15.710] Uploaded 344901 bytes
-[2025-05-30 22:49:16.753] Upload map response code: 200
-[2025-05-30 22:49:16.759] Found homedock_qr_id: 2ZWHV5L6I04, getting pose data
-[2025-05-30 22:49:16.764] Getting pose data for QR ID: 2ZWHV5L6I04
-[2025-05-30 22:49:16.771] Fetching lighthouse data for QR ID: 2ZWHV5L6I04 from domain server: https://domain-server-us-east-1.aukiverse.com
-2025-05-30T14:49:16.899Z: Map update complete
-2025-05-30T14:49:16.905Z: Validating waypoints...
-2025-05-30T14:49:16.925Z: Patrol Points Configuration: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"point1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"point2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"point3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"point4"}]
+2025-05-31T04:01:22.684Z: === New Debug Session Started ===
+2025-05-31T04:01:22.693Z: App Version: unknown
+2025-05-31T04:01:22.699Z: Starting app initialization...
+[2025-05-31 12:01:22.724] Using existing stored device ID: padbot-b44bd65d7d6d
+[2025-05-31 12:01:22.728] Device identifiers retrieved: deviceId=padbot-b44bd65d7d6d, macAddress=b44bd65d7d6d
+2025-05-31T04:01:22.735Z: Device identifiers initialized: deviceId=padbot-b44bd65d7d6d, macAddress=b44bd65d7d6d
+2025-05-31T04:01:22.740Z: Attempting authentication...
+2025-05-31T04:01:22.747Z: Authentication attempt 1/3
+2025-05-31T04:01:25.125Z: Authentication successful
+[2025-05-31 12:01:25.130] Authentication successful, initiating map download...
+2025-05-31T04:01:25.130Z: Checking for existing robot pose data ID...
+[2025-05-31 12:01:25.137] Starting downloadMapAfterAuth process
+[2025-05-31 12:01:25.140] Getting robot pose data ID
+[2025-05-31 12:01:25.143] Using map endpoint: https://dsc.dev.aukiverse.com/spatial/crosssection
+[2025-05-31 12:01:25.145] Using existing stored device ID: padbot-b44bd65d7d6d
+[2025-05-31 12:01:25.153] Checking for existing pose data with deviceId: padbot-b44bd65d7d6d
+[2025-05-31 12:01:25.153] Sending map request: {"domainId":"8093f9bf-c374-4162-ab74-ab61949627f1","domainServerUrl":"https:\/\/domain-server-us-east-1.aukiverse.com","height":0.1,"fileType":"stcm","pixelsPerMeter":20}
+[2025-05-31 12:01:25.159] Fetching data from: https://domain-server-us-east-1.aukiverse.com/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/data?name=padbot-b44bd65d7d6d&data_type=reported_pose_json
+[2025-05-31 12:01:25.162] Executing map download request
+[2025-05-31 12:01:26.109] Get response: {"data":[{"id":"195809dd-6e7e-4f1e-a20c-be15e8d31a0e","domain_id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"padbot-b44bd65d7d6d","data_type":"reported_pose_json","size":271,"created_at":"2025-05-29T10:19:56.182438Z","updated_at":"2025-05-31T04:00:44.43739Z"}]}
+[2025-05-31 12:01:26.112] Found existing pose data with ID: 195809dd-6e7e-4f1e-a20c-be15e8d31a0e
+2025-05-31T04:01:26.113Z: Found existing robot pose data ID: 195809dd-6e7e-4f1e-a20c-be15e8d31a0e
+2025-05-31T04:01:26.118Z: Updating map...
+2025-05-31T04:01:26.125Z: Authentication successful - map download was triggered during authentication
+[2025-05-31 12:01:27.277] Response content type: multipart/form-data; boundary=----0269654563015957206001184487
+[2025-05-31 12:01:27.454] Processing multipart/form-data response
+[2025-05-31 12:01:27.464] Found boundary: ------0269654563015957206001184487
+[2025-05-31 12:01:27.498] Split response into 4 parts
+[2025-05-31 12:01:27.507] Found img part in multipart response
+[2025-05-31 12:01:27.525] Extracted base64 data of length: 459868
+[2025-05-31 12:01:27.564] Successfully decoded 459868 bytes of base64 data to 344901 bytes of binary STCM data
+[2025-05-31 12:01:27.570] STCM map saved to: /storage/emulated/0/Download/GoTu/map.stcm
+[2025-05-31 12:01:27.573] Using SLAM API base URL: http://127.0.0.1:1448
+[2025-05-31 12:01:27.575] Clearing old POIs and map data
+[2025-05-31 12:01:27.584] Clear POIs response code: 200
+[2025-05-31 12:01:27.806] Clear map response code: 200
+[2025-05-31 12:01:27.814] Uploading new map: /storage/emulated/0/Download/GoTu/map.stcm
+[2025-05-31 12:01:27.841] Uploaded 344901 bytes
+[2025-05-31 12:01:28.565] Upload map response code: 200
+[2025-05-31 12:01:28.571] Found homedock_qr_id: 2ZWHV5L6I04, getting pose data
+[2025-05-31 12:01:28.577] Getting pose data for QR ID: 2ZWHV5L6I04
+[2025-05-31 12:01:28.585] Fetching lighthouse data for QR ID: 2ZWHV5L6I04 from domain server: https://domain-server-us-east-1.aukiverse.com
+2025-05-31T04:01:29.144Z: Map update complete
+2025-05-31T04:01:29.149Z: Validating waypoints...
+2025-05-31T04:01:29.192Z: Patrol Points Configuration: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"point1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"point2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"point3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"point4"}]
+Starting POI initialization...
+[2025-05-31 12:01:29.220] Get lighthouses response code: 200
+About to get ReactApplicationContext...
+Got ReactApplicationContext: not null
+Got ReactApplicationContext, checking patrol_points.json in Downloads directory
+About to get app variant...
+Got app variant: gotu
+Looking for patrol points file at: /storage/emulated/0/Download/GoTu/patrol_points.json
+File exists, attempting to read content...
+Successfully read file content, length: 359
+File content: {  "patrol_points": [    {      "name": "point1",      "x": -1.14,      "y": 2.21,      "yaw": 3.14    },    {      "name": "point2",      "x": -6.11,      "y": 2.35,      "yaw": -1.57    },    {      "name": "point3",      "x": -6.08,      "y": 0.05,      "yaw": 0    },    {      "name": "point4",      "x": -1.03,      "y": 0.01,      "yaw": 1.57    }  ]} 
+Attempting to parse JSON...
+Successfully created JSONObject
+Attempting to get patrol_points array...
+Successfully got patrol_points array with 4 points
+Parsed patrol points JSON: [{"name":"point1","x":-1.14,"y":2.21,"yaw":3.14},{"name":"point2","x":-6.11,"y":2.35,"yaw":-1.57},{"name":"point3","x":-6.08,"y":0.05,"yaw":0},{"name":"point4","x":-1.03,"y":0.01,"yaw":1.57}]
+Creating POI 'point1' at [-1.14, 2.21, 3.14]
+Creating POI 'point1' at [-1.14, 2.21, 3.14]
+POI request body: {"id":"6253b777-ab6b-44ed-afdb-95aad1b2b13c","pose":{"x":-1.14,"y":2.21,"yaw":3.14},"metadata":{"display_name":"point1","type":"","group":""}}
+ERROR: Error creating POI: null
+Creating POI 'point2' at [-6.11, 2.35, -1.57]
+Creating POI 'point2' at [-6.11, 2.35, -1.57]
+POI request body: {"id":"386c137c-f687-410f-88ed-c04f237f0b7b","pose":{"x":-6.11,"y":2.35,"yaw":-1.57},"metadata":{"display_name":"point2","type":"","group":""}}
+ERROR: Error creating POI: null
+Creating POI 'point3' at [-6.08, 0.05, 0.00]
+Creating POI 'point3' at [-6.08, 0.05, 0.00]
+POI request body: {"id":"31b68c8b-a14f-4cf3-b8e1-b08ce41184c5","pose":{"x":-6.08,"y":0.05,"yaw":0},"metadata":{"display_name":"point3","type":"","group":""}}
+ERROR: Error creating POI: null
+Creating POI 'point4' at [-1.03, 0.01, 1.57]
+Creating POI 'point4' at [-1.03, 0.01, 1.57]
+[2025-05-31 12:01:29.344] Found 'poses' field with 79 items
+POI request body: {"id":"82d8b33c-6564-4e34-a797-b691dddadad9","pose":{"x":-1.03,"y":0.01,"yaw":1.57},"metadata":{"display_name":"point4","type":"","group":""}}
+ERROR: Error creating POI: null
+[2025-05-31 12:01:29.355] Found matching lighthouse with short_id: 2ZWHV5L6I04
+POI initialization complete
+[2025-05-31 12:01:29.360] Transformed coordinates: Original (px=0.12365669757127762, py=0.0, pz=-1.9286682605743408) -> Transformed (px=0.12365669757127762, py=1.9286682605743408, pz=0.0)
+2025-05-31T04:01:29.358Z: Initial POIs fetch: []
+[2025-05-31 12:01:29.366] Converted quaternion (rx=-0.7070834125222052, ry=0.005742730586745238, rz=0.0057427317661111555, rw=0.7070835097873683) -> yaw=3.14
+2025-05-31T04:01:29.364Z: No POIs found, waiting for initialization...
+[2025-05-31 12:01:29.371] Saved homedock data to preferences: x=0.12365669757127762, y=1.9286682605743408, z=0.0, yaw=3.14
+[2025-05-31 12:01:29.377] Setting home dock from QR data: x=0.12365669757127762, y=1.9286682605743408, z=0.0, yaw=3.14
+[2025-05-31 12:01:29.383] Clear home docks response code: 200
+[2025-05-31 12:01:29.394] Set home dock response code: 200
+[2025-05-31 12:01:29.397] Setting robot pose from QR data: x=-0.07634304877423029, y=1.9286682605743408, z=3.185305832973657E-4, yaw=3.14
+[2025-05-31 12:01:29.411] Set pose response code: 200
+[2025-05-31 12:01:29.414] Saving persistent map
+[2025-05-31 12:01:29.432] Save persistent map response code: 200
+[2025-05-31 12:01:29.434] Map processing completed successfully
 Starting POI initialization...
 About to get ReactApplicationContext...
 Got ReactApplicationContext: not null
@@ -60,37 +108,26 @@ Successfully got patrol_points array with 4 points
 Parsed patrol points JSON: [{"name":"point1","x":-1.14,"y":2.21,"yaw":3.14},{"name":"point2","x":-6.11,"y":2.35,"yaw":-1.57},{"name":"point3","x":-6.08,"y":0.05,"yaw":0},{"name":"point4","x":-1.03,"y":0.01,"yaw":1.57}]
 Creating POI 'point1' at [-1.14, 2.21, 3.14]
 Creating POI 'point1' at [-1.14, 2.21, 3.14]
-POI request body: {"id":"88666b79-b3b1-4702-b4c8-5801df21c174","pose":{"x":-1.14,"y":2.21,"yaw":3.14},"metadata":{"display_name":"point1","type":"","group":""}}
+POI request body: {"id":"758ed064-e305-4894-8f09-973558778c16","pose":{"x":-1.14,"y":2.21,"yaw":3.14},"metadata":{"display_name":"point1","type":"","group":""}}
 ERROR: Error creating POI: null
 Creating POI 'point2' at [-6.11, 2.35, -1.57]
 Creating POI 'point2' at [-6.11, 2.35, -1.57]
-POI request body: {"id":"1b8881e2-eded-4aa7-865e-6a34df5fdf71","pose":{"x":-6.11,"y":2.35,"yaw":-1.57},"metadata":{"display_name":"point2","type":"","group":""}}
+POI request body: {"id":"577c7f2c-e085-44e3-8691-945d47108ae2","pose":{"x":-6.11,"y":2.35,"yaw":-1.57},"metadata":{"display_name":"point2","type":"","group":""}}
 ERROR: Error creating POI: null
 Creating POI 'point3' at [-6.08, 0.05, 0.00]
 Creating POI 'point3' at [-6.08, 0.05, 0.00]
-POI request body: {"id":"65257040-2b13-4d0c-9ddf-80ed5fe195d5","pose":{"x":-6.08,"y":0.05,"yaw":0},"metadata":{"display_name":"point3","type":"","group":""}}
+POI request body: {"id":"75226cfa-c165-4254-9fe6-3298a819701e","pose":{"x":-6.08,"y":0.05,"yaw":0},"metadata":{"display_name":"point3","type":"","group":""}}
 ERROR: Error creating POI: null
 Creating POI 'point4' at [-1.03, 0.01, 1.57]
 Creating POI 'point4' at [-1.03, 0.01, 1.57]
-POI request body: {"id":"2bbcfac0-b5d6-48b2-a5fd-98d2e86bc334","pose":{"x":-1.03,"y":0.01,"yaw":1.57},"metadata":{"display_name":"point4","type":"","group":""}}
+POI request body: {"id":"a558a717-cb64-4205-a827-b72fcfd86b13","pose":{"x":-1.03,"y":0.01,"yaw":1.57},"metadata":{"display_name":"point4","type":"","group":""}}
 ERROR: Error creating POI: null
 POI initialization complete
-2025-05-30T14:49:17.154Z: Initial POIs fetch: []
-2025-05-30T14:49:17.162Z: No POIs found, waiting for initialization...
-[2025-05-30 22:49:17.919] Get lighthouses response code: 200
-[2025-05-30 22:49:18.131] Found 'poses' field with 79 items
-[2025-05-30 22:49:18.136] Found matching lighthouse with short_id: 2ZWHV5L6I04
-[2025-05-30 22:49:18.142] Transformed coordinates: Original (px=0.12365669757127762, py=0.0, pz=-1.9286682605743408) -> Transformed (px=0.12365669757127762, py=1.9286682605743408, pz=0.0)
-[2025-05-30 22:49:18.146] Converted quaternion (rx=-0.7070834125222052, ry=0.005742730586745238, rz=0.0057427317661111555, rw=0.7070835097873683) -> yaw=3.14
-[2025-05-30 22:49:18.153] Saved homedock data to preferences: x=0.12365669757127762, y=1.9286682605743408, z=0.0, yaw=3.14
-[2025-05-30 22:49:18.161] Setting home dock from QR data: x=0.12365669757127762, y=1.9286682605743408, z=0.0, yaw=3.14
-[2025-05-30 22:49:18.174] Clear home docks response code: 200
-[2025-05-30 22:49:18.188] Set home dock response code: 200
-[2025-05-30 22:49:18.193] Setting robot pose from QR data: x=-0.07634304877423029, y=1.9286682605743408, z=3.185305832973657E-4, yaw=3.14
-[2025-05-30 22:49:18.204] Set pose response code: 200
-[2025-05-30 22:49:18.207] Saving persistent map
-[2025-05-30 22:49:18.256] Save persistent map response code: 200
-[2025-05-30 22:49:18.264] Map processing completed successfully
+2025-05-31T04:01:31.531Z: POIs after initialization: []
+2025-05-31T04:01:31.535Z: Found POI names: []
+2025-05-31T04:01:31.539Z: Valid POI names: []
+2025-05-31T04:01:31.543Z: POI validation error: Missing waypoints: point1, point2, point3, point4
+2025-05-31T04:01:31.547Z: Clearing and reinitializing POIs...
 Starting POI initialization...
 About to get ReactApplicationContext...
 Got ReactApplicationContext: not null
@@ -108,99 +145,75 @@ Successfully got patrol_points array with 4 points
 Parsed patrol points JSON: [{"name":"point1","x":-1.14,"y":2.21,"yaw":3.14},{"name":"point2","x":-6.11,"y":2.35,"yaw":-1.57},{"name":"point3","x":-6.08,"y":0.05,"yaw":0},{"name":"point4","x":-1.03,"y":0.01,"yaw":1.57}]
 Creating POI 'point1' at [-1.14, 2.21, 3.14]
 Creating POI 'point1' at [-1.14, 2.21, 3.14]
-POI request body: {"id":"f8ed08cf-e3ac-4ac0-916a-b12cb1118298","pose":{"x":-1.14,"y":2.21,"yaw":3.14},"metadata":{"display_name":"point1","type":"","group":""}}
-ERROR: Error creating POI: null
-Creating POI 'point2' at [-6.11, 2.35, -1.57]
-Creating POI 'point2' at [-6.11, 2.35, -1.57]
-POI request body: {"id":"cebe1edd-6724-4c99-8848-ea23c853058d","pose":{"x":-6.11,"y":2.35,"yaw":-1.57},"metadata":{"display_name":"point2","type":"","group":""}}
-ERROR: Error creating POI: null
-Creating POI 'point3' at [-6.08, 0.05, 0.00]
-Creating POI 'point3' at [-6.08, 0.05, 0.00]
-POI request body: {"id":"b5ad7113-42b7-4eb5-8ac1-a5a36135faea","pose":{"x":-6.08,"y":0.05,"yaw":0},"metadata":{"display_name":"point3","type":"","group":""}}
-ERROR: Error creating POI: null
-Creating POI 'point4' at [-1.03, 0.01, 1.57]
-Creating POI 'point4' at [-1.03, 0.01, 1.57]
-POI request body: {"id":"09ed537b-4af8-43bf-b0fe-4baf2ffb2844","pose":{"x":-1.03,"y":0.01,"yaw":1.57},"metadata":{"display_name":"point4","type":"","group":""}}
-ERROR: Error creating POI: null
-POI initialization complete
-2025-05-30T14:49:19.392Z: POIs after initialization: []
-2025-05-30T14:49:19.397Z: Found POI names: []
-2025-05-30T14:49:19.401Z: Valid POI names: []
-2025-05-30T14:49:19.405Z: POI validation error: Missing waypoints: point1, point2, point3, point4
-2025-05-30T14:49:19.411Z: Clearing and reinitializing POIs...
-Starting POI initialization...
-About to get ReactApplicationContext...
-Got ReactApplicationContext: not null
-Got ReactApplicationContext, checking patrol_points.json in Downloads directory
-About to get app variant...
-Got app variant: gotu
-Looking for patrol points file at: /storage/emulated/0/Download/GoTu/patrol_points.json
-File exists, attempting to read content...
-Successfully read file content, length: 359
-File content: {  "patrol_points": [    {      "name": "point1",      "x": -1.14,      "y": 2.21,      "yaw": 3.14    },    {      "name": "point2",      "x": -6.11,      "y": 2.35,      "yaw": -1.57    },    {      "name": "point3",      "x": -6.08,      "y": 0.05,      "yaw": 0    },    {      "name": "point4",      "x": -1.03,      "y": 0.01,      "yaw": 1.57    }  ]} 
-Attempting to parse JSON...
-Successfully created JSONObject
-Attempting to get patrol_points array...
-Successfully got patrol_points array with 4 points
-Parsed patrol points JSON: [{"name":"point1","x":-1.14,"y":2.21,"yaw":3.14},{"name":"point2","x":-6.11,"y":2.35,"yaw":-1.57},{"name":"point3","x":-6.08,"y":0.05,"yaw":0},{"name":"point4","x":-1.03,"y":0.01,"yaw":1.57}]
-Creating POI 'point1' at [-1.14, 2.21, 3.14]
-Creating POI 'point1' at [-1.14, 2.21, 3.14]
-POI request body: {"id":"1e95f631-686f-451b-ad8f-716ac7f94702","pose":{"x":-1.14,"y":2.21,"yaw":3.14},"metadata":{"display_name":"point1","type":"","group":""}}
+POI request body: {"id":"5f13c43d-7a90-465c-921e-9fd1234032b6","pose":{"x":-1.14,"y":2.21,"yaw":3.14},"metadata":{"display_name":"point1","type":"","group":""}}
 Successfully created POI: point1 (response code: 200)
 Creating POI 'point2' at [-6.11, 2.35, -1.57]
 Creating POI 'point2' at [-6.11, 2.35, -1.57]
-POI request body: {"id":"0561be31-0bcc-4200-9ea0-c68fca4a0198","pose":{"x":-6.11,"y":2.35,"yaw":-1.57},"metadata":{"display_name":"point2","type":"","group":""}}
+POI request body: {"id":"eed598d4-89ae-4432-85df-ae1f28430058","pose":{"x":-6.11,"y":2.35,"yaw":-1.57},"metadata":{"display_name":"point2","type":"","group":""}}
 Successfully created POI: point2 (response code: 200)
 Creating POI 'point3' at [-6.08, 0.05, 0.00]
 Creating POI 'point3' at [-6.08, 0.05, 0.00]
-POI request body: {"id":"23e9e4d5-736d-4a4b-8c72-71589d3d658d","pose":{"x":-6.08,"y":0.05,"yaw":0},"metadata":{"display_name":"point3","type":"","group":""}}
+POI request body: {"id":"698ccbab-e8db-4bf0-a7a5-36ab5df2ddb4","pose":{"x":-6.08,"y":0.05,"yaw":0},"metadata":{"display_name":"point3","type":"","group":""}}
 Successfully created POI: point3 (response code: 200)
 Creating POI 'point4' at [-1.03, 0.01, 1.57]
 Creating POI 'point4' at [-1.03, 0.01, 1.57]
-POI request body: {"id":"13e5682d-9a90-44b4-9133-34c35139520e","pose":{"x":-1.03,"y":0.01,"yaw":1.57},"metadata":{"display_name":"point4","type":"","group":""}}
+POI request body: {"id":"e79149a3-74cc-4fe5-bd21-07cc10b983a1","pose":{"x":-1.03,"y":0.01,"yaw":1.57},"metadata":{"display_name":"point4","type":"","group":""}}
 Successfully created POI: point4 (response code: 200)
 POI initialization complete
-2025-05-30T14:49:19.580Z: POIs have been reset and reinitialized
-2025-05-30T14:49:19.598Z: POIs after reset: [{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"point2"},"id":"0561be31-0bcc-4200-9ea0-c68fca4a0198"},{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"point4"},"id":"13e5682d-9a90-44b4-9133-34c35139520e"},{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"point1"},"id":"1e95f631-686f-451b-ad8f-716ac7f94702"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"point3"},"id":"23e9e4d5-736d-4a4b-8c72-71589d3d658d"}]
-2025-05-30T14:49:19.603Z: Loading Gotu items...
-2025-05-30T14:49:20.518Z: Loaded 41 items
-2025-05-30T14:49:21.532Z: Initialization complete, transitioning to main screen...
-2025-05-30T14:49:22.249Z: Patrol state changed to: inactive
-2025-05-30T14:49:22.250Z: MainScreen mounted. Promotion state: active=false, cancelled=false, currentPointIndex=0, remountFromConfig=false
-2025-05-30T14:49:22.304Z: Performing initial token validation
-2025-05-30T14:49:22.305Z: Polling for robot call data...
-2025-05-30T14:49:22.306Z: Started robot call polling
-2025-05-30T14:49:22.306Z: Navigation state changed to: IDLE
-2025-05-30T14:49:22.307Z: Navigation status updated to: IDLE
-2025-05-30T14:49:22.307Z: Performing initial health check in MainScreen...
-2025-05-30T14:49:22.308Z: Performing initial health check in MainScreen...
-2025-05-30T14:49:22.309Z: Starting robot pose polling at 2 times per second
-2025-05-30T14:49:22.377Z: validateToken called (force=true)
-2025-05-30T14:49:22.378Z: Proactively validating authentication token
-2025-05-30T14:49:22.379Z: Polling stopped in IDLE state
-2025-05-30T14:49:22.379Z: Loaded patrol points: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"point1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"point2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"point3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"point4"}]
-2025-05-30T14:49:22.380Z: Not starting polling interval - not in NAVIGATING/PATROL state
-[2025-05-30 22:49:22.409] Starting token validation...
-[2025-05-30 22:49:22.416] Domain info from storage: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","created_at":"2024-02-02T00:35:47.24977Z","updated_at":"2025-05-02T06:00:55.444308Z","claimed_by_kazm_id":null,"owner_wallet_address":"","access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsiZG9tYWluOnJ3Il0sImRvbWFpbl9pZCI6IjgwOTNmOWJmLWMzNzQtNDE2Mi1hYjc0LWFiNjE5NDk2MjdmMSIsIm9yZyI6ImNiYWM0MGVmLTc0NTItNDA4ZS04MTdiLWFmZDRlOTEzYWQwYyIsInR5cGUiOiJ1c2VyLWFjY2VzcyIsImlzcyI6ImRkcyIsInN1YiI6IjNlMDNlMjk4LWY0NzEtNDk4Ni05YjEwLTgzOTlmMzUzMDYyMCIsImF1ZCI6WyJkZHMiLCJodHRwczovL2RvbWFpbi1zZXJ2ZXItdXMtZWFzdC0xLmF1a2l2ZXJzZS5jb20iXSwiZXhwIjoxNzQ4NjIwMTUyLCJpYXQiOjE3NDg2MTY1NTJ9.H6MN8M9k8_fwEku1S1pvjYVbAe7PH-8DsI-bLseneKWlEdrQ20HB585Urip_KytbU1df6mjGcAI2BH2aFKm-xA","domain_server":{"id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","organization_id":"00000000-0000-0000-0000-000000000001","name":"node-c1349ff69a9f4d46a6b","url":"https://domain-server-us-east-1.aukiverse.com","version":"v0.5.37","status":"online","created_at":"2024-01-18T09:08:31.358792Z","updated_at":"2025-05-26T09:17:22.865415Z","redirect_url":null,"mode":"public","variants":["auki"],"description":"","staking_status":"Staked","ip":"52.45.94.183","latitude":37.751,"longitude":-97.822,"asn":16509,"h3_cell_index":"8226e7fffffffff","cloud_region":""}}
-[2025-05-30 22:49:22.423] Re-authenticating with email: phil+aukilabs@aukilabs.com, domainId: 8093f9bf-c374-4162-ab74-ab61949627f1
-[2025-05-30 22:49:22.427] Posemesh user login URL: https://api.auki.network/user/login
-2025-05-30T14:49:22.594Z: Initial health check response: {
+2025-05-31T04:01:31.690Z: POIs have been reset and reinitialized
+2025-05-31T04:01:31.703Z: POIs after reset: [{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"point1"},"id":"5f13c43d-7a90-465c-921e-9fd1234032b6"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"point3"},"id":"698ccbab-e8db-4bf0-a7a5-36ab5df2ddb4"},{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"point4"},"id":"e79149a3-74cc-4fe5-bd21-07cc10b983a1"},{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"point2"},"id":"eed598d4-89ae-4432-85df-ae1f28430058"}]
+2025-05-31T04:01:31.709Z: Loading Gotu items...
+2025-05-31T04:01:32.669Z: Loaded 41 items
+2025-05-31T04:01:33.688Z: Initialization complete, transitioning to main screen...
+2025-05-31T04:01:34.441Z: Starting battery monitoring...
+2025-05-31T04:01:34.441Z: Patrol state changed to: inactive
+2025-05-31T04:01:34.442Z: MainScreen mounted. Promotion state: active=false, cancelled=false, currentPointIndex=0, remountFromConfig=false
+2025-05-31T04:01:34.477Z: Performing initial token validation
+2025-05-31T04:01:34.478Z: Polling for robot call data...
+2025-05-31T04:01:34.479Z: Started robot call polling
+2025-05-31T04:01:34.479Z: Navigation state changed to: IDLE
+2025-05-31T04:01:34.479Z: Navigation status updated to: IDLE
+2025-05-31T04:01:34.480Z: Performing initial health check in MainScreen...
+2025-05-31T04:01:34.481Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-05-31T04:01:34.481Z: Performing initial health check in MainScreen...
+2025-05-31T04:01:34.483Z: Battery monitoring initialized successfully
+2025-05-31T04:01:34.551Z: validateToken called (force=true)
+2025-05-31T04:01:34.551Z: Proactively validating authentication token
+2025-05-31T04:01:34.552Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-05-31T04:01:34.553Z: [POSE POLLING] Wait-for-completion polling started
+2025-05-31T04:01:34.554Z: Loaded patrol points: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"point1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"point2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"point3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"point4"}]
+2025-05-31T04:01:34.554Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:01:34.573Z: Polling stopped in IDLE state
+[2025-05-31 12:01:34.593] Starting token validation...
+2025-05-31T04:01:34.581Z: [POSE POLLING] Wait-for-completion polling stopped
+[2025-05-31 12:01:34.600] Domain info from storage: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","created_at":"2024-02-02T00:35:47.24977Z","updated_at":"2025-05-02T06:00:55.444308Z","claimed_by_kazm_id":null,"owner_wallet_address":"","access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsiZG9tYWluOnJ3Il0sImRvbWFpbl9pZCI6IjgwOTNmOWJmLWMzNzQtNDE2Mi1hYjc0LWFiNjE5NDk2MjdmMSIsIm9yZyI6ImNiYWM0MGVmLTc0NTItNDA4ZS04MTdiLWFmZDRlOTEzYWQwYyIsInR5cGUiOiJ1c2VyLWFjY2VzcyIsImlzcyI6ImRkcyIsInN1YiI6IjNlMDNlMjk4LWY0NzEtNDk4Ni05YjEwLTgzOTlmMzUzMDYyMCIsImF1ZCI6WyJkZHMiLCJodHRwczovL2RvbWFpbi1zZXJ2ZXItdXMtZWFzdC0xLmF1a2l2ZXJzZS5jb20iXSwiZXhwIjoxNzQ4NjY3Njg0LCJpYXQiOjE3NDg2NjQwODR9.Z8TJZIGWV1pCk6MqfwUaMvOf16DZaFapfYh0bQtbqE6h_PeoqKoGGoZV1hmHaGUUgz_AbLwHegutof1jOaiG4A","domain_server":{"id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","organization_id":"00000000-0000-0000-0000-000000000001","name":"node-c1349ff69a9f4d46a6b","url":"https://domain-server-us-east-1.aukiverse.com","version":"v0.5.37","status":"online","created_at":"2024-01-18T09:08:31.358792Z","updated_at":"2025-05-26T09:17:22.865415Z","redirect_url":null,"mode":"public","variants":["auki"],"description":"","staking_status":"Staked","ip":"52.45.94.183","latitude":37.751,"longitude":-97.822,"asn":16509,"h3_cell_index":"8226e7fffffffff","cloud_region":""}}
+2025-05-31T04:01:34.598Z: [POSE POLLING] Auto-stopped polling - not in NAVIGATING/PATROL state
+[2025-05-31 12:01:34.608] Re-authenticating with email: phil+aukilabs@aukilabs.com, domainId: 8093f9bf-c374-4162-ab74-ab61949627f1
+[2025-05-31 12:01:34.613] Posemesh user login URL: https://api.auki.network/user/login
+2025-05-31T04:01:34.699Z: Initial health check response: {
   "deviceFound": true,
   "status": "Robot health check successful",
   "slamApiAvailable": true,
   "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
   "responseCode": 200
 }
-2025-05-30T14:49:22.597Z: validateToken called (force=false)
-2025-05-30T14:49:22.599Z: Token validation already in progress, skipping
-2025-05-30T14:49:22.601Z: Initial health check response: {
-  "deviceFound": true,
-  "status": "Robot health check successful",
-  "slamApiAvailable": true,
-  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
-  "responseCode": 200
-}
-2025-05-30T14:49:22.602Z: Parsed health check response: {
+2025-05-31T04:01:34.701Z: Parsed health check response: {
   "baseError": [],
   "hasDepthCameraDisconnected": false,
   "hasError": false,
@@ -210,40 +223,47 @@ POI initialization complete
   "hasSystemEmergencyStop": false,
   "hasWarning": false
 }
-2025-05-30T14:49:22.603Z: Initial health check successful
-2025-05-30T14:49:22.605Z: Initial POIs fetch: [{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"point2"},"id":"0561be31-0bcc-4200-9ea0-c68fca4a0198"},{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"point4"},"id":"13e5682d-9a90-44b4-9133-34c35139520e"},{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"point1"},"id":"1e95f631-686f-451b-ad8f-716ac7f94702"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"point3"},"id":"23e9e4d5-736d-4a4b-8c72-71589d3d658d"}]
-2025-05-30T14:49:22.619Z: Initial health check successful
-2025-05-30T14:49:22.825Z: Found POI names: ["point2","point4","point1","point3"]
-2025-05-30T14:49:22.830Z: Valid POI names: ["point2","point4","point1","point3"]
-2025-05-30T14:49:22.837Z: POI validation successful - all points match config
-[2025-05-30 22:49:23.263] Posemesh user login response code: 200
-[2025-05-30 22:49:23.273] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDg2MjAxNjMsImlhdC...
-[2025-05-30 22:49:23.292] Posemesh token received (first 10 chars): eyJhbGciOi...
-[2025-05-30 22:49:23.296] DDS authentication URL: https://api.auki.network/service/domains-access-token
-2025-05-30T14:49:23.386Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:49:23.705Z: Inactivity timer clear called, but no timer was running
-2025-05-30T14:49:23.706Z: resetInactivityTimer - promotionActive: false, promotionCancelled: false, isPatrolling: false
-2025-05-30T14:49:23.720Z: Not starting inactivity timer - promotion is inactive or cancelled
-[2025-05-30 22:49:24.055] DDS authentication response code: 200
-[2025-05-30 22:49:24.063] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4NjIwMTYzLCJpYXQiOjE3NDg2MTY1NjMsImp0aSI6IjAxOTA2NmU4LTNkZTMtNGYyOS05ZGY4LWVkZGFlYzZmZmJhYyJ9.Cn5enygcW-biTmq84C9-epuNCmkjowcRrYfa25cs3Y_b3ZZyJ_LbYgAF6nrxY_FJmmNQZ8cnPUhbg-tQxMQS2A"}
-[2025-05-30 22:49:24.075] DDS token received (first 10 chars): eyJhbGciOi...
-[2025-05-30 22:49:24.080] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
-[2025-05-30 22:49:24.878] Domain authentication response code: 200
-[2025-05-30 22:49:24.885] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
-[2025-05-30 22:49:24.890] Updated domain info after token validation
-[2025-05-30 22:49:24.897] Token validation successful via re-authentication
-2025-05-30T14:49:24.909Z: Token validation successful: {"message":"Token is valid","valid":true}
-2025-05-30T14:49:27.324Z: Polling for robot call data...
-2025-05-30T14:49:28.870Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:49:29.276Z: Inactivity timer clear called, but no timer was running
-2025-05-30T14:49:29.277Z: resetInactivityTimer - promotionActive: false, promotionCancelled: false, isPatrolling: false
-2025-05-30T14:49:29.328Z: Not starting inactivity timer - promotion is inactive or cancelled
-2025-05-30T14:49:32.282Z: Inactivity timer clear called, but no timer was running
-2025-05-30T14:49:32.283Z: Config screen opened, cleared inactivity timer
-2025-05-30T14:49:32.468Z: Polling for robot call data...
-2025-05-30T14:49:32.468Z: Cleared token validation interval
-2025-05-30T14:49:32.469Z: Cleared token refresh interval
-2025-05-30T14:49:32.469Z: Cleaned up robot call polling
+2025-05-31T04:01:34.702Z: Initial health check successful
+2025-05-31T04:01:34.707Z: Initial health check response: {
+  "deviceFound": true,
+  "status": "Robot health check successful",
+  "slamApiAvailable": true,
+  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
+  "responseCode": 200
+}
+2025-05-31T04:01:34.708Z: validateToken called (force=false)
+2025-05-31T04:01:34.709Z: Token validation already in progress, skipping
+2025-05-31T04:01:34.864Z: Initial health check successful
+2025-05-31T04:01:34.865Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":true,"powerStage":"running","dockingStatus":"on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:01:34.866Z: Initial POIs fetch: [{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"point1"},"id":"5f13c43d-7a90-465c-921e-9fd1234032b6"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"point3"},"id":"698ccbab-e8db-4bf0-a7a5-36ab5df2ddb4"},{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"point4"},"id":"e79149a3-74cc-4fe5-bd21-07cc10b983a1"},{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"point2"},"id":"eed598d4-89ae-4432-85df-ae1f28430058"}]
+2025-05-31T04:01:34.875Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:01:34.978Z: Found POI names: ["point1","point3","point4","point2"]
+2025-05-31T04:01:34.983Z: Valid POI names: ["point1","point3","point4","point2"]
+2025-05-31T04:01:34.989Z: POI validation successful - all points match config
+[2025-05-31 12:01:35.480] Posemesh user login response code: 200
+[2025-05-31 12:01:35.485] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDg2Njc2OTUsImlhdC...
+[2025-05-31 12:01:35.490] Posemesh token received (first 10 chars): eyJhbGciOi...
+[2025-05-31 12:01:35.495] DDS authentication URL: https://api.auki.network/service/domains-access-token
+2025-05-31T04:01:35.622Z: [POSE POLLING] Polling loop exited
+2025-05-31T04:01:35.898Z: Inactivity timer clear called, but no timer was running
+2025-05-31T04:01:35.899Z: resetInactivityTimer - promotionActive: false, promotionCancelled: false, isPatrolling: false
+2025-05-31T04:01:35.935Z: Not starting inactivity timer - promotion is inactive or cancelled
+2025-05-31T04:01:35.984Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+[2025-05-31 12:01:36.139] DDS authentication response code: 200
+[2025-05-31 12:01:36.147] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4NjY3Njk1LCJpYXQiOjE3NDg2NjQwOTUsImp0aSI6IjM0N2E4YjA2LTEzMjAtNDZjNy05MzA0LTNmNWQ3MTkzMWIxZSJ9.WYhBZUYG0s1IR0OgAcB2RBaByEz5jQQ7ia24kEw4eJoL9oeBK8Zuf5BJE2Y3XekXNibgkhLsrmy4Fw-XRUPXZA"}
+[2025-05-31 12:01:36.157] DDS token received (first 10 chars): eyJhbGciOi...
+[2025-05-31 12:01:36.163] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
+[2025-05-31 12:01:36.594] Domain authentication response code: 200
+[2025-05-31 12:01:36.605] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
+[2025-05-31 12:01:36.612] Updated domain info after token validation
+[2025-05-31 12:01:36.617] Token validation successful via re-authentication
+2025-05-31T04:01:36.620Z: Token validation successful: {"message":"Token is valid","valid":true}
+2025-05-31T04:01:38.905Z: Inactivity timer clear called, but no timer was running
+2025-05-31T04:01:38.914Z: Config screen opened, cleared inactivity timer
+2025-05-31T04:01:39.062Z: Cleared token validation interval
+2025-05-31T04:01:39.062Z: Cleared token refresh interval
+2025-05-31T04:01:39.063Z: Cleaned up robot call polling
+2025-05-31T04:01:39.063Z: [POSE POLLING] Wait-for-completion polling stopped
 Starting health check...
 
 Health check response: {
@@ -267,52 +287,48 @@ Parsed health check response: {
 
 Connection status: Health Check OK, Message: Health Check OK
 
-2025-05-30T14:49:34.007Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:49:34.502Z: Promotion activated globally
-2025-05-30T14:49:34.559Z: Set robot speed to patrol mode: 0.25 m/s
-2025-05-30T14:49:34.568Z: MainScreen not mounted, promotion will start when it mounts
-2025-05-30T14:49:34.812Z: Patrol state changed to: inactive
-2025-05-30T14:49:34.813Z: MainScreen mounted. Promotion state: active=true, cancelled=false, currentPointIndex=0, remountFromConfig=false
-2025-05-30T14:49:34.814Z: Active promotion detected on mount, starting navigation to first waypoint
-2025-05-30T14:49:34.867Z: Performing initial token validation
-2025-05-30T14:49:34.867Z: Polling for robot call data...
-2025-05-30T14:49:34.868Z: Started robot call polling
-2025-05-30T14:49:34.868Z: Navigation state changed to: IDLE
-2025-05-30T14:49:34.869Z: Navigation status updated to: IDLE
-2025-05-30T14:49:34.869Z: Performing initial health check in MainScreen...
-2025-05-30T14:49:34.870Z: Performing initial health check in MainScreen...
-2025-05-30T14:49:34.871Z: Starting robot pose polling at 2 times per second
-2025-05-30T14:49:34.872Z: validateToken called (force=true)
-2025-05-30T14:49:34.872Z: Proactively validating authentication token
-2025-05-30T14:49:34.887Z: Polling stopped in IDLE state
-2025-05-30T14:49:34.888Z: Cleaned up robot call polling
-2025-05-30T14:49:34.888Z: Patrol state changed to: active
-2025-05-30T14:49:34.889Z: Navigation state changed to: PATROL
-2025-05-30T14:49:34.889Z: Navigation status updated to: PATROL
-2025-05-30T14:49:34.910Z: Loaded patrol points: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"point1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"point2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"point3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"point4"}]
-2025-05-30T14:49:34.915Z: Robot pose polling started successfully
-[2025-05-30 22:49:34.962] Starting token validation...
-[2025-05-30 22:49:34.968] Domain info from storage: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","created_at":"2024-02-02T00:35:47.24977Z","updated_at":"2025-05-02T06:00:55.444308Z","claimed_by_kazm_id":null,"owner_wallet_address":"","access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsiZG9tYWluOnJ3Il0sImRvbWFpbl9pZCI6IjgwOTNmOWJmLWMzNzQtNDE2Mi1hYjc0LWFiNjE5NDk2MjdmMSIsIm9yZyI6ImNiYWM0MGVmLTc0NTItNDA4ZS04MTdiLWFmZDRlOTEzYWQwYyIsInR5cGUiOiJ1c2VyLWFjY2VzcyIsImlzcyI6ImRkcyIsInN1YiI6IjNlMDNlMjk4LWY0NzEtNDk4Ni05YjEwLTgzOTlmMzUzMDYyMCIsImF1ZCI6WyJkZHMiLCJodHRwczovL2RvbWFpbi1zZXJ2ZXItdXMtZWFzdC0xLmF1a2l2ZXJzZS5jb20iXSwiZXhwIjoxNzQ4NjIwMTY0LCJpYXQiOjE3NDg2MTY1NjR9.OQP6ukrgIxGRIIE1IcwsOAAyELus9CMavaWe9d9dkqUHywEeJ8pGNcCkBlovT2DQOx9iqdYzPW3zgnddV4iIow","domain_server":{"id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","organization_id":"00000000-0000-0000-0000-000000000001","name":"node-c1349ff69a9f4d46a6b","url":"https://domain-server-us-east-1.aukiverse.com","version":"v0.5.37","status":"online","created_at":"2024-01-18T09:08:31.358792Z","updated_at":"2025-05-26T09:17:22.865415Z","redirect_url":null,"mode":"public","variants":["auki"],"description":"","staking_status":"Staked","ip":"52.45.94.183","latitude":37.751,"longitude":-97.822,"asn":16509,"h3_cell_index":"8226e7fffffffff","cloud_region":""}}
-[2025-05-30 22:49:34.974] Re-authenticating with email: phil+aukilabs@aukilabs.com, domainId: 8093f9bf-c374-4162-ab74-ab61949627f1
-[2025-05-30 22:49:34.977] Posemesh user login URL: https://api.auki.network/user/login
-2025-05-30T14:49:35.001Z: Set robot speed to patrol mode: 0.25 m/s when mounting
-2025-05-30T14:49:35.002Z: Initial health check response: {
+2025-05-31T04:01:40.852Z: Promotion activated globally
+2025-05-31T04:01:40.893Z: Set robot speed to patrol mode: 0.25 m/s
+2025-05-31T04:01:40.898Z: MainScreen not mounted, promotion will start when it mounts
+2025-05-31T04:01:41.060Z: Starting battery monitoring...
+2025-05-31T04:01:41.061Z: Patrol state changed to: inactive
+2025-05-31T04:01:41.061Z: MainScreen mounted. Promotion state: active=true, cancelled=false, currentPointIndex=0, remountFromConfig=false
+2025-05-31T04:01:41.062Z: Active promotion detected on mount, starting navigation to first waypoint
+2025-05-31T04:01:41.090Z: Performing initial token validation
+2025-05-31T04:01:41.091Z: Polling for robot call data...
+2025-05-31T04:01:41.091Z: Started robot call polling
+2025-05-31T04:01:41.092Z: Navigation state changed to: IDLE
+2025-05-31T04:01:41.092Z: Navigation status updated to: IDLE
+2025-05-31T04:01:41.093Z: Performing initial health check in MainScreen...
+2025-05-31T04:01:41.093Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-05-31T04:01:41.094Z: Performing initial health check in MainScreen...
+2025-05-31T04:01:41.095Z: Battery monitoring initialized successfully
+2025-05-31T04:01:41.096Z: validateToken called (force=true)
+2025-05-31T04:01:41.096Z: Proactively validating authentication token
+2025-05-31T04:01:41.110Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-05-31T04:01:41.111Z: Cleaned up robot call polling
+2025-05-31T04:01:41.112Z: Patrol state changed to: active
+2025-05-31T04:01:41.112Z: Navigation state changed to: PATROL
+2025-05-31T04:01:41.113Z: Navigation status updated to: PATROL
+2025-05-31T04:01:41.123Z: [POSE POLLING] Wait-for-completion polling started
+2025-05-31T04:01:41.137Z: Loaded patrol points: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"point1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"point2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"point3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"point4"}]
+2025-05-31T04:01:41.156Z: Polling stopped in IDLE state
+[2025-05-31 12:01:41.189] Starting token validation...
+2025-05-31T04:01:41.171Z: Starting polling in PATROL state
+[2025-05-31 12:01:41.194] Domain info from storage: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","created_at":"2024-02-02T00:35:47.24977Z","updated_at":"2025-05-02T06:00:55.444308Z","claimed_by_kazm_id":null,"owner_wallet_address":"","access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsiZG9tYWluOnJ3Il0sImRvbWFpbl9pZCI6IjgwOTNmOWJmLWMzNzQtNDE2Mi1hYjc0LWFiNjE5NDk2MjdmMSIsIm9yZyI6ImNiYWM0MGVmLTc0NTItNDA4ZS04MTdiLWFmZDRlOTEzYWQwYyIsInR5cGUiOiJ1c2VyLWFjY2VzcyIsImlzcyI6ImRkcyIsInN1YiI6IjNlMDNlMjk4LWY0NzEtNDk4Ni05YjEwLTgzOTlmMzUzMDYyMCIsImF1ZCI6WyJkZHMiLCJodHRwczovL2RvbWFpbi1zZXJ2ZXItdXMtZWFzdC0xLmF1a2l2ZXJzZS5jb20iXSwiZXhwIjoxNzQ4NjY3Njk2LCJpYXQiOjE3NDg2NjQwOTZ9.4fGaWiWkv9jztMA-kuY8RVxl03KZniqmTKYxSd4-dyC00rf0z8HcOsFmOHOX8g6GeVtMbtAO7Nw3AgaWNhmqCA","domain_server":{"id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","organization_id":"00000000-0000-0000-0000-000000000001","name":"node-c1349ff69a9f4d46a6b","url":"https://domain-server-us-east-1.aukiverse.com","version":"v0.5.37","status":"online","created_at":"2024-01-18T09:08:31.358792Z","updated_at":"2025-05-26T09:17:22.865415Z","redirect_url":null,"mode":"public","variants":["auki"],"description":"","staking_status":"Staked","ip":"52.45.94.183","latitude":37.751,"longitude":-97.822,"asn":16509,"h3_cell_index":"8226e7fffffffff","cloud_region":""}}
+2025-05-31T04:01:41.192Z: [POSE POLLING] Wait-for-completion polling stopped
+[2025-05-31 12:01:41.203] Re-authenticating with email: phil+aukilabs@aukilabs.com, domainId: 8093f9bf-c374-4162-ab74-ab61949627f1
+2025-05-31T04:01:41.200Z: [POSE POLLING] Wait-for-completion polling started
+[2025-05-31 12:01:41.209] Posemesh user login URL: https://api.auki.network/user/login
+2025-05-31T04:01:41.230Z: Set robot speed to patrol mode: 0.25 m/s when mounting
+2025-05-31T04:01:41.235Z: Initial health check response: {
   "deviceFound": true,
   "status": "Robot health check successful",
   "slamApiAvailable": true,
   "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
   "responseCode": 200
 }
-2025-05-30T14:49:35.007Z: validateToken called (force=false)
-2025-05-30T14:49:35.008Z: Token validation already in progress, skipping
-2025-05-30T14:49:35.009Z: Initial health check response: {
-  "deviceFound": true,
-  "status": "Robot health check successful",
-  "slamApiAvailable": true,
-  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
-  "responseCode": 200
-}
-2025-05-30T14:49:35.010Z: Parsed health check response: {
+2025-05-31T04:01:41.236Z: Parsed health check response: {
   "baseError": [],
   "hasDepthCameraDisconnected": false,
   "hasError": false,
@@ -322,185 +338,868 @@ Connection status: Health Check OK, Message: Health Check OK
   "hasSystemEmergencyStop": false,
   "hasWarning": false
 }
-2025-05-30T14:49:35.011Z: Initial health check successful
-2025-05-30T14:49:35.036Z: Initial POIs fetch: [{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"point2"},"id":"0561be31-0bcc-4200-9ea0-c68fca4a0198"},{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"point4"},"id":"13e5682d-9a90-44b4-9133-34c35139520e"},{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"point1"},"id":"1e95f631-686f-451b-ad8f-716ac7f94702"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"point3"},"id":"23e9e4d5-736d-4a4b-8c72-71589d3d658d"}]
-2025-05-30T14:49:35.042Z: Initial health check successful
-2025-05-30T14:49:35.069Z: Found POI names: ["point2","point4","point1","point3"]
-2025-05-30T14:49:35.078Z: Valid POI names: ["point2","point4","point1","point3"]
-2025-05-30T14:49:35.091Z: POI validation successful - all points match config
-2025-05-30T14:49:35.331Z: Starting navigation to first waypoint
-2025-05-30T14:49:35.331Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-30T14:49:35.342Z: Starting navigation to point1 (index: 0)
-2025-05-30T14:49:35.349Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-[2025-05-30 22:49:35.762] Posemesh user login response code: 200
-[2025-05-30 22:49:35.773] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDg2MjAxNzUsImlhdC...
-[2025-05-30 22:49:35.780] Posemesh token received (first 10 chars): eyJhbGciOi...
-[2025-05-30 22:49:35.787] DDS authentication URL: https://api.auki.network/service/domains-access-token
-2025-05-30T14:49:35.891Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-[2025-05-30 22:49:36.437] DDS authentication response code: 200
-[2025-05-30 22:49:36.445] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4NjIwMTc2LCJpYXQiOjE3NDg2MTY1NzYsImp0aSI6Ijk1YzllMGYyLTY3ZTgtNDg1OC1iYjgyLWE2NzBhNDM5ZGEyYiJ9.a6u_qpE5RAtKdyCzS8BeIuDcR_X78wpHHyJ0ypptkefLxDFvyyn4YiDyU-jzilgB2DnfOG2oiJPDL2TrBN7e7Q"}
-[2025-05-30 22:49:36.464] DDS token received (first 10 chars): eyJhbGciOi...
-[2025-05-30 22:49:36.469] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
-[2025-05-30 22:49:37.124] Domain authentication response code: 200
-[2025-05-30 22:49:37.130] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
-[2025-05-30 22:49:37.135] Updated domain info after token validation
-[2025-05-30 22:49:37.140] Token validation successful via re-authentication
-2025-05-30T14:49:37.143Z: Token validation successful: {"message":"Token is valid","valid":true}
-2025-05-30T14:49:44.998Z: Navigation to point1 completed
-2025-05-30T14:49:45.004Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-30T14:49:45.011Z: Starting navigation to point2 (index: 1)
-2025-05-30T14:49:45.019Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-30T14:49:47.742Z: Inactivity timer clear called, but no timer was running
-2025-05-30T14:49:47.912Z: Waypoint sequence cancelled
-2025-05-30T14:49:47.945Z: Patrol state changed to: inactive
-2025-05-30T14:49:47.983Z: Robot movement stopped
-2025-05-30T14:49:47.989Z: Promotion active, starting inactivity timer after returning to list
-2025-05-30T14:49:48.139Z: Inactivity timer cleared
-2025-05-30T14:49:48.143Z: Patrol conditions changed after navigation, not proceeding to next point
-2025-05-30T14:49:48.144Z: Robot pose polling stopped on cleanup
-2025-05-30T14:49:48.144Z: Polling for robot call data...
-2025-05-30T14:49:48.145Z: Started robot call polling
-2025-05-30T14:49:48.145Z: Navigation state changed to: IDLE
-2025-05-30T14:49:48.146Z: Navigation status updated to: IDLE
-2025-05-30T14:49:48.175Z: Polling stopped in IDLE state
-2025-05-30T14:49:49.129Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:49:53.150Z: Polling for robot call data...
-2025-05-30T14:49:54.176Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:49:58.164Z: Polling for robot call data...
-2025-05-30T14:49:59.182Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:50:03.181Z: Polling for robot call data...
-2025-05-30T14:50:04.619Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:50:08.147Z: restartPromotion called
-2025-05-30T14:50:08.148Z: Auto-restarting promotion after inactivity
-2025-05-30T14:50:08.196Z: Set robot speed to patrol mode: 0.25 m/s
-2025-05-30T14:50:08.199Z: Cleaned up robot call polling
-2025-05-30T14:50:08.199Z: Patrol state changed to: active
-2025-05-30T14:50:08.199Z: Navigation state changed to: PATROL
-2025-05-30T14:50:08.200Z: Navigation status updated to: PATROL
-2025-05-30T14:50:08.220Z: Starting polling in PATROL state
-2025-05-30T14:50:08.231Z: Starting robot pose polling at 2 times per second
-2025-05-30T14:50:08.236Z: Robot pose polling started successfully
-2025-05-30T14:50:09.214Z: Starting navigation to waypoint 2 after auto-restart
-2025-05-30T14:50:09.215Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-30T14:50:09.226Z: Starting navigation to point2 (index: 1)
-2025-05-30T14:50:09.231Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-30T14:50:13.326Z: Inactivity timer cleared
-2025-05-30T14:50:13.390Z: Waypoint sequence cancelled
-2025-05-30T14:50:13.434Z: Patrol state changed to: inactive
-2025-05-30T14:50:13.497Z: Robot movement stopped
-2025-05-30T14:50:13.509Z: Promotion active, starting inactivity timer after returning to list
-2025-05-30T14:50:13.671Z: Inactivity timer cleared
-2025-05-30T14:50:13.675Z: Robot pose polling stopped on cleanup
-2025-05-30T14:50:13.676Z: Polling for robot call data...
-2025-05-30T14:50:13.676Z: Started robot call polling
-2025-05-30T14:50:13.676Z: Navigation state changed to: IDLE
-2025-05-30T14:50:13.677Z: Navigation status updated to: IDLE
-2025-05-30T14:50:13.698Z: Polling stopped in IDLE state
-2025-05-30T14:50:14.012Z: Patrol conditions changed after navigation, not proceeding to next point
-2025-05-30T14:50:14.711Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:50:14.799Z: Inactivity timer cleared
-2025-05-30T14:50:14.800Z: resetInactivityTimer - promotionActive: true, promotionCancelled: false, isPatrolling: false
-2025-05-30T14:50:14.820Z: Starting inactivity timer - promotion is active and not cancelled
-2025-05-30T14:50:14.827Z: Inactivity timer clear called, but no timer was running
-2025-05-30T14:50:18.498Z: Inactivity timer cleared
-2025-05-30T14:50:18.499Z: resetInactivityTimer - promotionActive: true, promotionCancelled: false, isPatrolling: false
-2025-05-30T14:50:18.511Z: Starting inactivity timer - promotion is active and not cancelled
-2025-05-30T14:50:18.517Z: Inactivity timer clear called, but no timer was running
-2025-05-30T14:50:18.697Z: Polling for robot call data...
-2025-05-30T14:50:19.134Z: Inactivity timer cleared
-2025-05-30T14:50:19.137Z: Waypoint sequence cancelled due to product selection
-2025-05-30T14:50:19.519Z: Starting navigation to: Lounge Stage
-2025-05-30T14:50:19.659Z: Cleaned up robot call polling
-2025-05-30T14:50:19.660Z: Navigation state changed to: NAVIGATING
-2025-05-30T14:50:19.661Z: Navigation status updated to: NAVIGATING
-2025-05-30T14:50:19.671Z: Starting polling in NAVIGATING state
-2025-05-30T14:50:19.681Z: Starting robot pose polling at 2 times per second
-2025-05-30T14:50:19.688Z: Robot pose polling started successfully
-2025-05-30T14:50:19.833Z: Set robot speed to product search mode: 0.7 m/s
-2025-05-30T14:50:19.842Z: validateToken called (force=false)
-2025-05-30T14:50:19.843Z: Token validation was performed recently, skipping
-2025-05-30T14:50:19.859Z: Requesting navmesh coordinates for: {"x":1.8841,"y":0,"z":3.3539}
-2025-05-30T14:50:20.097Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:50:23.992Z: Received navTarget: {"debug":{"navmeshResult":{"deltaZ":-4.425048816258936e-8,"deltaX":-1.9548511108398436,"yaw":-0.0015926535897925476,"z":3.3538999557495117,"x":3.8389511108398438},"transformedCoords":{"z":-3.3539,"x":1.8841},"productCoords":{"z":3.3539,"x":1.8841}},"yaw":-0.0015926535897925476,"z":3.3538999557495117,"x":3.8389511108398438}
-2025-05-30T14:50:24.004Z: Raw targetCoords: {
-  "debug": {
-    "navmeshResult": {
-      "deltaZ": -4.425048816258936e-8,
-      "deltaX": -1.9548511108398436,
-      "yaw": -0.0015926535897925476,
-      "z": 3.3538999557495117,
-      "x": 3.8389511108398438
-    },
-    "transformedCoords": {
-      "z": -3.3539,
-      "x": 1.8841
-    },
-    "productCoords": {
-      "z": 3.3539,
-      "x": 1.8841
-    }
-  },
-  "yaw": -0.0015926535897925476,
-  "z": 3.3538999557495117,
-  "x": 3.8389511108398438
+2025-05-31T04:01:41.237Z: Initial health check successful
+2025-05-31T04:01:41.238Z: Initial health check response: {
+  "deviceFound": true,
+  "status": "Robot health check successful",
+  "slamApiAvailable": true,
+  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
+  "responseCode": 200
 }
-2025-05-30T14:50:24.013Z: Calling navigateProduct with exact params: {
-  "x": 3.8389511108398438,
-  "y": 3.3538999557495117,
-  "yaw": -0.0015926535897925476
-}
-2025-05-30T14:50:24.025Z: Starting navigation command...
-2025-05-30T14:50:57.291Z: Navigation command completed
-2025-05-30T14:50:57.300Z: Setting navigation status to ARRIVED
-2025-05-30T14:50:57.313Z: Auto-promotion disabled, not starting inactivity timer
-2025-05-30T14:50:57.430Z: Navigation completed, showing arrival screen
-2025-05-30T14:50:57.450Z: Robot pose polling stopped on cleanup
-2025-05-30T14:50:57.459Z: Navigation state changed to: ARRIVED
-2025-05-30T14:50:57.460Z: Navigation status updated to: ARRIVED
-2025-05-30T14:50:57.466Z: Polling stopped in ARRIVED state
-2025-05-30T14:51:02.462Z: Waypoint sequence cancelled
-2025-05-30T14:51:02.478Z: Robot movement stopped
-2025-05-30T14:51:02.485Z: Promotion inactive or cancelled, not starting inactivity timer
-2025-05-30T14:51:02.697Z: Polling for robot call data...
-2025-05-30T14:51:02.698Z: Started robot call polling
-2025-05-30T14:51:02.698Z: Navigation state changed to: IDLE
-2025-05-30T14:51:02.698Z: Navigation status updated to: IDLE
-2025-05-30T14:51:02.715Z: Polling stopped in IDLE state
-2025-05-30T14:51:04.424Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:51:07.712Z: Polling for robot call data...
-2025-05-30T14:51:09.159Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:51:12.729Z: Polling for robot call data...
-2025-05-30T14:51:13.832Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:51:17.745Z: Polling for robot call data...
-2025-05-30T14:51:19.259Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:51:22.762Z: Polling for robot call data...
-2025-05-30T14:51:23.560Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:51:27.772Z: Polling for robot call data...
-2025-05-30T14:51:29.298Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:51:32.779Z: Polling for robot call data...
-2025-05-30T14:51:34.340Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:51:37.795Z: Polling for robot call data...
-2025-05-30T14:51:38.846Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:51:42.806Z: Polling for robot call data...
-2025-05-30T14:51:43.341Z: Inactivity timer clear called, but no timer was running
-2025-05-30T14:51:43.342Z: resetInactivityTimer - promotionActive: false, promotionCancelled: false, isPatrolling: false
-2025-05-30T14:51:43.354Z: Not starting inactivity timer - promotion is inactive or cancelled
-2025-05-30T14:51:43.836Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:51:47.828Z: Polling for robot call data...
-2025-05-30T14:51:48.861Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:51:49.146Z: Inactivity timer clear called, but no timer was running
-2025-05-30T14:51:49.148Z: resetInactivityTimer - promotionActive: false, promotionCancelled: false, isPatrolling: false
-2025-05-30T14:51:49.162Z: Not starting inactivity timer - promotion is inactive or cancelled
-2025-05-30T14:51:52.841Z: Polling for robot call data...
-2025-05-30T14:51:53.641Z: Inactivity timer clear called, but no timer was running
-2025-05-30T14:51:53.642Z: resetInactivityTimer - promotionActive: false, promotionCancelled: false, isPatrolling: false
-2025-05-30T14:51:53.652Z: Not starting inactivity timer - promotion is inactive or cancelled
-2025-05-30T14:51:54.381Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:51:57.861Z: Polling for robot call data...
-2025-05-30T14:51:58.468Z: User confirmed app exit
-2025-05-30T14:51:58.592Z: App state changed from active to background
-2025-05-30T14:51:58.599Z: App state changed from active to background
-2025-05-30T14:51:58.890Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-2025-05-30T14:51:59.425Z: Cleared token validation interval
-2025-05-30T14:51:59.428Z: Cleared token refresh interval
-2025-05-30T14:51:59.435Z: Cleaned up robot call polling
+2025-05-31T04:01:41.239Z: validateToken called (force=false)
+2025-05-31T04:01:41.240Z: Token validation already in progress, skipping
+2025-05-31T04:01:41.255Z: Initial POIs fetch: [{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"point1"},"id":"5f13c43d-7a90-465c-921e-9fd1234032b6"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"point3"},"id":"698ccbab-e8db-4bf0-a7a5-36ab5df2ddb4"},{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"point4"},"id":"e79149a3-74cc-4fe5-bd21-07cc10b983a1"},{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"point2"},"id":"eed598d4-89ae-4432-85df-ae1f28430058"}]
+2025-05-31T04:01:41.282Z: Initial health check successful
+2025-05-31T04:01:41.288Z: Found POI names: ["point1","point3","point4","point2"]
+2025-05-31T04:01:41.309Z: Valid POI names: ["point1","point3","point4","point2"]
+2025-05-31T04:01:41.314Z: POI validation successful - all points match config
+2025-05-31T04:01:41.571Z: Starting navigation to first waypoint
+2025-05-31T04:01:41.572Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:01:41.583Z: Starting navigation to point1 (index: 0)
+2025-05-31T04:01:41.591Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
+[2025-05-31 12:01:42.066] Posemesh user login response code: 200
+[2025-05-31 12:01:42.072] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDg2Njc3MDEsImlhdC...
+[2025-05-31 12:01:42.083] Posemesh token received (first 10 chars): eyJhbGciOi...
+[2025-05-31 12:01:42.088] DDS authentication URL: https://api.auki.network/service/domains-access-token
+2025-05-31T04:01:42.769Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+[2025-05-31 12:01:42.972] DDS authentication response code: 200
+[2025-05-31 12:01:42.977] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4NjY3NzAyLCJpYXQiOjE3NDg2NjQxMDIsImp0aSI6ImQxOTQxOWQxLTM0NWQtNGFhMC04ZjAxLTY0NTQxOGVhMDk1YyJ9.iDNdHPHhBA4y2JYpFy9IyOaGMkhMgp8zxn0m-0LEeOzUqvrLkwxavswARbyn7UsONcLMQq6HCIexZaCMDs08dQ"}
+[2025-05-31 12:01:42.993] DDS token received (first 10 chars): eyJhbGciOi...
+[2025-05-31 12:01:42.998] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
+[2025-05-31 12:01:43.305] Domain authentication response code: 200
+[2025-05-31 12:01:43.313] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
+[2025-05-31 12:01:43.320] Updated domain info after token validation
+[2025-05-31 12:01:43.325] Token validation successful via re-authentication
+2025-05-31T04:01:43.327Z: Token validation successful: {"message":"Token is valid","valid":true}
+2025-05-31T04:01:52.961Z: Navigation to point1 completed
+2025-05-31T04:01:52.967Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:01:52.974Z: Starting navigation to point2 (index: 1)
+2025-05-31T04:01:52.985Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
+2025-05-31T04:02:04.602Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:02:04.624Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:02:04.671Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:02:04.676Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:02:04.678Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:02:04.682Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:02:20.132Z: Navigation to point2 completed
+2025-05-31T04:02:20.137Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:02:20.143Z: Starting navigation to point3 (index: 2)
+2025-05-31T04:02:20.149Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
+2025-05-31T04:02:34.628Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:02:34.635Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:02:34.688Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:02:34.701Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:02:34.703Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:02:34.716Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:02:37.244Z: Navigation to point3 completed
+2025-05-31T04:02:37.255Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:02:37.259Z: Starting navigation to point4 (index: 3)
+2025-05-31T04:02:37.278Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
+2025-05-31T04:03:04.660Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:03:04.663Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:03:04.702Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:03:04.710Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:03:04.713Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:03:04.717Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:03:06.516Z: Navigation to point4 completed
+2025-05-31T04:03:06.526Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:03:06.536Z: Completed one cycle of waypoints, looping back to the beginning
+2025-05-31T04:03:06.541Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:03:06.548Z: Starting navigation to point1 (index: 0)
+2025-05-31T04:03:06.558Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
+2025-05-31T04:03:20.489Z: Navigation to point1 completed
+2025-05-31T04:03:20.494Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:03:20.500Z: Starting navigation to point2 (index: 1)
+2025-05-31T04:03:20.514Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
+2025-05-31T04:03:34.684Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:03:34.686Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:03:34.769Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:03:34.770Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:03:34.776Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:03:34.782Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:03:51.227Z: Navigation to point2 completed
+2025-05-31T04:03:51.232Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:03:51.236Z: Starting navigation to point3 (index: 2)
+2025-05-31T04:03:51.242Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
+2025-05-31T04:04:04.710Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:04:04.711Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:04:04.748Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:04:04.753Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:04:04.756Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:04:04.762Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:04:07.470Z: Navigation to point3 completed
+2025-05-31T04:04:07.480Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:04:07.486Z: Starting navigation to point4 (index: 3)
+2025-05-31T04:04:07.495Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
+2025-05-31T04:04:34.746Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:04:34.756Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:04:34.792Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:04:34.800Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:04:34.802Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:04:34.812Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:04:35.181Z: Navigation to point4 completed
+2025-05-31T04:04:35.187Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:04:35.192Z: Completed one cycle of waypoints, looping back to the beginning
+2025-05-31T04:04:35.195Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:04:35.203Z: Starting navigation to point1 (index: 0)
+2025-05-31T04:04:35.207Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
+2025-05-31T04:04:51.594Z: Navigation to point1 completed
+2025-05-31T04:04:51.608Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:04:51.616Z: Starting navigation to point2 (index: 1)
+2025-05-31T04:04:51.630Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
+2025-05-31T04:05:04.763Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:05:04.765Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:05:04.836Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:05:04.874Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:05:04.879Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:05:04.903Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:05:22.694Z: Navigation to point2 completed
+2025-05-31T04:05:22.699Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:05:22.703Z: Starting navigation to point3 (index: 2)
+2025-05-31T04:05:22.712Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
+2025-05-31T04:05:34.791Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:05:34.793Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:05:34.837Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:05:34.847Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:05:34.853Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:05:34.859Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:05:40.612Z: Navigation to point3 completed
+2025-05-31T04:05:40.619Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:05:40.625Z: Starting navigation to point4 (index: 3)
+2025-05-31T04:05:40.631Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
+2025-05-31T04:06:04.833Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:06:04.842Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:06:04.865Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:06:04.867Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:06:04.872Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:06:04.876Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:06:08.337Z: Navigation to point4 completed
+2025-05-31T04:06:08.342Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:06:08.350Z: Completed one cycle of waypoints, looping back to the beginning
+2025-05-31T04:06:08.357Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:06:08.362Z: Starting navigation to point1 (index: 0)
+2025-05-31T04:06:08.368Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
+2025-05-31T04:06:20.671Z: Navigation to point1 completed
+2025-05-31T04:06:20.676Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:06:20.681Z: Starting navigation to point2 (index: 1)
+2025-05-31T04:06:20.686Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
+2025-05-31T04:06:34.863Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:06:34.865Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:06:34.902Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:06:34.910Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:06:34.932Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:06:34.941Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:06:52.563Z: Navigation to point2 completed
+2025-05-31T04:06:52.570Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:06:52.580Z: Starting navigation to point3 (index: 2)
+2025-05-31T04:06:52.586Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
+2025-05-31T04:07:04.895Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:07:04.903Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:07:04.928Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:07:04.931Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:07:04.933Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:07:04.948Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:07:09.573Z: Navigation to point3 completed
+2025-05-31T04:07:09.588Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:07:09.593Z: Starting navigation to point4 (index: 3)
+2025-05-31T04:07:09.599Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
+2025-05-31T04:07:34.928Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:07:34.929Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:07:34.954Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:07:34.959Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:07:34.968Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:07:34.974Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:07:37.302Z: Navigation to point4 completed
+2025-05-31T04:07:37.307Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:07:37.315Z: Completed one cycle of waypoints, looping back to the beginning
+2025-05-31T04:07:37.334Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:07:37.340Z: Starting navigation to point1 (index: 0)
+2025-05-31T04:07:37.350Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
+2025-05-31T04:07:49.596Z: Navigation to point1 completed
+2025-05-31T04:07:49.601Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:07:49.605Z: Starting navigation to point2 (index: 1)
+2025-05-31T04:07:49.611Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
+2025-05-31T04:08:04.966Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:08:04.967Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:08:05.017Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:08:05.023Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:08:05.028Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:08:05.040Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:08:20.207Z: Navigation to point2 completed
+2025-05-31T04:08:20.215Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:08:20.223Z: Starting navigation to point3 (index: 2)
+2025-05-31T04:08:20.230Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
+2025-05-31T04:08:35.005Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:08:35.007Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:08:35.029Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:08:35.055Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:08:35.060Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":27}
+2025-05-31T04:08:35.068Z: [BATTERY] Battery level updated to: 27%
+2025-05-31T04:08:38.052Z: Navigation to point3 completed
+2025-05-31T04:08:38.059Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:08:38.065Z: Starting navigation to point4 (index: 3)
+2025-05-31T04:08:38.071Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
+2025-05-31T04:09:05.038Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:09:05.039Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:09:05.070Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":26}
+2025-05-31T04:09:05.071Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":26}
+2025-05-31T04:09:05.079Z: [BATTERY] Battery level updated to: 26%
+2025-05-31T04:09:05.105Z: [BATTERY] Battery level updated to: 26%
+2025-05-31T04:09:06.170Z: Navigation to point4 completed
+2025-05-31T04:09:06.178Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:09:06.187Z: Completed one cycle of waypoints, looping back to the beginning
+2025-05-31T04:09:06.202Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:09:06.214Z: Starting navigation to point1 (index: 0)
+2025-05-31T04:09:06.221Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
+2025-05-31T04:09:18.522Z: Navigation to point1 completed
+2025-05-31T04:09:18.528Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:09:18.533Z: Starting navigation to point2 (index: 1)
+2025-05-31T04:09:18.541Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
+2025-05-31T04:09:35.074Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:09:35.074Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:09:35.110Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":26}
+2025-05-31T04:09:35.120Z: [BATTERY] Battery level updated to: 26%
+2025-05-31T04:09:35.121Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":26}
+2025-05-31T04:09:35.132Z: [BATTERY] Battery level updated to: 26%
+2025-05-31T04:09:50.448Z: Navigation to point2 completed
+2025-05-31T04:09:50.454Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:09:50.459Z: Starting navigation to point3 (index: 2)
+2025-05-31T04:09:50.465Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
+2025-05-31T04:10:05.107Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:10:05.109Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:10:05.143Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":26}
+2025-05-31T04:10:05.144Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":26}
+2025-05-31T04:10:05.149Z: [BATTERY] Battery level updated to: 26%
+2025-05-31T04:10:05.154Z: [BATTERY] Battery level updated to: 26%
+2025-05-31T04:10:08.040Z: Navigation to point3 completed
+2025-05-31T04:10:08.047Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:10:08.054Z: Starting navigation to point4 (index: 3)
+2025-05-31T04:10:08.066Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
+2025-05-31T04:10:35.141Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:10:35.143Z: [BATTERY] Battery status update event received - Stack: Error
+    at ?anon_0_ (address at index.android.bundle:1:721658)
+    at next (native)
+    at asyncGeneratorStep (address at index.android.bundle:1:550388)
+    at _next (address at index.android.bundle:1:550646)
+    at anonymous (address at index.android.bundle:1:550598)
+    at tryCallTwo (address at InternalBytecode.js:1:1222)
+    at doResolve (address at InternalBytecode.js:1:2541)
+    at Promise (address at InternalBytecode.js:1:1318)
+    at anonymous (address at index.android.bundle:1:550519)
+    at apply (native)
+    at handleBatteryStatusUpdate (address at index.android.bundle:1:722652)
+    at apply (native)
+    at emit (address at index.android.bundle:1:40719)
+    at apply (native)
+    at anonymous (address at index.android.bundle:1:38127)
+    at emit (address at index.android.bundle:1:38434)
+2025-05-31T04:10:35.170Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":26}
+2025-05-31T04:10:35.171Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":26}
+2025-05-31T04:10:35.177Z: [BATTERY] Battery level updated to: 26%
+2025-05-31T04:10:35.184Z: [BATTERY] Battery level updated to: 26%
+2025-05-31T04:10:39.379Z: Navigation to point4 completed
+2025-05-31T04:10:39.385Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:10:39.392Z: Completed one cycle of waypoints, looping back to the beginning
+2025-05-31T04:10:39.400Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-05-31T04:10:39.405Z: Starting navigation to point1 (index: 0)
+2025-05-31T04:10:39.411Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
+2025-05-31T04:10:44.472Z: Inactivity timer clear called, but no timer was running
+2025-05-31T04:10:44.504Z: Waypoint sequence cancelled
+2025-05-31T04:10:44.550Z: Patrol state changed to: inactive
+2025-05-31T04:10:44.588Z: Robot movement stopped
+2025-05-31T04:10:44.595Z: Promotion active, starting inactivity timer after returning to list
+2025-05-31T04:10:44.697Z: Inactivity timer cleared
+2025-05-31T04:10:44.699Z: Polling for robot call data...
+2025-05-31T04:10:44.699Z: Started robot call polling
+2025-05-31T04:10:44.700Z: Navigation state changed to: IDLE
+2025-05-31T04:10:44.700Z: Navigation status updated to: IDLE
+2025-05-31T04:10:44.710Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-05-31T04:10:44.718Z: Polling stopped in IDLE state
+2025-05-31T04:10:45.070Z: Patrol conditions changed after navigation, not proceeding to next point
+2025-05-31T04:10:45.603Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T04:10:45.997Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-05-31T04:10:46.003Z: [POSE POLLING] Auto-stopped polling - not in NAVIGATING/PATROL state
+2025-05-31T04:10:46.178Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-05-31T04:10:46.185Z: [POSE POLLING] Auto-stopped polling - not in NAVIGATING/PATROL state
+2025-05-31T04:10:47.035Z: [POSE POLLING] Polling loop exited
+2025-05-31T04:10:47.194Z: [POSE POLLING] Polling loop exited
+2025-05-31T04:10:47.300Z: Inactivity timer cleared
+2025-05-31T04:10:47.300Z: resetInactivityTimer - promotionActive: true, promotionCancelled: false, isPatrolling: false
+2025-05-31T04:10:47.315Z: Starting inactivity timer - promotion is active and not cancelled
+2025-05-31T04:10:47.327Z: Inactivity timer clear called, but no timer was running
+2025-05-31T04:10:49.718Z: Polling for robot call data...
+2025-05-31T04:10:51.138Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T04:10:54.730Z: Polling for robot call data...
+2025-05-31T04:10:55.099Z: Inactivity timer cleared
+2025-05-31T04:10:55.100Z: resetInactivityTimer - promotionActive: true, promotionCancelled: false, isPatrolling: false
+2025-05-31T04:10:55.150Z: Starting inactivity timer - promotion is active and not cancelled
+2025-05-31T04:10:55.159Z: Inactivity timer clear called, but no timer was running
+2025-05-31T04:10:56.117Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T04:10:59.746Z: Polling for robot call data...
+2025-05-31T04:11:00.043Z: User confirmed app exit
+2025-05-31T04:11:00.156Z: App state changed from active to background
+2025-05-31T04:11:00.157Z: App state changed from active to background
+2025-05-31T04:11:00.940Z: Cleared token validation interval
+2025-05-31T04:11:00.949Z: Cleared token refresh interval
+2025-05-31T04:11:00.974Z: Cleaned up robot call polling
+2025-05-31T04:11:00.979Z: [POSE POLLING] Wait-for-completion polling stopped

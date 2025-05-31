@@ -27,7 +27,7 @@ public class BatteryMonitorModule extends ReactContextBaseJavaModule {
     private HandlerThread batteryThread;
     private Handler batteryHandler;
     private boolean isMonitoring = false;
-    private static final int CHECK_INTERVAL = 300000; // 5 minutes
+    private static final int CHECK_INTERVAL = 30000; // 30 seconds
     private final ReactApplicationContext reactContext;
 
     public BatteryMonitorModule(ReactApplicationContext reactContext) {
