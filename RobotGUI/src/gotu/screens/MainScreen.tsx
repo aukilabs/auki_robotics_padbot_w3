@@ -264,32 +264,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           await cancelPatrol('battery_return');
         }
 
-        // Reset navigation status and start going home
-        setNavigationStatus(NavigationStatus.NAVIGATING);
-        await NativeModules.SlamtecUtils.goHome();
-        
-        // Wait for arrival at dock
-        const checkDockStatus = async () => {
-          try {
-            const powerStatus = await NativeModules.SlamtecUtils.getPowerStatus();
-            LogUtils.writeDebugToFile('Checking dock status: ' + JSON.stringify(powerStatus));
-            
-            if (powerStatus.dockingStatus === 'on_dock') {
-              setIsReturningToCharger(false);
-              setNavigationStatus(NavigationStatus.IDLE);
-              LogUtils.writeDebugToFile('Robot docked successfully');
-            } else {
-              // Check again in 5 seconds
-              setTimeout(checkDockStatus, 5000);
-            }
-          } catch (error) {
-            console.error('Error checking dock status:', error);
-            LogUtils.writeDebugToFile('Error checking dock status: ' + error);
-          }
-        };
-        
-        // Start checking dock status
-        checkDockStatus();
+        // Call handleReturnToList to handle the return to charger
+        handleReturnToList();
       }
     } catch (error) {
       console.error('Error checking power status:', error);
@@ -1034,27 +1010,46 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     try {
       // Mark navigation as cancelled
       navigationCancelledRef.current = true;
-      //promotionCancelled = true;
-      //promotionActive = false;  // Don't force this to false as we might not be in patrol mode
-      
-      // Stop heartbeat checks
-      // stopHeartbeatCheck();
       
       // Reset recovery attempts counter
       setRecoveryAttempts(0);
       
-      // Cancel patrol sequence
-      setIsPatrolling(false);
-      isPatrollingRef.current = false;
-      await LogUtils.writeDebugToFile('Waypoint sequence cancelled');
-      
-      // Stop the robot's movement
-      await NativeModules.SlamtecUtils.stopNavigation();
-      await LogUtils.writeDebugToFile('Robot movement stopped');
-      
-      // Reset UI state
-      setSelectedProduct(null);
-      setNavigationStatus(NavigationStatus.IDLE);
+      // Don't cancel navigation if we're returning to charger due to low battery
+      if (!isReturningToCharger) {
+        // Cancel patrol sequence
+        setIsPatrolling(false);
+        isPatrollingRef.current = false;
+        await LogUtils.writeDebugToFile('Waypoint sequence cancelled');
+        
+        // Stop the robot's movement
+        await NativeModules.SlamtecUtils.stopNavigation();
+        await LogUtils.writeDebugToFile('Robot movement stopped');
+        
+        // Reset UI state
+        setSelectedProduct(null);
+        setNavigationStatus(NavigationStatus.IDLE);
+      } else {
+        await LogUtils.writeDebugToFile('Not cancelling navigation - returning to charger due to low battery');
+        // Keep navigation status as NAVIGATING while returning to charger
+        setNavigationStatus(NavigationStatus.NAVIGATING);
+        
+        // Set promotion flags for low battery state
+        promotionCancelled = true;
+        promotionActive = false;
+        await LogUtils.writeDebugToFile('Promotion cancelled due to low battery return to charger');
+
+        // Start going home
+        await NativeModules.SlamtecUtils.goHome();
+        await LogUtils.writeDebugToFile('Initiating return to charger');
+
+        // Check if robot is already on dock
+        const powerStatus = await NativeModules.SlamtecUtils.getPowerStatus();
+        if (powerStatus.dockingStatus === 'on_dock') {
+          setIsReturningToCharger(false);
+          setNavigationStatus(NavigationStatus.IDLE);
+          await LogUtils.writeDebugToFile('Robot already on dock, resetting return to charger state');
+        }
+      }
       
       // If we just handled a robot call, implement cooldown period before restarting polling
       if (lastRobotCallHandled) {
@@ -1072,12 +1067,42 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     } catch (error) {
       // Even if stopping fails, still cancel patrol and return to list
       navigationCancelledRef.current = true;
-      //promotionCancelled = true;
-      promotionActive = false;
-      setIsPatrolling(false);
-      isPatrollingRef.current = false;
-      setSelectedProduct(null);
-      setNavigationStatus(NavigationStatus.IDLE);
+      
+      // Reset recovery attempts counter
+      setRecoveryAttempts(0);
+      
+      // Don't cancel navigation if we're returning to charger due to low battery
+      if (!isReturningToCharger) {
+        // Cancel patrol sequence
+        setIsPatrolling(false);
+        isPatrollingRef.current = false;
+        await LogUtils.writeDebugToFile('Waypoint sequence cancelled in error handler');
+        
+        // Reset UI state
+        setSelectedProduct(null);
+        setNavigationStatus(NavigationStatus.IDLE);
+      } else {
+        await LogUtils.writeDebugToFile('Not cancelling navigation in error handler - returning to charger due to low battery');
+        // Keep navigation status as NAVIGATING while returning to charger
+        setNavigationStatus(NavigationStatus.NAVIGATING);
+        
+        // Set promotion flags for low battery state
+        promotionCancelled = true;
+        promotionActive = false;
+        await LogUtils.writeDebugToFile('Promotion cancelled due to low battery return to charger (error handler)');
+
+        // Start going home
+        await NativeModules.SlamtecUtils.goHome();
+        await LogUtils.writeDebugToFile('Initiating return to charger in error handler');
+
+        // Check if robot is already on dock
+        const powerStatus = await NativeModules.SlamtecUtils.getPowerStatus();
+        if (powerStatus.dockingStatus === 'on_dock') {
+          setIsReturningToCharger(false);
+          setNavigationStatus(NavigationStatus.IDLE);
+          await LogUtils.writeDebugToFile('Robot already on dock, resetting return to charger state');
+        }
+      }
       
       // Only start inactivity timer if auto-promotion is enabled
       if (promotionActive && !promotionCancelled) {
@@ -1446,6 +1471,20 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         posePollingInProgress = false;
         return;
       }
+
+      // Check if robot is on dock while returning to charger
+      if (isReturningToCharger) {
+        const powerStatus = await NativeModules.SlamtecUtils.getPowerStatus();
+        if (powerStatus.dockingStatus === 'on_dock') {
+          setIsReturningToCharger(false);
+          setNavigationStatus(NavigationStatus.IDLE);
+          await LogUtils.writeDebugToFile('Robot docked successfully, resetting return to charger state');
+          await stopPosePolling();
+          posePollingInProgress = false;
+          return;
+        }
+      }
+
       if (poseReportingCooldownRef.current) {
         posePollingInProgress = false;
         return;
