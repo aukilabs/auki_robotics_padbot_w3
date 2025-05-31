@@ -18,6 +18,7 @@ import {
   AppState,
   AppStateStatus,
   Keyboard,
+  Modal,
 } from 'react-native';
 import { LogUtils } from '../utils/logging';
 import { 
@@ -230,6 +231,101 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   // Add these near the top of the file with other state declarations
   const [robotSpeed, setRobotSpeed] = useState(SPEEDS.default);
   const defaultSpeed = SPEEDS.default;
+  
+  // Add battery monitoring state
+  const [batteryLevel, setBatteryLevel] = useState<number>(100);
+  const [isLowBatteryAlertShown, setIsLowBatteryAlertShown] = useState(false);
+  const [isReturningToCharger, setIsReturningToCharger] = useState(false);
+  const returnToChargerAlertRef = useRef<{ dismiss: () => void } | null>(null);
+  
+  // Function to handle battery status updates
+  const handleBatteryStatusUpdate = async (event: any) => {
+    const { batteryPercentage, dockingStatus, isCharging } = event;
+    setBatteryLevel(batteryPercentage);
+    await LogUtils.writeDebugToFile(`Battery status update - Level: ${batteryPercentage}%, Docking: ${dockingStatus}, Charging: ${isCharging}`);
+
+    // Check if we should return to charger
+    if ((navigationStatus === NavigationStatus.IDLE || navigationStatus === NavigationStatus.PATROL) &&
+        !isReturningToCharger) {
+      
+      try {
+        // Get current power status to verify docking status
+        const powerStatus = await NativeModules.SlamtecUtils.getPowerStatus();
+        
+        // Only proceed if not on dock
+        if (powerStatus.dockingStatus !== 'on_dock') {
+          // Show dialog and start returning to charger
+          setIsReturningToCharger(true);
+
+          // Cancel any ongoing patrol
+          if (isPatrolling) {
+            await cancelPatrol('battery_return');
+          }
+
+          // Reset navigation status and start going home
+          setNavigationStatus(NavigationStatus.NAVIGATING);
+          await NativeModules.SlamtecUtils.goHome();
+          
+          // Wait for arrival at dock
+          const checkDockStatus = async () => {
+            try {
+              const powerStatus = await NativeModules.SlamtecUtils.getPowerStatus();
+              if (powerStatus.dockingStatus === 'on_dock') {
+                setIsReturningToCharger(false);
+                setNavigationStatus(NavigationStatus.IDLE);
+              } else {
+                // Check again in 5 seconds
+                setTimeout(checkDockStatus, 5000);
+              }
+            } catch (error) {
+              console.error('Error checking dock status:', error);
+            }
+          };
+          
+          // Start checking dock status
+          checkDockStatus();
+        }
+      } catch (error) {
+        console.error('Error checking power status:', error);
+      }
+    }
+  };
+
+  // Add effect to start battery monitoring
+  useEffect(() => {
+    const initializeBatteryMonitoring = async () => {
+      try {
+        // Check if BatteryMonitor module exists
+        if (!NativeModules.BatteryMonitor) {
+          await LogUtils.writeDebugToFile('BatteryMonitor module not found');
+          return;
+        }
+
+        // Start battery monitoring
+        await LogUtils.writeDebugToFile('Starting battery monitoring...');
+        NativeModules.BatteryMonitor.startMonitoring();
+        
+        // Add event listener for battery updates
+        const eventEmitter = new NativeEventEmitter(NativeModules.BatteryMonitor);
+        const subscription = eventEmitter.addListener('BatteryStatusUpdate', handleBatteryStatusUpdate);
+        
+        await LogUtils.writeDebugToFile('Battery monitoring initialized successfully');
+        
+        return () => {
+          // Clean up
+          if (NativeModules.BatteryMonitor) {
+            NativeModules.BatteryMonitor.stopMonitoring();
+          }
+          subscription.remove();
+          LogUtils.writeDebugToFile('Battery monitoring stopped');
+        };
+      } catch (error: any) {
+        await LogUtils.writeDebugToFile(`Error initializing battery monitoring: ${error.message}`);
+      }
+    };
+
+    initializeBatteryMonitoring();
+  }, []);
   
   // Function to clear the inactivity timer
   const clearInactivityTimer = () => {
@@ -1149,109 +1245,122 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   
   // Modify the renderContent function to remove the robot call button
   const renderContent = () => {
-    switch (navigationStatus) {
-      case NavigationStatus.IDLE:
-        return (
-          <View style={styles.searchContainer}>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search for a person or place..."
-              placeholderTextColor="#999"
-              value={searchText}
-              onChangeText={setSearchText}
-              onFocus={() => setIsInputFocused(true)}
-              onBlur={() => setIsInputFocused(false)}
-            />
-            
-            {isLoading ? (
-              <ActivityIndicator size="large" color="#2670F8" />
-            ) : (
-              <>
-                <FlatList
-                  data={filteredProducts}
-                  renderItem={renderProductItem}
-                  keyExtractor={item => item.eslCode}
-                  style={styles.productList}
-                  contentContainerStyle={[styles.productListContent, { paddingBottom: 100 }]}
-                  keyboardShouldPersistTaps="handled"
-                />
-              </>
-            )}
-          </View>
-        );
-        
-      case NavigationStatus.PATROL:
-        // Full-screen image for patrol mode, no text or banner
-        return (
-          <TouchableOpacity 
-            style={styles.fullScreenContainer}
-            onPress={handleReturnToList}
-            activeOpacity={1}
-          >
-            <Image 
-              source={require('../assets/GotuAdLandscape.png')} 
-              style={styles.fullScreenImage}
-              resizeMode="cover"
-            />
-          </TouchableOpacity>
-        );
-        
-      case NavigationStatus.NAVIGATING:
-        return (
-          <View style={styles.navigationContainer}>
-            <View style={styles.navigationDialog}>
-              <Text style={styles.navigationTitle}>Navigating to:</Text>
-              <Text style={styles.navigationProductName}>
-                {selectedProduct ? selectedProduct.name : "Home"}
-              </Text>
-              <ActivityIndicator size="large" color="#2670F8" style={styles.navigationSpinner} />
-              
-              <TouchableOpacity 
-                style={[styles.navigationButton, styles.cancelButton, { marginTop: 30 }]}
-                onPress={handleReturnToList}
-              >
-                <Text style={styles.navigationButtonText}>Cancel Navigation</Text>
-              </TouchableOpacity>
+    return (
+      <>
+        <Modal
+          visible={isReturningToCharger}
+          transparent={true}
+          animationType="fade"
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Returning to Charger</Text>
+              <Text style={styles.modalText}>The robot is returning to the charging dock.</Text>
             </View>
           </View>
-        );
-        
-      case NavigationStatus.ARRIVED:
-        return (
-          <View style={styles.navigationContainer}>
-            <View style={styles.navigationDialog}>
-              <Text style={styles.navigationTitle}>We have arrived!</Text>
-              <Text style={styles.navigationProductName}>{selectedProduct?.name}</Text>
+        </Modal>
+
+        {(() => {
+          switch (navigationStatus) {
+            case NavigationStatus.IDLE:
+              return (
+                <View style={styles.searchContainer}>
+                  <TextInput
+                    style={styles.searchInput}
+                    placeholder="Search products..."
+                    value={searchText}
+                    onChangeText={setSearchText}
+                    onFocus={() => setIsInputFocused(true)}
+                    onBlur={() => setIsInputFocused(false)}
+                  />
+                  {filteredProducts.length > 0 ? (
+                    <FlatList
+                      data={filteredProducts}
+                      renderItem={renderProductItem}
+                      keyExtractor={(item) => item.eslCode}
+                      style={styles.productList}
+                    />
+                  ) : (
+                    <Text style={styles.noProductsText}>No products found</Text>
+                  )}
+                </View>
+              );
               
-              <View style={styles.navigationButtonContainer}>
+            case NavigationStatus.PATROL:
+              // Full-screen image for patrol mode, no text or banner
+              return (
                 <TouchableOpacity 
-                  style={styles.navigationButton}
+                  style={styles.fullScreenContainer}
                   onPress={handleReturnToList}
+                  activeOpacity={1}
                 >
-                  <Text style={styles.navigationButtonText}>Back to List</Text>
+                  <Image 
+                    source={require('../assets/GotuAdLandscape.png')} 
+                    style={styles.fullScreenImage}
+                    resizeMode="cover"
+                  />
                 </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        );
-        
-      case NavigationStatus.ERROR:
-        return (
-          <View style={styles.navigationContainer}>
-            <View style={styles.navigationDialog}>
-              <Text style={styles.navigationTitle}>Navigation Error</Text>
-              <Text style={styles.navigationErrorText}>{navigationError}</Text>
+              );
               
-              <TouchableOpacity 
-                style={styles.navigationButton}
-                onPress={handleReturnToList}
-              >
-                <Text style={styles.navigationButtonText}>Back to List</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        );
-    }
+            case NavigationStatus.NAVIGATING:
+              return (
+                <View style={styles.navigationContainer}>
+                  <View style={styles.navigationDialog}>
+                    <Text style={styles.navigationTitle}>Navigating to:</Text>
+                    <Text style={styles.navigationProductName}>
+                      {selectedProduct ? selectedProduct.name : "Home"}
+                    </Text>
+                    <ActivityIndicator size="large" color="#2670F8" style={styles.navigationSpinner} />
+                    
+                    <TouchableOpacity 
+                      style={[styles.navigationButton, styles.cancelButton, { marginTop: 30 }]}
+                      onPress={handleReturnToList}
+                    >
+                      <Text style={styles.navigationButtonText}>Cancel Navigation</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              );
+              
+            case NavigationStatus.ARRIVED:
+              return (
+                <View style={styles.navigationContainer}>
+                  <View style={styles.navigationDialog}>
+                    <Text style={styles.navigationTitle}>We have arrived!</Text>
+                    <Text style={styles.navigationProductName}>{selectedProduct?.name}</Text>
+                    
+                    <View style={styles.navigationButtonContainer}>
+                      <TouchableOpacity 
+                        style={styles.navigationButton}
+                        onPress={handleReturnToList}
+                      >
+                        <Text style={styles.navigationButtonText}>Back to List</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              );
+              
+            case NavigationStatus.ERROR:
+              return (
+                <View style={styles.navigationContainer}>
+                  <View style={styles.navigationDialog}>
+                    <Text style={styles.navigationTitle}>Navigation Error</Text>
+                    <Text style={styles.navigationErrorText}>{navigationError}</Text>
+                    
+                    <TouchableOpacity 
+                      style={styles.navigationButton}
+                      onPress={handleReturnToList}
+                    >
+                      <Text style={styles.navigationButtonText}>Back to List</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              );
+          }
+        })()}
+      </>
+    );
   };
   
   // Function to reset the inactivity timer
@@ -2186,6 +2295,39 @@ const styles = StyleSheet.create({
   },
   actionButtonContainer: {
     marginBottom: 10,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  noProductsText: {
+    fontSize: 20,
+    color: '#555',
+    textAlign: 'center',
+    marginVertical: 16,
+    fontFamily: 'DM Sans',
   },
 });
 
