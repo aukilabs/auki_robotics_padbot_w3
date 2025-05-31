@@ -264,6 +264,10 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           await cancelPatrol('battery_return');
         }
 
+        // Clear the inactivity timer when returning to charger
+        clearInactivityTimer();
+        await LogUtils.writeDebugToFile('Cleared inactivity timer due to return to charger');
+
         // Call handleReturnToList to handle the return to charger
         handleReturnToList();
       }
@@ -347,7 +351,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     clearInactivityTimer();
     
     inactivityTimerRef.current = setTimeout(() => {
-      if (promotionActive && !promotionCancelled && isMountedRef.current) {
+      if (promotionActive && !promotionCancelled && isMountedRef.current && !isReturningToCharger) {
         restartPromotion();
       }
     }, INACTIVITY_TIMEOUT);
