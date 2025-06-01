@@ -2140,6 +2140,40 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     );
   };
 
+  // Add loading state
+  const [isContentReady, setIsContentReady] = useState(false);
+  const [isHeaderReady, setIsHeaderReady] = useState(false);
+  
+  // Add effect to handle initial loading
+  useEffect(() => {
+    const initializeContent = async () => {
+      try {
+        // Wait for initial battery status
+        const powerStatus = await NativeModules.SlamtecUtils.getPowerStatus();
+        if (powerStatus) {
+          // Add delay before setting header ready
+          setTimeout(() => {
+            setIsHeaderReady(true);
+            // Add a small delay to ensure header is rendered
+            setTimeout(() => {
+              setIsContentReady(true);
+            }, 100);
+          }, 250);
+        }
+      } catch (error) {
+        // If we can't get battery status, still show content after a short delay
+        setTimeout(() => {
+          setIsHeaderReady(true);
+          setTimeout(() => {
+            setIsContentReady(true);
+          }, 500);
+        }, 250);
+      }
+    };
+
+    initializeContent();
+  }, []);
+
   return (
     <SafeAreaView 
       style={styles.container}
@@ -2158,43 +2192,49 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         }
       }}
     >
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.closeButton} 
-          onPress={undefined}
-          onLongPress={handleClose}
-          delayLongPress={3000}
-        >
-          {/* Close button is now invisible but still functional with long press */}
-        </TouchableOpacity>
-        
-        <Image 
-          source={require('../assets/AppIcon_Gotu.png')}
-          style={styles.headerLogo}
-          resizeMode="contain"
-        />
-        
-        <View style={styles.headerRight}>
-          <BatteryIndicator />
+      <View style={[
+        styles.contentContainer,
+        { opacity: isContentReady ? 1 : 0 }
+      ]}>
+        <View style={[
+          styles.header,
+          { opacity: isHeaderReady ? 1 : 0 }
+        ]}>
           <TouchableOpacity 
-            style={styles.configButton}
+            style={styles.closeButton} 
             onPress={undefined}
-            onLongPress={() => {
-              // Clear inactivity timer when config screen is opened
-              clearInactivityTimer();
-              LogUtils.writeDebugToFile('Config screen opened, cleared inactivity timer');
-              // Set flag that we're navigating to config
-              navigatingToConfig = true;
-              onConfigPress();
-            }}
+            onLongPress={handleClose}
             delayLongPress={3000}
           >
-            {/* Config button is now invisible but still functional with long press */}
+            {/* Close button is now invisible but still functional with long press */}
           </TouchableOpacity>
+          
+          <Image 
+            source={require('../assets/AppIcon_Gotu.png')}
+            style={styles.headerLogo}
+            resizeMode="contain"
+          />
+          
+          <View style={styles.headerRight}>
+            <BatteryIndicator />
+            <TouchableOpacity 
+              style={styles.configButton}
+              onPress={undefined}
+              onLongPress={() => {
+                clearInactivityTimer();
+                LogUtils.writeDebugToFile('Config screen opened, cleared inactivity timer');
+                navigatingToConfig = true;
+                onConfigPress();
+              }}
+              delayLongPress={3000}
+            >
+              {/* Config button is now invisible but still functional with long press */}
+            </TouchableOpacity>
+          </View>
         </View>
+        
+        {renderContent()}
       </View>
-      
-      {renderContent()}
     </SafeAreaView>
   );
 };
@@ -2231,6 +2271,11 @@ const styles = StyleSheet.create({
     padding: 5,
     width: 40,
     height: 40,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   searchContainer: {
     flex: 1,
@@ -2463,11 +2508,6 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     fontFamily: 'DM Sans',
   },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
   batteryContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderRadius: 8,
@@ -2497,6 +2537,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     fontFamily: 'DM Sans',
+  },
+  contentContainer: {
+    flex: 1,
+    opacity: 0, // Start invisible
   },
 });
 
