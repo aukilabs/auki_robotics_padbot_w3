@@ -787,7 +787,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     
     // Cancel any ongoing patrol
     setIsPatrolling(false);
-    //promotionActive = false;
+    //globalAny.promotionActive = false;
     //promotionCancelled = true;
     await LogUtils.writeDebugToFile('Waypoint sequence cancelled due to product selection');
     
@@ -2427,7 +2427,7 @@ const styles = StyleSheet.create({
   batteryContainer: {
     position: 'absolute',
     top: 10,
-    right: 10,
+    right: 60, // Moved from 10 to 60 to avoid overlapping with config button
     zIndex: 1000,
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderRadius: 8,

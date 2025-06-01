@@ -76,7 +76,7 @@ loadSpeeds();
 const INACTIVITY_TIMEOUT = 20000;
 
 // Global variables to track promotion state across component lifecycles
-let promotionActive = false;
+globalAny.promotionActive = false;
 let promotionMounted = false;
 let promotionCancelled = false;
 let currentPointIndex = 0;
@@ -145,7 +145,7 @@ globalAny.startPromotion = async () => {
   // Set the promotion state
   promotionCancelled = false;
   currentPointIndex = 0;
-  promotionActive = true;
+  globalAny.promotionActive = true;
   
   // Reset the remountFromConfig flag to ensure promotion starts even when coming from config screen
   remountFromConfig = false;
@@ -358,7 +358,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     clearInactivityTimer();
     
     inactivityTimerRef.current = setTimeout(() => {
-      if (promotionActive && !promotionCancelled && isMountedRef.current && !isReturningToCharger) {
+      if (globalAny.promotionActive && !promotionCancelled && isMountedRef.current && !isReturningToCharger) {
         restartPromotion();
       }
     }, INACTIVITY_TIMEOUT);
@@ -375,7 +375,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         // Use the same logic as the global startPromotion function
         promotionCancelled = false;
         // Don't reset currentPointIndex, preserve it for resuming patrol
-        promotionActive = true;
+        globalAny.promotionActive = true;
         
         // Set patrol state to active
         setIsPatrolling(true);
@@ -533,14 +533,20 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   useEffect(() => {
     // Set the mounted ref to true
     isMountedRef.current = true;
-    promotionMounted = true;
+    
+    if(globalAny.promotionActive) {
+      promotionMounted = true;
+      globalAny.promotionActive = true;
+      globalAny.promotionCancelled = false;
+      globalAny.currentPointIndex = 0;
+    }
     
     // Log the current promotion state
-    LogUtils.writeDebugToFile(`MainScreen mounted. Promotion state: active=${promotionActive}, cancelled=${promotionCancelled}, currentPointIndex=${currentPointIndex}, remountFromConfig=${remountFromConfig}`);
+    LogUtils.writeDebugToFile(`MainScreen mounted. Promotion state: active=${globalAny.promotionActive}, cancelled=${promotionCancelled}, currentPointIndex=${currentPointIndex}, remountFromConfig=${remountFromConfig}`);
     
     // Only start promotion if it was explicitly activated via the global startPromotion function
     // and not cancelled, and we're not remounting after config screen
-    if (promotionActive && !promotionCancelled) {
+    if (globalAny.promotionActive && !promotionCancelled) {
       LogUtils.writeDebugToFile('Active promotion detected on mount, starting navigation to first waypoint');
       
       // Set patrol state to active
@@ -781,7 +787,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     
     // Cancel any ongoing patrol
     setIsPatrolling(false);
-    //promotionActive = false;
+    //globalAny.promotionActive = false;
     //promotionCancelled = true;
     await LogUtils.writeDebugToFile('Waypoint sequence cancelled due to product selection');
     
@@ -1031,7 +1037,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       // Set promotion flags first if returning to charger
       if (isReturningToChargerRef.current) {
         promotionCancelled = true;
-        promotionActive = false;
+        globalAny.promotionActive = false;
         await LogUtils.writeDebugToFile('Promotion cancelled due to low battery return to charger');
       }
       
@@ -1051,7 +1057,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         setNavigationStatus(NavigationStatus.IDLE);
         
         // Only start inactivity timer if promotion is active and not cancelled
-        if (promotionActive && !promotionCancelled) {
+        if (globalAny.promotionActive && !promotionCancelled) {
           await LogUtils.writeDebugToFile('Promotion active, starting inactivity timer after returning to list');
           startInactivityTimer();
         } else {
@@ -1091,7 +1097,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       // Set promotion flags first if returning to charger
       if (isReturningToChargerRef.current) {
         promotionCancelled = true;
-        promotionActive = false;
+        globalAny.promotionActive = false;
         await LogUtils.writeDebugToFile('Promotion cancelled due to low battery return to charger (error handler)');
       }
       
@@ -1107,7 +1113,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         setNavigationStatus(NavigationStatus.IDLE);
         
         // Only start inactivity timer if promotion is active and not cancelled
-        if (promotionActive && !promotionCancelled) {
+        if (globalAny.promotionActive && !promotionCancelled) {
           await LogUtils.writeDebugToFile('Promotion active, starting inactivity timer after error');
           startInactivityTimer();
         } else {
@@ -1438,10 +1444,10 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     clearInactivityTimer();
     
     // Log the state of promotion flags
-    await LogUtils.writeDebugToFile(`resetInactivityTimer - promotionActive: ${promotionActive}, promotionCancelled: ${promotionCancelled}, isPatrolling: ${isPatrollingRef.current}`);
+    await LogUtils.writeDebugToFile(`resetInactivityTimer - promotionActive: ${globalAny.promotionActive}, promotionCancelled: ${promotionCancelled}, isPatrolling: ${isPatrollingRef.current}`);
     
     // Only start inactivity timer if promotion is active and not cancelled
-    if (promotionActive && !promotionCancelled) {
+    if (globalAny.promotionActive && !promotionCancelled) {
       await LogUtils.writeDebugToFile('Starting inactivity timer - promotion is active and not cancelled');
       startInactivityTimer();
     } else {
@@ -1973,15 +1979,15 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     LogUtils.writeDebugToFile(`Current navigation status: ${navigationStatus}`);
     LogUtils.writeDebugToFile(`Is patrolling: ${isPatrolling}`);
     LogUtils.writeDebugToFile(`Is returning to charger: ${isReturningToCharger}`);
-    LogUtils.writeDebugToFile(`Current promotion state - Active: ${promotionActive}, Cancelled: ${promotionCancelled}`);
+    LogUtils.writeDebugToFile(`Current promotion state - Active: ${globalAny.promotionActive}, Cancelled: ${promotionCancelled}`);
     
     setIsPatrolling(false);
-    promotionActive = false;
     promotionCancelled = true;
+    globalAny.promotionActive = false;
     await LogUtils.writeDebugToFile(`Waypoint sequence cancelled (reason: ${reason})`);
     
     LogUtils.writeDebugToFile('Patrol cancelled - Flags updated');
-    LogUtils.writeDebugToFile(`New promotion state - Active: ${promotionActive}, Cancelled: ${promotionCancelled}`);
+    LogUtils.writeDebugToFile(`New promotion state - Active: ${globalAny.promotionActive}, Cancelled: ${promotionCancelled}`);
   };
 
   // Add a ref to track pose reporting cooldown
@@ -2177,7 +2183,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   return (
     <SafeAreaView 
       style={styles.container}
-      onTouchStart={async () => {
+      /*onTouchStart={async () => {
         // Debounce touch events to prevent rapid firing
         if (isTouchDebouncedRef.current) return;
         isTouchDebouncedRef.current = true;
@@ -2189,6 +2195,15 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
             .catch(err => console.error('Error resetting inactivity timer:', err));
         } else if (isPatrollingRef.current && navigationStatus === NavigationStatus.PATROL) {
           startInactivityTimer();
+        }
+      }}*/
+      onTouchStart={() => {
+        // Only start timer if we're in promotion mode (PATROL), no product selected, and promotion is active
+        if (navigationStatus === NavigationStatus.PATROL && !selectedProduct && globalAny.promotionActive) {
+          // We can't use await in the onTouchStart handler, so we handle it with a promise
+          resetInactivityTimer()
+            .then(() => LogUtils.writeDebugToFile('Touch detected in active promotion mode, reset inactivity timer processed'))
+            .catch(err => LogUtils.writeDebugToFile(`Error resetting inactivity timer: ${err.message || err}`));
         }
       }}
     >
