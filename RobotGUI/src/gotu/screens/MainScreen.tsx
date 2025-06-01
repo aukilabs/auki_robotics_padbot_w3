@@ -107,9 +107,8 @@ const AuthState = {
 };
 
 interface MainScreenProps {
-  onClose: () => void;
-  onConfigPress: () => void;
-  initialProducts: any[];
+  products: any[];
+  onReady?: () => void;
 }
 
 interface Product {
@@ -176,10 +175,9 @@ globalAny.startPromotion = async () => {
   }
 };
 
-const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps): React.JSX.Element => {
+const MainScreen = ({ products, onReady }: MainScreenProps): React.JSX.Element => {
   const [searchText, setSearchText] = useState('');
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(initialProducts);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
   const [isLoading, setIsLoading] = useState(false);
   const [navigationStatus, setNavigationStatus] = useState<NavigationStatus>(NavigationStatus.IDLE);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -240,6 +238,9 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   const [showPatrolDialog, setShowPatrolDialog] = useState(false);
   const batteryMonitoringInitializedRef = useRef(false);
   
+  // Add this with other refs at the top of the component
+  const isReturningToChargerRef = useRef(false);
+
   // Function to handle battery status updates
   const handleBatteryStatusUpdate = async (event: any) => {
     await LogUtils.writeDebugToFile(`[BATTERY] Battery status update event received`);
@@ -254,9 +255,8 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       await LogUtils.writeDebugToFile(`[BATTERY] Battery level updated to: ${powerStatus.batteryPercentage}%`);
       
       // Only proceed if not on dock AND battery is low
-      if (powerStatus.dockingStatus !== 'on_dock' && powerStatus.batteryPercentage <= 20 && !isReturningToCharger) {
-        setIsReturningToCharger(true);
-        LogUtils.writeDebugToFile('Initiating return to charger due to low battery');
+      if (powerStatus.dockingStatus !== 'on_dock' && powerStatus.batteryPercentage <= 20 && !isReturningToChargerRef.current) {
+        await LogUtils.writeDebugToFile('Initiating return to charger due to low battery');
         
         // Cancel any ongoing patrol
         if (isPatrolling) {
@@ -267,6 +267,11 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         // Clear the inactivity timer when returning to charger
         clearInactivityTimer();
         await LogUtils.writeDebugToFile('Cleared inactivity timer due to return to charger');
+
+        // Set returning to charger state using both ref and state
+        isReturningToChargerRef.current = true;
+        setIsReturningToCharger(true);
+        await LogUtils.writeDebugToFile(`isReturningToCharger value after setting: ${isReturningToChargerRef.current}`);
 
         // Call handleReturnToList to handle the return to charger
         handleReturnToList();
@@ -1018,8 +1023,18 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       // Reset recovery attempts counter
       setRecoveryAttempts(0);
       
+      // Log the actual value of isReturningToCharger
+      await LogUtils.writeDebugToFile(`handleReturnToList - isReturningToCharger value: ${isReturningToChargerRef.current}`);
+      
+      // Set promotion flags first if returning to charger
+      if (isReturningToChargerRef.current) {
+        promotionCancelled = true;
+        promotionActive = false;
+        await LogUtils.writeDebugToFile('Promotion cancelled due to low battery return to charger');
+      }
+      
       // Don't cancel navigation if we're returning to charger due to low battery
-      if (!isReturningToCharger) {
+      if (!isReturningToChargerRef.current) {
         // Cancel patrol sequence
         setIsPatrolling(false);
         isPatrollingRef.current = false;
@@ -1032,15 +1047,18 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         // Reset UI state
         setSelectedProduct(null);
         setNavigationStatus(NavigationStatus.IDLE);
+        
+        // Only start inactivity timer if promotion is active and not cancelled
+        if (promotionActive && !promotionCancelled) {
+          await LogUtils.writeDebugToFile('Promotion active, starting inactivity timer after returning to list');
+          startInactivityTimer();
+        } else {
+          await LogUtils.writeDebugToFile('Promotion inactive or cancelled, not starting inactivity timer');
+        }
       } else {
         await LogUtils.writeDebugToFile('Not cancelling navigation - returning to charger due to low battery');
         // Keep navigation status as NAVIGATING while returning to charger
         setNavigationStatus(NavigationStatus.NAVIGATING);
-        
-        // Set promotion flags for low battery state
-        promotionCancelled = true;
-        promotionActive = false;
-        await LogUtils.writeDebugToFile('Promotion cancelled due to low battery return to charger');
 
         // Start going home
         await NativeModules.SlamtecUtils.goHome();
@@ -1049,6 +1067,7 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         // Check if robot is already on dock
         const powerStatus = await NativeModules.SlamtecUtils.getPowerStatus();
         if (powerStatus.dockingStatus === 'on_dock') {
+          isReturningToChargerRef.current = false;
           setIsReturningToCharger(false);
           setNavigationStatus(NavigationStatus.IDLE);
           await LogUtils.writeDebugToFile('Robot already on dock, resetting return to charger state');
@@ -1060,14 +1079,6 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         await LogUtils.writeDebugToFile('Robot call cooldown period starting (60 seconds)');
         // Will be reset in the useEffect
       }
-      
-      // Only start inactivity timer if promotion is active and not cancelled
-      if (promotionActive && !promotionCancelled) {
-        await LogUtils.writeDebugToFile('Promotion active, starting inactivity timer after returning to list');
-        startInactivityTimer();
-      } else {
-        await LogUtils.writeDebugToFile('Promotion inactive or cancelled, not starting inactivity timer');
-      }
     } catch (error) {
       // Even if stopping fails, still cancel patrol and return to list
       navigationCancelledRef.current = true;
@@ -1075,8 +1086,15 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
       // Reset recovery attempts counter
       setRecoveryAttempts(0);
       
+      // Set promotion flags first if returning to charger
+      if (isReturningToChargerRef.current) {
+        promotionCancelled = true;
+        promotionActive = false;
+        await LogUtils.writeDebugToFile('Promotion cancelled due to low battery return to charger (error handler)');
+      }
+      
       // Don't cancel navigation if we're returning to charger due to low battery
-      if (!isReturningToCharger) {
+      if (!isReturningToChargerRef.current) {
         // Cancel patrol sequence
         setIsPatrolling(false);
         isPatrollingRef.current = false;
@@ -1085,15 +1103,18 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         // Reset UI state
         setSelectedProduct(null);
         setNavigationStatus(NavigationStatus.IDLE);
+        
+        // Only start inactivity timer if promotion is active and not cancelled
+        if (promotionActive && !promotionCancelled) {
+          await LogUtils.writeDebugToFile('Promotion active, starting inactivity timer after error');
+          startInactivityTimer();
+        } else {
+          await LogUtils.writeDebugToFile('Promotion inactive or cancelled, not starting inactivity timer after error');
+        }
       } else {
         await LogUtils.writeDebugToFile('Not cancelling navigation in error handler - returning to charger due to low battery');
         // Keep navigation status as NAVIGATING while returning to charger
         setNavigationStatus(NavigationStatus.NAVIGATING);
-        
-        // Set promotion flags for low battery state
-        promotionCancelled = true;
-        promotionActive = false;
-        await LogUtils.writeDebugToFile('Promotion cancelled due to low battery return to charger (error handler)');
 
         // Start going home
         await NativeModules.SlamtecUtils.goHome();
@@ -1102,18 +1123,11 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         // Check if robot is already on dock
         const powerStatus = await NativeModules.SlamtecUtils.getPowerStatus();
         if (powerStatus.dockingStatus === 'on_dock') {
+          isReturningToChargerRef.current = false;
           setIsReturningToCharger(false);
           setNavigationStatus(NavigationStatus.IDLE);
           await LogUtils.writeDebugToFile('Robot already on dock, resetting return to charger state');
         }
-      }
-      
-      // Only start inactivity timer if auto-promotion is enabled
-      if (promotionActive && !promotionCancelled) {
-        await LogUtils.writeDebugToFile('Promotion active, starting inactivity timer after error');
-        startInactivityTimer();
-      } else {
-        await LogUtils.writeDebugToFile('Promotion inactive or cancelled, not starting inactivity timer after error');
       }
     }
   };
@@ -1921,33 +1935,96 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        // Perform health check first
-        LogUtils.writeDebugToFile('Performing initial health check in MainScreen...');
-        const healthCheck = await NativeModules.SlamtecUtils.checkConnection();
-        LogUtils.writeDebugToFile('Initial health check response: ' + JSON.stringify(healthCheck, null, 2));
+        // Initialize logging first
+        await LogUtils.initializeLogging();
+        await LogUtils.writeDebugToFile('Starting MainScreen initialization...');
 
-        if (!healthCheck.slamApiAvailable) {
-          throw new Error('Robot not ready');
+        // Get device identifiers early and store them globally
+        try {
+          const identifiers = await NativeModules.DomainUtils.getDeviceIdentifiers();
+          DeviceStorage.setIdentifiers(identifiers.deviceId, identifiers.macAddress);
+          await LogUtils.writeDebugToFile(`Device identifiers initialized: deviceId=${identifiers.deviceId}, macAddress=${identifiers.macAddress}`);
+        } catch (identifierError: any) {
+          await LogUtils.writeDebugToFile(`Error initializing device identifiers: ${identifierError.message}`);
         }
 
-        // Only proceed with token validation if health check passes
-        await validateToken();
-
-        // Then proceed with map operations
-        LogUtils.writeDebugToFile('Initial health check successful');
-      } catch (error) {
-        LogUtils.writeDebugToFile('Initial health check failed: ' + (error instanceof Error ? error.message : String(error)));
+        // First authenticate with stored credentials
+        await LogUtils.writeDebugToFile('Attempting authentication...');
         
-        Alert.alert(
-          'Connection Error',
-          'Please wait for the robot to be ready before proceeding.',
-          [{ text: 'OK' }]
-        );
+        // Use the regular authentication system, not gotu credentials
+        let authSuccess = false;
+        let authAttempts = 0;
+        const maxAuthAttempts = 3;
+        
+        while (!authSuccess && authAttempts < maxAuthAttempts) {
+          try {
+            authAttempts++;
+            await LogUtils.writeDebugToFile(`Authentication attempt ${authAttempts}/${maxAuthAttempts}`);
+            
+            // This uses the existing authentication system with stored credentials
+            await NativeModules.DomainUtils.authenticate(null, null, null);
+            await LogUtils.writeDebugToFile('Authentication successful');
+            authSuccess = true;
+
+            // First try to get existing robot pose data ID
+            try {
+              await LogUtils.writeDebugToFile('Checking for existing robot pose data ID...');
+              const dataIdResult = await NativeModules.DomainUtils.getRobotPoseDataId();
+              
+              if (dataIdResult.exists) {
+                // Use existing data ID if available
+                DeviceStorage.setRobotPoseDataId(dataIdResult.dataId);
+                await LogUtils.writeDebugToFile(`Found existing robot pose data ID: ${dataIdResult.dataId}`);
+              } else {
+                // Only if no existing data ID, send test robot pose data with POST method
+                await LogUtils.writeDebugToFile('No existing data ID found. Sending test robot pose data with POST method...');
+                const testData = '{"Test 1 2 3 4"}';
+                const result = await NativeModules.DomainUtils.writeRobotPose(testData, 'POST', null);
+                await LogUtils.writeDebugToFile(`Robot pose test data sent successfully with ${result.method} method`);
+                
+                // Store the data ID from POST result
+                if (result.dataId) {
+                  DeviceStorage.setRobotPoseDataId(result.dataId);
+                  await LogUtils.writeDebugToFile(`Robot pose data ID from POST: ${result.dataId}`);
+                } else {
+                  await LogUtils.writeDebugToFile('No robot pose data ID returned from POST. Will create one with the first pose update.');
+                }
+              }
+            } catch (poseError: any) {
+              await LogUtils.writeDebugToFile(`Error handling robot pose data: ${poseError.message}`);
+            }
+          } catch (authError: any) {
+            await LogUtils.writeDebugToFile(`Authentication error on attempt ${authAttempts}: ${authError.message}`);
+            
+            // Log more detailed error information
+            if (authError.code) {
+              await LogUtils.writeDebugToFile(`Error code: ${authError.code}`);
+            }
+            
+            // Implement exponential backoff between retries
+            if (authAttempts < maxAuthAttempts) {
+              const backoffDelay = Math.pow(2, authAttempts - 1) * 1000; // 1s, 2s, 4s
+              await LogUtils.writeDebugToFile(`Retrying authentication in ${backoffDelay}ms...`);
+              await new Promise(resolve => setTimeout(resolve, backoffDelay));
+            }
+          }
+        }
+        
+        if (!authSuccess) {
+          await LogUtils.writeDebugToFile('All authentication attempts failed, proceeding with limited functionality');
+        }
+
+        // Call onReady when everything is initialized
+        onReady?.();
+      } catch (error) {
+        console.error('Error during initialization:', error);
+        // Still call onReady even if there's an error, so we don't get stuck on splash screen
+        onReady?.();
       }
     };
 
     initializeApp();
-  }, []);
+  }, [onReady]);
 
   const [isInputFocused, setIsInputFocused] = useState(false);
 
@@ -2086,6 +2163,59 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
   // Add a flag to prevent overlapping pose uploads
   let poseUploadInProgress = false;
 
+  const BatteryIndicator = () => {
+    const [powerStatus, setPowerStatus] = useState<any>(null);
+
+    useEffect(() => {
+      const updatePowerStatus = async () => {
+        try {
+          const status = await NativeModules.SlamtecUtils.getPowerStatus();
+          setPowerStatus(status);
+        } catch (error) {
+          console.error('Error getting power status:', error);
+        }
+      };
+
+      // Update immediately
+      updatePowerStatus();
+
+      // Set up interval to update every 30 seconds
+      const interval = setInterval(updatePowerStatus, 30000);
+
+      return () => clearInterval(interval);
+    }, []);
+
+    if (!powerStatus) return null;
+
+    return (
+      <View style={styles.batteryContainer}>
+        <View style={[
+          styles.batteryIndicator,
+          powerStatus.batteryPercentage <= 20 ? styles.batteryLow :
+          powerStatus.batteryPercentage <= 50 ? styles.batteryMedium :
+          styles.batteryHigh
+        ]}>
+          <Text style={styles.batteryText}>{Math.round(powerStatus.batteryPercentage)}%</Text>
+        </View>
+      </View>
+    );
+  };
+
+  useEffect(() => {
+    const initialize = async () => {
+      try {
+        // ... existing initialization code ...
+
+        // Call onReady when everything is initialized
+        onReady?.();
+      } catch (error) {
+        console.error('Error during initialization:', error);
+      }
+    };
+
+    initialize();
+  }, [onReady]);
+
   return (
     <SafeAreaView 
       style={styles.container}
@@ -2120,21 +2250,24 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
           resizeMode="contain"
         />
         
-        <TouchableOpacity 
-          style={styles.configButton}
-          onPress={undefined}
-          onLongPress={() => {
-            // Clear inactivity timer when config screen is opened
-            clearInactivityTimer();
-            LogUtils.writeDebugToFile('Config screen opened, cleared inactivity timer');
-            // Set flag that we're navigating to config
-            navigatingToConfig = true;
-            onConfigPress();
-          }}
-          delayLongPress={3000}
-        >
-          {/* Config button is now invisible but still functional with long press */}
-        </TouchableOpacity>
+        <View style={styles.headerRight}>
+          <BatteryIndicator />
+          <TouchableOpacity 
+            style={styles.configButton}
+            onPress={undefined}
+            onLongPress={() => {
+              // Clear inactivity timer when config screen is opened
+              clearInactivityTimer();
+              LogUtils.writeDebugToFile('Config screen opened, cleared inactivity timer');
+              // Set flag that we're navigating to config
+              navigatingToConfig = true;
+              onReady?.();
+            }}
+            delayLongPress={3000}
+          >
+            {/* Config button is now invisible but still functional with long press */}
+          </TouchableOpacity>
+        </View>
       </View>
       
       {renderContent()}
@@ -2404,6 +2537,41 @@ const styles = StyleSheet.create({
     color: '#555',
     textAlign: 'center',
     marginVertical: 16,
+    fontFamily: 'DM Sans',
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  batteryContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 8,
+    padding: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  batteryIndicator: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  batteryHigh: {
+    backgroundColor: '#4CAF50',
+  },
+  batteryMedium: {
+    backgroundColor: '#FFC107',
+  },
+  batteryLow: {
+    backgroundColor: '#F44336',
+  },
+  batteryText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: 'bold',
     fontFamily: 'DM Sans',
   },
 });

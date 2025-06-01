@@ -1,49 +1,48 @@
-2025-05-31T04:37:57.991Z: === New Debug Session Started ===
-2025-05-31T04:37:58.000Z: App Version: unknown
-2025-05-31T04:37:58.006Z: Starting app initialization...
-[2025-05-31 12:37:58.033] Using existing stored device ID: padbot-b44bd65d7d6d
-[2025-05-31 12:37:58.038] Device identifiers retrieved: deviceId=padbot-b44bd65d7d6d, macAddress=b44bd65d7d6d
-2025-05-31T04:37:58.043Z: Device identifiers initialized: deviceId=padbot-b44bd65d7d6d, macAddress=b44bd65d7d6d
-2025-05-31T04:37:58.049Z: Attempting authentication...
-2025-05-31T04:37:58.064Z: Authentication attempt 1/3
-2025-05-31T04:38:00.610Z: Authentication successful
-2025-05-31T04:38:00.619Z: Checking for existing robot pose data ID...
-[2025-05-31 12:38:00.621] Authentication successful, initiating map download...
-[2025-05-31 12:38:00.631] Starting downloadMapAfterAuth process
-[2025-05-31 12:38:00.632] Getting robot pose data ID
-[2025-05-31 12:38:00.647] Using existing stored device ID: padbot-b44bd65d7d6d
-[2025-05-31 12:38:00.647] Using map endpoint: https://dsc.dev.aukiverse.com/spatial/crosssection
-[2025-05-31 12:38:00.655] Checking for existing pose data with deviceId: padbot-b44bd65d7d6d
-[2025-05-31 12:38:00.659] Sending map request: {"domainId":"8093f9bf-c374-4162-ab74-ab61949627f1","domainServerUrl":"https:\/\/domain-server-us-east-1.aukiverse.com","height":0.1,"fileType":"stcm","pixelsPerMeter":20}
-[2025-05-31 12:38:00.669] Fetching data from: https://domain-server-us-east-1.aukiverse.com/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/data?name=padbot-b44bd65d7d6d&data_type=reported_pose_json
-[2025-05-31 12:38:00.681] Executing map download request
-[2025-05-31 12:38:01.737] Get response: {"data":[{"id":"195809dd-6e7e-4f1e-a20c-be15e8d31a0e","domain_id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"padbot-b44bd65d7d6d","data_type":"reported_pose_json","size":273,"created_at":"2025-05-29T10:19:56.182438Z","updated_at":"2025-05-31T04:37:22.133513Z"}]}
-[2025-05-31 12:38:01.741] Found existing pose data with ID: 195809dd-6e7e-4f1e-a20c-be15e8d31a0e
-2025-05-31T04:38:01.744Z: Found existing robot pose data ID: 195809dd-6e7e-4f1e-a20c-be15e8d31a0e
-2025-05-31T04:38:01.751Z: Updating map...
-2025-05-31T04:38:01.772Z: Authentication successful - map download was triggered during authentication
-[2025-05-31 12:38:02.867] Response content type: multipart/form-data; boundary=----6139338077208211699603283562
-[2025-05-31 12:38:03.044] Processing multipart/form-data response
-[2025-05-31 12:38:03.052] Found boundary: ------6139338077208211699603283562
-[2025-05-31 12:38:03.079] Split response into 4 parts
-[2025-05-31 12:38:03.087] Found img part in multipart response
-[2025-05-31 12:38:03.099] Extracted base64 data of length: 459868
-[2025-05-31 12:38:03.119] Successfully decoded 459868 bytes of base64 data to 344901 bytes of binary STCM data
-[2025-05-31 12:38:03.127] STCM map saved to: /storage/emulated/0/Download/GoTu/map.stcm
-[2025-05-31 12:38:03.132] Using SLAM API base URL: http://127.0.0.1:1448
-[2025-05-31 12:38:03.135] Clearing old POIs and map data
-[2025-05-31 12:38:03.142] Clear POIs response code: 200
-[2025-05-31 12:38:03.349] Clear map response code: 200
-[2025-05-31 12:38:03.368] Uploading new map: /storage/emulated/0/Download/GoTu/map.stcm
-[2025-05-31 12:38:03.392] Uploaded 344901 bytes
-[2025-05-31 12:38:04.240] Upload map response code: 200
-[2025-05-31 12:38:04.242] Found homedock_qr_id: 2ZWHV5L6I04, getting pose data
-[2025-05-31 12:38:04.246] Getting pose data for QR ID: 2ZWHV5L6I04
-[2025-05-31 12:38:04.253] Fetching lighthouse data for QR ID: 2ZWHV5L6I04 from domain server: https://domain-server-us-east-1.aukiverse.com
-2025-05-31T04:38:04.801Z: Map update complete
-[2025-05-31 12:38:04.813] Get lighthouses response code: 200
-2025-05-31T04:38:04.811Z: Validating waypoints...
-2025-05-31T04:38:04.843Z: Patrol Points Configuration: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"point1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"point2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"point3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"point4"}]
+2025-05-31T23:58:03.237Z: === New Debug Session Started ===
+2025-05-31T23:58:03.244Z: App Version: unknown
+2025-05-31T23:58:03.251Z: Starting app initialization...
+[2025-06-01 07:58:03.287] Using existing stored device ID: padbot-b44bd65d7d6d
+[2025-06-01 07:58:03.292] Device identifiers retrieved: deviceId=padbot-b44bd65d7d6d, macAddress=b44bd65d7d6d
+2025-05-31T23:58:03.297Z: Device identifiers initialized: deviceId=padbot-b44bd65d7d6d, macAddress=b44bd65d7d6d
+2025-05-31T23:58:03.304Z: Attempting authentication...
+2025-05-31T23:58:03.314Z: Authentication attempt 1/3
+[2025-06-01 07:58:05.812] Authentication successful, initiating map download...
+2025-05-31T23:58:05.805Z: Authentication successful
+2025-05-31T23:58:05.821Z: Checking for existing robot pose data ID...
+[2025-06-01 07:58:05.827] Starting downloadMapAfterAuth process
+[2025-06-01 07:58:05.834] Using map endpoint: https://dsc.dev.aukiverse.com/spatial/crosssection
+[2025-06-01 07:58:05.842] Sending map request: {"domainId":"8093f9bf-c374-4162-ab74-ab61949627f1","domainServerUrl":"https:\/\/domain-server-us-east-1.aukiverse.com","height":0.1,"fileType":"stcm","pixelsPerMeter":20}
+[2025-06-01 07:58:05.834] Getting robot pose data ID
+[2025-06-01 07:58:05.849] Using existing stored device ID: padbot-b44bd65d7d6d
+[2025-06-01 07:58:05.853] Executing map download request
+[2025-06-01 07:58:05.856] Checking for existing pose data with deviceId: padbot-b44bd65d7d6d
+[2025-06-01 07:58:05.860] Fetching data from: https://domain-server-us-east-1.aukiverse.com/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/data?name=padbot-b44bd65d7d6d&data_type=reported_pose_json
+[2025-06-01 07:58:06.799] Get response: {"data":[{"id":"195809dd-6e7e-4f1e-a20c-be15e8d31a0e","domain_id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"padbot-b44bd65d7d6d","data_type":"reported_pose_json","size":272,"created_at":"2025-05-29T10:19:56.182438Z","updated_at":"2025-05-31T10:53:00.245652Z"}]}
+[2025-06-01 07:58:06.813] Found existing pose data with ID: 195809dd-6e7e-4f1e-a20c-be15e8d31a0e
+2025-05-31T23:58:06.817Z: Found existing robot pose data ID: 195809dd-6e7e-4f1e-a20c-be15e8d31a0e
+2025-05-31T23:58:06.823Z: Updating map...
+2025-05-31T23:58:06.842Z: Authentication successful - map download was triggered during authentication
+[2025-06-01 07:58:08.179] Response content type: multipart/form-data; boundary=----8165032981505731233185767421
+[2025-06-01 07:58:08.428] Processing multipart/form-data response
+[2025-06-01 07:58:08.435] Found boundary: ------8165032981505731233185767421
+[2025-06-01 07:58:08.450] Split response into 4 parts
+[2025-06-01 07:58:08.457] Found img part in multipart response
+[2025-06-01 07:58:08.481] Extracted base64 data of length: 459868
+[2025-06-01 07:58:08.514] Successfully decoded 459868 bytes of base64 data to 344901 bytes of binary STCM data
+[2025-06-01 07:58:08.521] STCM map saved to: /storage/emulated/0/Download/GoTu/map.stcm
+[2025-06-01 07:58:08.524] Using SLAM API base URL: http://127.0.0.1:1448
+[2025-06-01 07:58:08.528] Clearing old POIs and map data
+[2025-06-01 07:58:08.536] Clear POIs response code: 200
+[2025-06-01 07:58:08.807] Clear map response code: 200
+[2025-06-01 07:58:08.813] Uploading new map: /storage/emulated/0/Download/GoTu/map.stcm
+[2025-06-01 07:58:08.829] Uploaded 344901 bytes
+[2025-06-01 07:58:09.695] Upload map response code: 200
+[2025-06-01 07:58:09.697] Found homedock_qr_id: 2ZWHV5L6I04, getting pose data
+[2025-06-01 07:58:09.702] Getting pose data for QR ID: 2ZWHV5L6I04
+[2025-06-01 07:58:09.707] Fetching lighthouse data for QR ID: 2ZWHV5L6I04 from domain server: https://domain-server-us-east-1.aukiverse.com
+2025-05-31T23:58:09.867Z: Map update complete
+2025-05-31T23:58:09.876Z: Validating waypoints...
+2025-05-31T23:58:09.901Z: Patrol Points Configuration: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"point1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"point2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"point3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"point4"}]
 Starting POI initialization...
 About to get ReactApplicationContext...
 Got ReactApplicationContext: not null
@@ -61,36 +60,37 @@ Successfully got patrol_points array with 4 points
 Parsed patrol points JSON: [{"name":"point1","x":-1.14,"y":2.21,"yaw":3.14},{"name":"point2","x":-6.11,"y":2.35,"yaw":-1.57},{"name":"point3","x":-6.08,"y":0.05,"yaw":0},{"name":"point4","x":-1.03,"y":0.01,"yaw":1.57}]
 Creating POI 'point1' at [-1.14, 2.21, 3.14]
 Creating POI 'point1' at [-1.14, 2.21, 3.14]
-[2025-05-31 12:38:04.955] Found 'poses' field with 80 items
-POI request body: {"id":"e7e3d36b-853d-493c-9b68-12b5fbada80f","pose":{"x":-1.14,"y":2.21,"yaw":3.14},"metadata":{"display_name":"point1","type":"","group":""}}
-[2025-05-31 12:38:04.960] Found matching lighthouse with short_id: 2ZWHV5L6I04
+POI request body: {"id":"4b0faed0-3a7c-46fc-99d2-6e89fde416a0","pose":{"x":-1.14,"y":2.21,"yaw":3.14},"metadata":{"display_name":"point1","type":"","group":""}}
 ERROR: Error creating POI: null
-[2025-05-31 12:38:04.963] Transformed coordinates: Original (px=0.12365669757127762, py=0.0, pz=-1.9286682605743408) -> Transformed (px=0.12365669757127762, py=1.9286682605743408, pz=0.0)
 Creating POI 'point2' at [-6.11, 2.35, -1.57]
-[2025-05-31 12:38:04.965] Converted quaternion (rx=-0.7070834125222052, ry=0.005742730586745238, rz=0.0057427317661111555, rw=0.7070835097873683) -> yaw=3.14
 Creating POI 'point2' at [-6.11, 2.35, -1.57]
-[2025-05-31 12:38:04.968] Saved homedock data to preferences: x=0.12365669757127762, y=1.9286682605743408, z=0.0, yaw=3.14
-POI request body: {"id":"d5c571b4-20e4-4679-ad2d-e52e1460577b","pose":{"x":-6.11,"y":2.35,"yaw":-1.57},"metadata":{"display_name":"point2","type":"","group":""}}
-[2025-05-31 12:38:04.971] Setting home dock from QR data: x=0.12365669757127762, y=1.9286682605743408, z=0.0, yaw=3.14
+POI request body: {"id":"015b8b41-1789-41e9-b344-393cd1cb05cf","pose":{"x":-6.11,"y":2.35,"yaw":-1.57},"metadata":{"display_name":"point2","type":"","group":""}}
 ERROR: Error creating POI: null
-[2025-05-31 12:38:04.980] Clear home docks response code: 200
 Creating POI 'point3' at [-6.08, 0.05, 0.00]
 Creating POI 'point3' at [-6.08, 0.05, 0.00]
-POI request body: {"id":"74585477-2859-4884-b86d-0a3947a011e5","pose":{"x":-6.08,"y":0.05,"yaw":0},"metadata":{"display_name":"point3","type":"","group":""}}
-[2025-05-31 12:38:04.991] Set home dock response code: 200
+POI request body: {"id":"187c7b24-4ed2-40c2-bd50-133dca482cad","pose":{"x":-6.08,"y":0.05,"yaw":0},"metadata":{"display_name":"point3","type":"","group":""}}
 ERROR: Error creating POI: null
-[2025-05-31 12:38:04.993] Setting robot pose from QR data: x=-0.07634304877423029, y=1.9286682605743408, z=3.185305832973657E-4, yaw=3.14
 Creating POI 'point4' at [-1.03, 0.01, 1.57]
-[2025-05-31 12:38:05.001] Set pose response code: 200
 Creating POI 'point4' at [-1.03, 0.01, 1.57]
-POI request body: {"id":"e9f07606-a150-429a-9cf2-26df510f7aea","pose":{"x":-1.03,"y":0.01,"yaw":1.57},"metadata":{"display_name":"point4","type":"","group":""}}
-[2025-05-31 12:38:05.005] Saving persistent map
+POI request body: {"id":"1ec6e800-9f40-4f16-991c-9351a2d2fa76","pose":{"x":-1.03,"y":0.01,"yaw":1.57},"metadata":{"display_name":"point4","type":"","group":""}}
 ERROR: Error creating POI: null
 POI initialization complete
-2025-05-31T04:38:05.018Z: Initial POIs fetch: []
-2025-05-31T04:38:05.027Z: No POIs found, waiting for initialization...
-[2025-05-31 12:38:05.032] Save persistent map response code: 200
-[2025-05-31 12:38:05.036] Map processing completed successfully
+2025-05-31T23:58:10.065Z: Initial POIs fetch: []
+2025-05-31T23:58:10.078Z: No POIs found, waiting for initialization...
+[2025-06-01 07:58:10.198] Get lighthouses response code: 200
+[2025-06-01 07:58:10.440] Found 'poses' field with 80 items
+[2025-06-01 07:58:10.446] Found matching lighthouse with short_id: 2ZWHV5L6I04
+[2025-06-01 07:58:10.450] Transformed coordinates: Original (px=0.12365669757127762, py=0.0, pz=-1.9286682605743408) -> Transformed (px=0.12365669757127762, py=1.9286682605743408, pz=0.0)
+[2025-06-01 07:58:10.454] Converted quaternion (rx=-0.7070834125222052, ry=0.005742730586745238, rz=0.0057427317661111555, rw=0.7070835097873683) -> yaw=3.14
+[2025-06-01 07:58:10.460] Saved homedock data to preferences: x=0.12365669757127762, y=1.9286682605743408, z=0.0, yaw=3.14
+[2025-06-01 07:58:10.466] Setting home dock from QR data: x=0.12365669757127762, y=1.9286682605743408, z=0.0, yaw=3.14
+[2025-06-01 07:58:10.476] Clear home docks response code: 200
+[2025-06-01 07:58:10.495] Set home dock response code: 200
+[2025-06-01 07:58:10.499] Setting robot pose from QR data: x=-0.07634304877423029, y=1.9286682605743408, z=3.185305832973657E-4, yaw=3.14
+[2025-06-01 07:58:10.512] Set pose response code: 200
+[2025-06-01 07:58:10.514] Saving persistent map
+[2025-06-01 07:58:10.556] Save persistent map response code: 200
+[2025-06-01 07:58:10.559] Map processing completed successfully
 Starting POI initialization...
 About to get ReactApplicationContext...
 Got ReactApplicationContext: not null
@@ -108,26 +108,26 @@ Successfully got patrol_points array with 4 points
 Parsed patrol points JSON: [{"name":"point1","x":-1.14,"y":2.21,"yaw":3.14},{"name":"point2","x":-6.11,"y":2.35,"yaw":-1.57},{"name":"point3","x":-6.08,"y":0.05,"yaw":0},{"name":"point4","x":-1.03,"y":0.01,"yaw":1.57}]
 Creating POI 'point1' at [-1.14, 2.21, 3.14]
 Creating POI 'point1' at [-1.14, 2.21, 3.14]
-POI request body: {"id":"0d967f52-a509-48c8-b06b-b2e74dc7e106","pose":{"x":-1.14,"y":2.21,"yaw":3.14},"metadata":{"display_name":"point1","type":"","group":""}}
+POI request body: {"id":"c0eb7ccf-f845-460c-b7c1-7bfcbb01d201","pose":{"x":-1.14,"y":2.21,"yaw":3.14},"metadata":{"display_name":"point1","type":"","group":""}}
 ERROR: Error creating POI: null
 Creating POI 'point2' at [-6.11, 2.35, -1.57]
 Creating POI 'point2' at [-6.11, 2.35, -1.57]
-POI request body: {"id":"4722dcf5-c032-47bf-bf23-fe727a2936b8","pose":{"x":-6.11,"y":2.35,"yaw":-1.57},"metadata":{"display_name":"point2","type":"","group":""}}
+POI request body: {"id":"099b80ad-32c8-424c-bcc7-2c5bdc1e172b","pose":{"x":-6.11,"y":2.35,"yaw":-1.57},"metadata":{"display_name":"point2","type":"","group":""}}
 ERROR: Error creating POI: null
 Creating POI 'point3' at [-6.08, 0.05, 0.00]
 Creating POI 'point3' at [-6.08, 0.05, 0.00]
-POI request body: {"id":"249657bd-0d58-4f47-87cf-9786e9c8d1d5","pose":{"x":-6.08,"y":0.05,"yaw":0},"metadata":{"display_name":"point3","type":"","group":""}}
+POI request body: {"id":"beb2c6f1-73d8-460f-bb78-b1fadcf3feb8","pose":{"x":-6.08,"y":0.05,"yaw":0},"metadata":{"display_name":"point3","type":"","group":""}}
 ERROR: Error creating POI: null
 Creating POI 'point4' at [-1.03, 0.01, 1.57]
 Creating POI 'point4' at [-1.03, 0.01, 1.57]
-POI request body: {"id":"d4f5716d-7e4a-498a-bd97-0c5928dbba8e","pose":{"x":-1.03,"y":0.01,"yaw":1.57},"metadata":{"display_name":"point4","type":"","group":""}}
+POI request body: {"id":"8a083d38-05b4-4d04-9464-53253ed8efb0","pose":{"x":-1.03,"y":0.01,"yaw":1.57},"metadata":{"display_name":"point4","type":"","group":""}}
 ERROR: Error creating POI: null
 POI initialization complete
-2025-05-31T04:38:07.193Z: POIs after initialization: []
-2025-05-31T04:38:07.197Z: Found POI names: []
-2025-05-31T04:38:07.201Z: Valid POI names: []
-2025-05-31T04:38:07.205Z: POI validation error: Missing waypoints: point1, point2, point3, point4
-2025-05-31T04:38:07.208Z: Clearing and reinitializing POIs...
+2025-05-31T23:58:12.247Z: POIs after initialization: []
+2025-05-31T23:58:12.252Z: Found POI names: []
+2025-05-31T23:58:12.258Z: Valid POI names: []
+2025-05-31T23:58:12.261Z: POI validation error: Missing waypoints: point1, point2, point3, point4
+2025-05-31T23:58:12.267Z: Clearing and reinitializing POIs...
 Starting POI initialization...
 About to get ReactApplicationContext...
 Got ReactApplicationContext: not null
@@ -145,59 +145,68 @@ Successfully got patrol_points array with 4 points
 Parsed patrol points JSON: [{"name":"point1","x":-1.14,"y":2.21,"yaw":3.14},{"name":"point2","x":-6.11,"y":2.35,"yaw":-1.57},{"name":"point3","x":-6.08,"y":0.05,"yaw":0},{"name":"point4","x":-1.03,"y":0.01,"yaw":1.57}]
 Creating POI 'point1' at [-1.14, 2.21, 3.14]
 Creating POI 'point1' at [-1.14, 2.21, 3.14]
-POI request body: {"id":"11c6a46e-f8a4-4c5f-8295-55d7fa086529","pose":{"x":-1.14,"y":2.21,"yaw":3.14},"metadata":{"display_name":"point1","type":"","group":""}}
+POI request body: {"id":"bf80af2e-14eb-4782-bfd1-1ca1d80a77ed","pose":{"x":-1.14,"y":2.21,"yaw":3.14},"metadata":{"display_name":"point1","type":"","group":""}}
 Successfully created POI: point1 (response code: 200)
 Creating POI 'point2' at [-6.11, 2.35, -1.57]
 Creating POI 'point2' at [-6.11, 2.35, -1.57]
-POI request body: {"id":"2ed7a77f-c9a7-40b7-9a61-ee6a0766d7c4","pose":{"x":-6.11,"y":2.35,"yaw":-1.57},"metadata":{"display_name":"point2","type":"","group":""}}
+POI request body: {"id":"13e73c91-cc9e-40af-8c66-47d7c72a0257","pose":{"x":-6.11,"y":2.35,"yaw":-1.57},"metadata":{"display_name":"point2","type":"","group":""}}
 Successfully created POI: point2 (response code: 200)
 Creating POI 'point3' at [-6.08, 0.05, 0.00]
 Creating POI 'point3' at [-6.08, 0.05, 0.00]
-POI request body: {"id":"26f5994c-e3c5-49db-afac-5e4ae754d03f","pose":{"x":-6.08,"y":0.05,"yaw":0},"metadata":{"display_name":"point3","type":"","group":""}}
+POI request body: {"id":"c64e2a39-4753-4301-a78a-b2860d1864f7","pose":{"x":-6.08,"y":0.05,"yaw":0},"metadata":{"display_name":"point3","type":"","group":""}}
 Successfully created POI: point3 (response code: 200)
 Creating POI 'point4' at [-1.03, 0.01, 1.57]
 Creating POI 'point4' at [-1.03, 0.01, 1.57]
-POI request body: {"id":"7f6030e3-f992-4c32-a783-3d838c359fa9","pose":{"x":-1.03,"y":0.01,"yaw":1.57},"metadata":{"display_name":"point4","type":"","group":""}}
+POI request body: {"id":"25a7edb7-4316-4c34-b55a-889fafa44e26","pose":{"x":-1.03,"y":0.01,"yaw":1.57},"metadata":{"display_name":"point4","type":"","group":""}}
 Successfully created POI: point4 (response code: 200)
 POI initialization complete
-2025-05-31T04:38:07.367Z: POIs have been reset and reinitialized
-2025-05-31T04:38:07.381Z: POIs after reset: [{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"point1"},"id":"11c6a46e-f8a4-4c5f-8295-55d7fa086529"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"point3"},"id":"26f5994c-e3c5-49db-afac-5e4ae754d03f"},{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"point2"},"id":"2ed7a77f-c9a7-40b7-9a61-ee6a0766d7c4"},{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"point4"},"id":"7f6030e3-f992-4c32-a783-3d838c359fa9"}]
-2025-05-31T04:38:07.387Z: Loading Gotu items...
-2025-05-31T04:38:08.261Z: Loaded 41 items
-2025-05-31T04:38:09.281Z: Initialization complete, transitioning to main screen...
-2025-05-31T04:38:10.049Z: Starting battery monitoring...
-2025-05-31T04:38:10.050Z: Patrol state changed to: inactive
-2025-05-31T04:38:10.051Z: MainScreen mounted. Promotion state: active=false, cancelled=false, currentPointIndex=0, remountFromConfig=false
-2025-05-31T04:38:10.084Z: Performing initial token validation
-2025-05-31T04:38:10.085Z: Polling for robot call data...
-2025-05-31T04:38:10.085Z: Started robot call polling
-2025-05-31T04:38:10.086Z: Navigation state changed to: IDLE
-2025-05-31T04:38:10.086Z: Navigation status updated to: IDLE
-2025-05-31T04:38:10.086Z: Performing initial health check in MainScreen...
-2025-05-31T04:38:10.087Z: [POSE POLLING] Wait-for-completion polling stopped
-2025-05-31T04:38:10.088Z: Performing initial health check in MainScreen...
-2025-05-31T04:38:10.090Z: Battery monitoring initialized successfully
-2025-05-31T04:38:10.090Z: validateToken called (force=true)
-2025-05-31T04:38:10.091Z: Proactively validating authentication token
-2025-05-31T04:38:10.157Z: [POSE POLLING] Wait-for-completion polling stopped
-2025-05-31T04:38:10.158Z: [POSE POLLING] Wait-for-completion polling started
-2025-05-31T04:38:10.159Z: Loaded patrol points: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"point1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"point2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"point3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"point4"}]
-2025-05-31T04:38:10.162Z: [BATTERY] Battery status update event received
-2025-05-31T04:38:10.175Z: Polling stopped in IDLE state
-[2025-05-31 12:38:10.199] Starting token validation...
-2025-05-31T04:38:10.182Z: [POSE POLLING] Wait-for-completion polling stopped
-[2025-05-31 12:38:10.203] Domain info from storage: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","created_at":"2024-02-02T00:35:47.24977Z","updated_at":"2025-05-02T06:00:55.444308Z","claimed_by_kazm_id":null,"owner_wallet_address":"","access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsiZG9tYWluOnJ3Il0sImRvbWFpbl9pZCI6IjgwOTNmOWJmLWMzNzQtNDE2Mi1hYjc0LWFiNjE5NDk2MjdmMSIsIm9yZyI6ImNiYWM0MGVmLTc0NTItNDA4ZS04MTdiLWFmZDRlOTEzYWQwYyIsInR5cGUiOiJ1c2VyLWFjY2VzcyIsImlzcyI6ImRkcyIsInN1YiI6IjNlMDNlMjk4LWY0NzEtNDk4Ni05YjEwLTgzOTlmMzUzMDYyMCIsImF1ZCI6WyJkZHMiLCJodHRwczovL2RvbWFpbi1zZXJ2ZXItdXMtZWFzdC0xLmF1a2l2ZXJzZS5jb20iXSwiZXhwIjoxNzQ4NjY5ODgwLCJpYXQiOjE3NDg2NjYyODB9.a63yEziG0ljnvxuFzox7dnqN5NogTyQ8gp8-2n5y7qdiYBssX2lX8QNtNmzqAqT05jW4-9qkjtVxLCT_TZ-UmQ","domain_server":{"id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","organization_id":"00000000-0000-0000-0000-000000000001","name":"node-c1349ff69a9f4d46a6b","url":"https://domain-server-us-east-1.aukiverse.com","version":"v0.5.37","status":"online","created_at":"2024-01-18T09:08:31.358792Z","updated_at":"2025-05-26T09:17:22.865415Z","redirect_url":null,"mode":"public","variants":["auki"],"description":"","staking_status":"Staked","ip":"52.45.94.183","latitude":37.751,"longitude":-97.822,"asn":16509,"h3_cell_index":"8226e7fffffffff","cloud_region":""}}
-2025-05-31T04:38:10.203Z: [POSE POLLING] Auto-stopped polling - not in NAVIGATING/PATROL state
-[2025-05-31 12:38:10.208] Re-authenticating with email: phil+aukilabs@aukilabs.com, domainId: 8093f9bf-c374-4162-ab74-ab61949627f1
-[2025-05-31 12:38:10.215] Posemesh user login URL: https://api.auki.network/user/login
-2025-05-31T04:38:10.306Z: Initial health check response: {
+2025-05-31T23:58:12.419Z: POIs have been reset and reinitialized
+2025-05-31T23:58:12.432Z: POIs after reset: [{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"point2"},"id":"13e73c91-cc9e-40af-8c66-47d7c72a0257"},{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"point4"},"id":"25a7edb7-4316-4c34-b55a-889fafa44e26"},{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"point1"},"id":"bf80af2e-14eb-4782-bfd1-1ca1d80a77ed"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"point3"},"id":"c64e2a39-4753-4301-a78a-b2860d1864f7"}]
+2025-05-31T23:58:12.438Z: Loading Gotu items...
+2025-05-31T23:58:13.457Z: Loaded 41 items
+2025-05-31T23:58:14.472Z: Initialization complete, transitioning to main screen...
+2025-05-31T23:58:15.237Z: Starting battery monitoring...
+2025-05-31T23:58:15.237Z: Patrol state changed to: inactive
+2025-05-31T23:58:15.239Z: MainScreen mounted. Promotion state: active=false, cancelled=false, currentPointIndex=0, remountFromConfig=false
+2025-05-31T23:58:15.272Z: Performing initial token validation
+2025-05-31T23:58:15.273Z: Polling for robot call data...
+2025-05-31T23:58:15.274Z: Started robot call polling
+2025-05-31T23:58:15.274Z: Navigation state changed to: IDLE
+2025-05-31T23:58:15.275Z: Navigation status updated to: IDLE
+2025-05-31T23:58:15.275Z: Performing initial health check in MainScreen...
+2025-05-31T23:58:15.276Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-05-31T23:58:15.276Z: Performing initial health check in MainScreen...
+2025-05-31T23:58:15.277Z: Battery monitoring initialized successfully
+2025-05-31T23:58:15.278Z: validateToken called (force=true)
+2025-05-31T23:58:15.278Z: Proactively validating authentication token
+2025-05-31T23:58:15.348Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-05-31T23:58:15.348Z: [POSE POLLING] Wait-for-completion polling started
+2025-05-31T23:58:15.349Z: Loaded patrol points: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"point1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"point2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"point3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"point4"}]
+2025-05-31T23:58:15.350Z: [BATTERY] Battery status update event received
+[2025-06-01 07:58:15.375] Starting token validation...
+2025-05-31T23:58:15.356Z: Polling stopped in IDLE state
+[2025-06-01 07:58:15.380] Domain info from storage: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","created_at":"2024-02-02T00:35:47.24977Z","updated_at":"2025-05-02T06:00:55.444308Z","claimed_by_kazm_id":null,"owner_wallet_address":"","access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsiZG9tYWluOnJ3Il0sImRvbWFpbl9pZCI6IjgwOTNmOWJmLWMzNzQtNDE2Mi1hYjc0LWFiNjE5NDk2MjdmMSIsIm9yZyI6ImNiYWM0MGVmLTc0NTItNDA4ZS04MTdiLWFmZDRlOTEzYWQwYyIsInR5cGUiOiJ1c2VyLWFjY2VzcyIsImlzcyI6ImRkcyIsInN1YiI6IjNlMDNlMjk4LWY0NzEtNDk4Ni05YjEwLTgzOTlmMzUzMDYyMCIsImF1ZCI6WyJkZHMiLCJodHRwczovL2RvbWFpbi1zZXJ2ZXItdXMtZWFzdC0xLmF1a2l2ZXJzZS5jb20iXSwiZXhwIjoxNzQ4NzM5NDg1LCJpYXQiOjE3NDg3MzU4ODV9.F5hWmJV0noUCRAxYAVzIq_gH0IKdNUbwhMH4jKPmjg1fANKj_ev1K-FJrriTpnGOQ388iAK0Xwwf9biScDxROg","domain_server":{"id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","organization_id":"00000000-0000-0000-0000-000000000001","name":"node-c1349ff69a9f4d46a6b","url":"https://domain-server-us-east-1.aukiverse.com","version":"v0.5.37","status":"online","created_at":"2024-01-18T09:08:31.358792Z","updated_at":"2025-05-26T09:17:22.865415Z","redirect_url":null,"mode":"public","variants":["auki"],"description":"","staking_status":"Staked","ip":"52.45.94.183","latitude":37.751,"longitude":-97.822,"asn":16509,"h3_cell_index":"8226e7fffffffff","cloud_region":""}}
+2025-05-31T23:58:15.362Z: [POSE POLLING] Wait-for-completion polling stopped
+[2025-06-01 07:58:15.389] Re-authenticating with email: phil+aukilabs@aukilabs.com, domainId: 8093f9bf-c374-4162-ab74-ab61949627f1
+2025-05-31T23:58:15.383Z: [POSE POLLING] Auto-stopped polling - not in NAVIGATING/PATROL state
+[2025-06-01 07:58:15.395] Posemesh user login URL: https://api.auki.network/user/login
+2025-05-31T23:58:15.518Z: Initial health check response: {
   "deviceFound": true,
   "status": "Robot health check successful",
   "slamApiAvailable": true,
   "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
   "responseCode": 200
 }
-2025-05-31T04:38:10.307Z: Parsed health check response: {
+2025-05-31T23:58:15.519Z: validateToken called (force=false)
+2025-05-31T23:58:15.520Z: Token validation already in progress, skipping
+2025-05-31T23:58:15.522Z: Initial health check response: {
+  "deviceFound": true,
+  "status": "Robot health check successful",
+  "slamApiAvailable": true,
+  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
+  "responseCode": 200
+}
+2025-05-31T23:58:15.524Z: Parsed health check response: {
   "baseError": [],
   "hasDepthCameraDisconnected": false,
   "hasError": false,
@@ -207,50 +216,185 @@ POI initialization complete
   "hasSystemEmergencyStop": false,
   "hasWarning": false
 }
-2025-05-31T04:38:10.307Z: Initial health check successful
-2025-05-31T04:38:10.308Z: Initial health check response: {
-  "deviceFound": true,
-  "status": "Robot health check successful",
-  "slamApiAvailable": true,
-  "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
-  "responseCode": 200
-}
-2025-05-31T04:38:10.308Z: validateToken called (force=false)
-2025-05-31T04:38:10.308Z: Token validation already in progress, skipping
-2025-05-31T04:38:10.466Z: Initial health check successful
-2025-05-31T04:38:10.467Z: Initial POIs fetch: [{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"point1"},"id":"11c6a46e-f8a4-4c5f-8295-55d7fa086529"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"point3"},"id":"26f5994c-e3c5-49db-afac-5e4ae754d03f"},{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"point2"},"id":"2ed7a77f-c9a7-40b7-9a61-ee6a0766d7c4"},{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"point4"},"id":"7f6030e3-f992-4c32-a783-3d838c359fa9"}]
-2025-05-31T04:38:10.468Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":true,"powerStage":"running","dockingStatus":"on_dock","sleepMode":"awake","batteryPercentage":24}
-2025-05-31T04:38:10.481Z: Found POI names: ["point1","point3","point2","point4"]
-2025-05-31T04:38:10.486Z: [BATTERY] Battery level updated to: 24%
-2025-05-31T04:38:10.583Z: Valid POI names: ["point1","point3","point2","point4"]
-2025-05-31T04:38:10.590Z: POI validation successful - all points match config
-2025-05-31T04:38:10.862Z: Inactivity timer clear called, but no timer was running
-2025-05-31T04:38:10.863Z: resetInactivityTimer - promotionActive: false, promotionCancelled: false, isPatrolling: false
-2025-05-31T04:38:10.929Z: Not starting inactivity timer - promotion is inactive or cancelled
-[2025-05-31 12:38:11.007] Posemesh user login response code: 200
-[2025-05-31 12:38:11.024] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDg2Njk4OTAsImlhdC...
-[2025-05-31 12:38:11.035] Posemesh token received (first 10 chars): eyJhbGciOi...
-[2025-05-31 12:38:11.042] DDS authentication URL: https://api.auki.network/service/domains-access-token
-2025-05-31T04:38:11.221Z: [POSE POLLING] Polling loop exited
-2025-05-31T04:38:11.513Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-[2025-05-31 12:38:11.693] DDS authentication response code: 200
-[2025-05-31 12:38:11.702] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4NjY5ODkxLCJpYXQiOjE3NDg2NjYyOTEsImp0aSI6IjJjZjViYzhlLTY3N2EtNGM0Ny1iMTllLTQyODVmYmZkZWU4YSJ9.m8GQMTruXoONFt8M7ZE6bg4e33FGJn1t_TCE5wBtqHl5VYNVcF6UY2-75b7YdVmZ_Azw55ygctdbd6TaR1F5Rw"}
-[2025-05-31 12:38:11.709] DDS token received (first 10 chars): eyJhbGciOi...
-[2025-05-31 12:38:11.718] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
-[2025-05-31 12:38:12.018] Domain authentication response code: 200
-[2025-05-31 12:38:12.026] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
-[2025-05-31 12:38:12.034] Updated domain info after token validation
-[2025-05-31 12:38:12.042] Token validation successful via re-authentication
-2025-05-31T04:38:12.046Z: Token validation successful: {"message":"Token is valid","valid":true}
-2025-05-31T04:38:13.865Z: Inactivity timer clear called, but no timer was running
-2025-05-31T04:38:13.872Z: Config screen opened, cleared inactivity timer
-2025-05-31T04:38:14.036Z: Cleared token validation interval
-2025-05-31T04:38:14.036Z: Cleared token refresh interval
-2025-05-31T04:38:14.037Z: Cleaned up robot call polling
-2025-05-31T04:38:14.037Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-05-31T23:58:15.525Z: Initial health check successful
+2025-05-31T23:58:15.541Z: Initial health check successful
+2025-05-31T23:58:15.727Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":true,"powerStage":"running","dockingStatus":"on_dock","sleepMode":"awake","batteryPercentage":54}
+2025-05-31T23:58:15.728Z: Initial POIs fetch: [{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"point2"},"id":"13e73c91-cc9e-40af-8c66-47d7c72a0257"},{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"point4"},"id":"25a7edb7-4316-4c34-b55a-889fafa44e26"},{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"point1"},"id":"bf80af2e-14eb-4782-bfd1-1ca1d80a77ed"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"point3"},"id":"c64e2a39-4753-4301-a78a-b2860d1864f7"}]
+2025-05-31T23:58:15.733Z: [BATTERY] Battery level updated to: 54%
+2025-05-31T23:58:15.843Z: Found POI names: ["point2","point4","point1","point3"]
+2025-05-31T23:58:15.997Z: Valid POI names: ["point2","point4","point1","point3"]
+2025-05-31T23:58:16.005Z: POI validation successful - all points match config
+[2025-06-01 07:58:16.315] Posemesh user login response code: 200
+[2025-06-01 07:58:16.320] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDg3Mzk0OTYsImlhdC...
+[2025-06-01 07:58:16.327] Posemesh token received (first 10 chars): eyJhbGciOi...
+[2025-06-01 07:58:16.333] DDS authentication URL: https://api.auki.network/service/domains-access-token
+2025-05-31T23:58:16.400Z: [POSE POLLING] Polling loop exited
+2025-05-31T23:58:16.737Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+[2025-06-01 07:58:17.039] DDS authentication response code: 200
+[2025-06-01 07:58:17.045] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4NzM5NDk2LCJpYXQiOjE3NDg3MzU4OTYsImp0aSI6ImUyYTdmODMwLTJkYzEtNDc2ZC05MGJkLWMyMzA1YzNjYTQ0MiJ9._yJZGYkBOHajM0I8y9xswN6ZRC_IR0gHvwsg8GbK5Ybz1PLgiiBRdDhadgvAZxO3H53EbaXXiD9M_w58tTyJJg"}
+[2025-06-01 07:58:17.053] DDS token received (first 10 chars): eyJhbGciOi...
+[2025-06-01 07:58:17.060] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
+[2025-06-01 07:58:17.852] Domain authentication response code: 200
+[2025-06-01 07:58:17.861] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
+[2025-06-01 07:58:17.870] Updated domain info after token validation
+[2025-06-01 07:58:17.875] Token validation successful via re-authentication
+2025-05-31T23:58:17.878Z: Token validation successful: {"message":"Token is valid","valid":true}
+2025-05-31T23:58:20.283Z: Polling for robot call data...
+2025-05-31T23:58:21.463Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T23:58:25.297Z: Polling for robot call data...
+2025-05-31T23:58:26.189Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T23:58:30.316Z: Polling for robot call data...
+2025-05-31T23:58:31.378Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T23:58:35.332Z: Polling for robot call data...
+2025-05-31T23:58:36.692Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T23:58:40.347Z: Polling for robot call data...
+2025-05-31T23:58:40.890Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T23:58:45.366Z: Polling for robot call data...
+2025-05-31T23:58:45.374Z: [BATTERY] Battery status update event received
+2025-05-31T23:58:45.412Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":true,"powerStage":"running","dockingStatus":"on_dock","sleepMode":"awake","batteryPercentage":54}
+2025-05-31T23:58:45.420Z: [BATTERY] Battery level updated to: 54%
+2025-05-31T23:58:46.422Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T23:58:50.387Z: Polling for robot call data...
+2025-05-31T23:58:50.977Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T23:58:55.382Z: Polling for robot call data...
+2025-05-31T23:58:56.281Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T23:59:00.397Z: Polling for robot call data...
+2025-05-31T23:59:01.782Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T23:59:05.414Z: Polling for robot call data...
+2025-05-31T23:59:06.800Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T23:59:10.430Z: Polling for robot call data...
+2025-05-31T23:59:11.405Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T23:59:15.410Z: [BATTERY] Battery status update event received
+2025-05-31T23:59:15.435Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":true,"powerStage":"running","dockingStatus":"on_dock","sleepMode":"awake","batteryPercentage":54}
+2025-05-31T23:59:15.442Z: [BATTERY] Battery level updated to: 54%
+2025-05-31T23:59:15.448Z: Polling for robot call data...
+2025-05-31T23:59:16.733Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T23:59:20.448Z: Polling for robot call data...
+2025-05-31T23:59:21.361Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T23:59:25.464Z: Polling for robot call data...
+2025-05-31T23:59:25.977Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T23:59:30.481Z: Polling for robot call data...
+2025-05-31T23:59:31.684Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T23:59:35.497Z: Polling for robot call data...
+2025-05-31T23:59:35.959Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T23:59:40.514Z: Polling for robot call data...
+2025-05-31T23:59:41.924Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T23:59:45.443Z: [BATTERY] Battery status update event received
+2025-05-31T23:59:45.460Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":true,"powerStage":"running","dockingStatus":"on_dock","sleepMode":"awake","batteryPercentage":55}
+2025-05-31T23:59:45.467Z: [BATTERY] Battery level updated to: 55%
+2025-05-31T23:59:45.650Z: Polling for robot call data...
+2025-05-31T23:59:46.639Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T23:59:50.549Z: Polling for robot call data...
+2025-05-31T23:59:51.881Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-05-31T23:59:55.563Z: Polling for robot call data...
+2025-05-31T23:59:56.977Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:00:00.580Z: Polling for robot call data...
+2025-06-01T00:00:01.176Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:00:05.596Z: Polling for robot call data...
+2025-06-01T00:00:06.953Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:00:10.613Z: Polling for robot call data...
+2025-06-01T00:00:11.952Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:00:15.470Z: [BATTERY] Battery status update event received
+2025-06-01T00:00:15.484Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":true,"powerStage":"running","dockingStatus":"on_dock","sleepMode":"awake","batteryPercentage":56}
+2025-06-01T00:00:15.491Z: [BATTERY] Battery level updated to: 56%
+2025-06-01T00:00:15.650Z: Polling for robot call data...
+2025-06-01T00:00:17.050Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:00:20.647Z: Polling for robot call data...
+2025-06-01T00:00:21.653Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:00:25.663Z: Polling for robot call data...
+2025-06-01T00:00:27.217Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:00:30.678Z: Polling for robot call data...
+2025-06-01T00:00:31.305Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:00:35.695Z: Polling for robot call data...
+2025-06-01T00:00:36.605Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:00:40.712Z: Polling for robot call data...
+2025-06-01T00:00:41.928Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:00:45.486Z: [BATTERY] Battery status update event received
+2025-06-01T00:00:45.504Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":true,"powerStage":"running","dockingStatus":"on_dock","sleepMode":"awake","batteryPercentage":57}
+2025-06-01T00:00:45.509Z: [BATTERY] Battery level updated to: 57%
+2025-06-01T00:00:45.736Z: Polling for robot call data...
+2025-06-01T00:00:47.152Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:00:50.750Z: Polling for robot call data...
+2025-06-01T00:00:51.893Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:00:55.761Z: Polling for robot call data...
+2025-06-01T00:00:56.777Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:01:00.778Z: Polling for robot call data...
+2025-06-01T00:01:02.202Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:01:05.795Z: Polling for robot call data...
+2025-06-01T00:01:07.425Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:01:10.811Z: Polling for robot call data...
+2025-06-01T00:01:12.173Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:01:15.518Z: [BATTERY] Battery status update event received
+2025-06-01T00:01:15.539Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":true,"powerStage":"running","dockingStatus":"on_dock","sleepMode":"awake","batteryPercentage":58}
+2025-06-01T00:01:15.547Z: [BATTERY] Battery level updated to: 58%
+2025-06-01T00:01:15.829Z: Polling for robot call data...
+2025-06-01T00:01:17.254Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:01:20.843Z: Polling for robot call data...
+2025-06-01T00:01:22.479Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:01:25.861Z: Polling for robot call data...
+2025-06-01T00:01:27.296Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:01:30.878Z: Polling for robot call data...
+2025-06-01T00:01:32.017Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:01:35.897Z: Polling for robot call data...
+2025-06-01T00:01:37.019Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:01:40.909Z: Polling for robot call data...
+2025-06-01T00:01:42.344Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:01:45.554Z: [BATTERY] Battery status update event received
+2025-06-01T00:01:45.567Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":true,"powerStage":"running","dockingStatus":"on_dock","sleepMode":"awake","batteryPercentage":58}
+2025-06-01T00:01:45.572Z: [BATTERY] Battery level updated to: 58%
+2025-06-01T00:01:45.926Z: Polling for robot call data...
+2025-06-01T00:01:46.950Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:01:50.942Z: Polling for robot call data...
+2025-06-01T00:01:51.457Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:01:55.962Z: Polling for robot call data...
+2025-06-01T00:01:57.402Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:02:00.978Z: Polling for robot call data...
+2025-06-01T00:02:02.114Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:02:05.991Z: Polling for robot call data...
+2025-06-01T00:02:07.022Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:02:11.012Z: Polling for robot call data...
+2025-06-01T00:02:12.452Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:02:15.590Z: [BATTERY] Battery status update event received
+2025-06-01T00:02:15.605Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":true,"powerStage":"running","dockingStatus":"on_dock","sleepMode":"awake","batteryPercentage":60}
+2025-06-01T00:02:15.613Z: [BATTERY] Battery level updated to: 60%
+2025-06-01T00:02:16.025Z: Polling for robot call data...
+2025-06-01T00:02:17.065Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:02:21.043Z: Polling for robot call data...
+2025-06-01T00:02:22.076Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:02:26.060Z: Polling for robot call data...
+2025-06-01T00:02:27.717Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:02:31.077Z: Polling for robot call data...
+2025-06-01T00:02:32.042Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:02:36.095Z: Polling for robot call data...
+2025-06-01T00:02:37.138Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:02:41.107Z: Polling for robot call data...
+2025-06-01T00:02:42.154Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:02:45.625Z: [BATTERY] Battery status update event received
+2025-06-01T00:02:45.643Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":true,"powerStage":"running","dockingStatus":"on_dock","sleepMode":"awake","batteryPercentage":61}
+2025-06-01T00:02:45.662Z: [BATTERY] Battery level updated to: 61%
+2025-06-01T00:02:46.123Z: Polling for robot call data...
+2025-06-01T00:02:47.167Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:02:51.140Z: Polling for robot call data...
+2025-06-01T00:02:51.759Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:02:56.157Z: Polling for robot call data...
+2025-06-01T00:02:57.609Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:03:01.173Z: Polling for robot call data...
+2025-06-01T00:03:02.832Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:03:06.195Z: Polling for robot call data...
+2025-06-01T00:03:07.131Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:03:09.177Z: Inactivity timer clear called, but no timer was running
+2025-06-01T00:03:09.178Z: resetInactivityTimer - promotionActive: false, promotionCancelled: false, isPatrolling: false
+2025-06-01T00:03:09.187Z: Not starting inactivity timer - promotion is inactive or cancelled
+2025-06-01T00:03:11.207Z: Polling for robot call data...
+2025-06-01T00:03:12.190Z: Inactivity timer clear called, but no timer was running
+2025-06-01T00:03:12.191Z: Config screen opened, cleared inactivity timer
+2025-06-01T00:03:12.360Z: Cleared token validation interval
+2025-06-01T00:03:12.361Z: Cleared token refresh interval
+2025-06-01T00:03:12.361Z: Cleaned up robot call polling
+2025-06-01T00:03:12.361Z: [POSE POLLING] Wait-for-completion polling stopped
 Starting health check...
 
-2025-05-31T04:38:14.042Z: Battery monitoring stopped
+2025-06-01T00:03:12.366Z: Battery monitoring stopped
 Health check response: {
   "deviceFound": true,
   "status": "Robot health check successful",
@@ -272,49 +416,49 @@ Parsed health check response: {
 
 Connection status: Health Check OK, Message: Health Check OK
 
-2025-05-31T04:38:15.874Z: Promotion activated globally
-2025-05-31T04:38:15.921Z: Set robot speed to patrol mode: 0.25 m/s
-2025-05-31T04:38:15.932Z: MainScreen not mounted, promotion will start when it mounts
-2025-05-31T04:38:16.072Z: Starting battery monitoring...
-2025-05-31T04:38:16.073Z: Patrol state changed to: inactive
-2025-05-31T04:38:16.074Z: MainScreen mounted. Promotion state: active=true, cancelled=false, currentPointIndex=0, remountFromConfig=false
-2025-05-31T04:38:16.074Z: Active promotion detected on mount, starting navigation to first waypoint
-2025-05-31T04:38:16.121Z: Performing initial token validation
-2025-05-31T04:38:16.121Z: Polling for robot call data...
-2025-05-31T04:38:16.122Z: Started robot call polling
-2025-05-31T04:38:16.122Z: Navigation state changed to: IDLE
-2025-05-31T04:38:16.122Z: Navigation status updated to: IDLE
-2025-05-31T04:38:16.123Z: Performing initial health check in MainScreen...
-2025-05-31T04:38:16.124Z: [POSE POLLING] Wait-for-completion polling stopped
-2025-05-31T04:38:16.124Z: Performing initial health check in MainScreen...
-2025-05-31T04:38:16.126Z: Battery monitoring initialized successfully
-2025-05-31T04:38:16.144Z: validateToken called (force=true)
-2025-05-31T04:38:16.145Z: Proactively validating authentication token
-2025-05-31T04:38:16.146Z: [POSE POLLING] Wait-for-completion polling stopped
-2025-05-31T04:38:16.147Z: Cleaned up robot call polling
-2025-05-31T04:38:16.147Z: Patrol state changed to: active
-2025-05-31T04:38:16.147Z: Navigation state changed to: PATROL
-2025-05-31T04:38:16.148Z: Navigation status updated to: PATROL
-2025-05-31T04:38:16.159Z: [POSE POLLING] Wait-for-completion polling started
-2025-05-31T04:38:16.173Z: Loaded patrol points: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"point1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"point2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"point3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"point4"}]
-2025-05-31T04:38:16.186Z: [BATTERY] Battery status update event received
-2025-05-31T04:38:16.198Z: Polling stopped in IDLE state
-[2025-05-31 12:38:16.234] Starting token validation...
-2025-05-31T04:38:16.211Z: Starting polling in PATROL state
-[2025-05-31 12:38:16.241] Domain info from storage: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","created_at":"2024-02-02T00:35:47.24977Z","updated_at":"2025-05-02T06:00:55.444308Z","claimed_by_kazm_id":null,"owner_wallet_address":"","access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsiZG9tYWluOnJ3Il0sImRvbWFpbl9pZCI6IjgwOTNmOWJmLWMzNzQtNDE2Mi1hYjc0LWFiNjE5NDk2MjdmMSIsIm9yZyI6ImNiYWM0MGVmLTc0NTItNDA4ZS04MTdiLWFmZDRlOTEzYWQwYyIsInR5cGUiOiJ1c2VyLWFjY2VzcyIsImlzcyI6ImRkcyIsInN1YiI6IjNlMDNlMjk4LWY0NzEtNDk4Ni05YjEwLTgzOTlmMzUzMDYyMCIsImF1ZCI6WyJkZHMiLCJodHRwczovL2RvbWFpbi1zZXJ2ZXItdXMtZWFzdC0xLmF1a2l2ZXJzZS5jb20iXSwiZXhwIjoxNzQ4NjY5ODkxLCJpYXQiOjE3NDg2NjYyOTF9.HJQjciMpnFKVp-X0iXQAxa2Lw45nVDRpt5fra_j7q-FsTgzjx-a4zijeWxNVg-n3G2Wy8e0pEUXNZQWOtukVUw","domain_server":{"id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","organization_id":"00000000-0000-0000-0000-000000000001","name":"node-c1349ff69a9f4d46a6b","url":"https://domain-server-us-east-1.aukiverse.com","version":"v0.5.37","status":"online","created_at":"2024-01-18T09:08:31.358792Z","updated_at":"2025-05-26T09:17:22.865415Z","redirect_url":null,"mode":"public","variants":["auki"],"description":"","staking_status":"Staked","ip":"52.45.94.183","latitude":37.751,"longitude":-97.822,"asn":16509,"h3_cell_index":"8226e7fffffffff","cloud_region":""}}
-[2025-05-31 12:38:16.246] Re-authenticating with email: phil+aukilabs@aukilabs.com, domainId: 8093f9bf-c374-4162-ab74-ab61949627f1
-2025-05-31T04:38:16.240Z: [POSE POLLING] Wait-for-completion polling stopped
-[2025-05-31 12:38:16.261] Posemesh user login URL: https://api.auki.network/user/login
-2025-05-31T04:38:16.251Z: [POSE POLLING] Wait-for-completion polling started
-2025-05-31T04:38:16.258Z: Set robot speed to patrol mode: 0.25 m/s when mounting
-2025-05-31T04:38:16.258Z: Initial health check response: {
+2025-06-01T00:03:12.870Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:03:14.503Z: Promotion activated globally
+2025-06-01T00:03:14.541Z: Set robot speed to patrol mode: 0.25 m/s
+2025-06-01T00:03:14.548Z: MainScreen not mounted, promotion will start when it mounts
+2025-06-01T00:03:14.678Z: Starting battery monitoring...
+2025-06-01T00:03:14.678Z: Patrol state changed to: inactive
+2025-06-01T00:03:14.679Z: MainScreen mounted. Promotion state: active=true, cancelled=false, currentPointIndex=0, remountFromConfig=false
+2025-06-01T00:03:14.679Z: Active promotion detected on mount, starting navigation to first waypoint
+2025-06-01T00:03:14.727Z: Performing initial token validation
+2025-06-01T00:03:14.727Z: Polling for robot call data...
+2025-06-01T00:03:14.728Z: Started robot call polling
+2025-06-01T00:03:14.728Z: Navigation state changed to: IDLE
+2025-06-01T00:03:14.728Z: Navigation status updated to: IDLE
+2025-06-01T00:03:14.729Z: Performing initial health check in MainScreen...
+2025-06-01T00:03:14.729Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:03:14.729Z: Performing initial health check in MainScreen...
+2025-06-01T00:03:14.731Z: Battery monitoring initialized successfully
+2025-06-01T00:03:14.746Z: validateToken called (force=true)
+2025-06-01T00:03:14.746Z: Proactively validating authentication token
+2025-06-01T00:03:14.747Z: Cleaned up robot call polling
+2025-06-01T00:03:14.749Z: Patrol state changed to: active
+2025-06-01T00:03:14.749Z: Navigation state changed to: PATROL
+2025-06-01T00:03:14.750Z: Navigation status updated to: PATROL
+2025-06-01T00:03:14.751Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:03:14.769Z: [POSE POLLING] Wait-for-completion polling started
+2025-06-01T00:03:14.782Z: Loaded patrol points: [{"yaw":3.14,"y":2.21,"x":-1.14,"name":"point1"},{"yaw":-1.57,"y":2.35,"x":-6.11,"name":"point2"},{"yaw":0,"y":0.05,"x":-6.08,"name":"point3"},{"yaw":1.57,"y":0.01,"x":-1.03,"name":"point4"}]
+2025-06-01T00:03:14.786Z: [BATTERY] Battery status update event received
+2025-06-01T00:03:14.821Z: Starting polling in PATROL state
+[2025-06-01 08:03:14.855] Starting token validation...
+2025-06-01T00:03:14.833Z: Polling stopped in IDLE state
+2025-06-01T00:03:14.858Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:03:14.870Z: Set robot speed to patrol mode: 0.25 m/s when mounting
+[2025-06-01 08:03:14.889] Domain info from storage: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","created_at":"2024-02-02T00:35:47.24977Z","updated_at":"2025-05-02T06:00:55.444308Z","claimed_by_kazm_id":null,"owner_wallet_address":"","access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsiZG9tYWluOnJ3Il0sImRvbWFpbl9pZCI6IjgwOTNmOWJmLWMzNzQtNDE2Mi1hYjc0LWFiNjE5NDk2MjdmMSIsIm9yZyI6ImNiYWM0MGVmLTc0NTItNDA4ZS04MTdiLWFmZDRlOTEzYWQwYyIsInR5cGUiOiJ1c2VyLWFjY2VzcyIsImlzcyI6ImRkcyIsInN1YiI6IjNlMDNlMjk4LWY0NzEtNDk4Ni05YjEwLTgzOTlmMzUzMDYyMCIsImF1ZCI6WyJkZHMiLCJodHRwczovL2RvbWFpbi1zZXJ2ZXItdXMtZWFzdC0xLmF1a2l2ZXJzZS5jb20iXSwiZXhwIjoxNzQ4NzM5NDk3LCJpYXQiOjE3NDg3MzU4OTd9.R84tuXxkQqoCQTgLAV96NHe4qYgYApyuL5dA547LhMRgofwufuUyoz8ypLnvqNt2AX2eyIRu1Ed5mjtwG0maAA","domain_server":{"id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","organization_id":"00000000-0000-0000-0000-000000000001","name":"node-c1349ff69a9f4d46a6b","url":"https://domain-server-us-east-1.aukiverse.com","version":"v0.5.37","status":"online","created_at":"2024-01-18T09:08:31.358792Z","updated_at":"2025-05-26T09:17:22.865415Z","redirect_url":null,"mode":"public","variants":["auki"],"description":"","staking_status":"Staked","ip":"52.45.94.183","latitude":37.751,"longitude":-97.822,"asn":16509,"h3_cell_index":"8226e7fffffffff","cloud_region":""}}
+[2025-06-01 08:03:14.897] Re-authenticating with email: phil+aukilabs@aukilabs.com, domainId: 8093f9bf-c374-4162-ab74-ab61949627f1
+[2025-06-01 08:03:14.903] Posemesh user login URL: https://api.auki.network/user/login
+2025-06-01T00:03:14.871Z: Initial health check response: {
   "deviceFound": true,
   "status": "Robot health check successful",
   "slamApiAvailable": true,
   "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
   "responseCode": 200
 }
-2025-05-31T04:38:16.258Z: Parsed health check response: {
+2025-06-01T00:03:14.871Z: Parsed health check response: {
   "baseError": [],
   "hasDepthCameraDisconnected": false,
   "hasError": false,
@@ -324,705 +468,313 @@ Connection status: Health Check OK, Message: Health Check OK
   "hasSystemEmergencyStop": false,
   "hasWarning": false
 }
-2025-05-31T04:38:16.259Z: Initial health check successful
-2025-05-31T04:38:16.283Z: Initial health check response: {
+2025-06-01T00:03:14.872Z: Initial health check successful
+2025-06-01T00:03:14.872Z: Initial health check response: {
   "deviceFound": true,
   "status": "Robot health check successful",
   "slamApiAvailable": true,
   "response": "{\"baseError\":[],\"hasDepthCameraDisconnected\":false,\"hasError\":false,\"hasFatal\":false,\"hasLidarDisconnected\":false,\"hasSdpDisconnected\":false,\"hasSystemEmergencyStop\":false,\"hasWarning\":false}",
   "responseCode": 200
 }
-2025-05-31T04:38:16.284Z: validateToken called (force=false)
-2025-05-31T04:38:16.285Z: Token validation already in progress, skipping
-2025-05-31T04:38:16.287Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":true,"powerStage":"running","dockingStatus":"on_dock","sleepMode":"awake","batteryPercentage":24}
-2025-05-31T04:38:16.290Z: Initial POIs fetch: [{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"point1"},"id":"11c6a46e-f8a4-4c5f-8295-55d7fa086529"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"point3"},"id":"26f5994c-e3c5-49db-afac-5e4ae754d03f"},{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"point2"},"id":"2ed7a77f-c9a7-40b7-9a61-ee6a0766d7c4"},{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"point4"},"id":"7f6030e3-f992-4c32-a783-3d838c359fa9"}]
-2025-05-31T04:38:16.307Z: Initial health check successful
-2025-05-31T04:38:16.311Z: [BATTERY] Battery level updated to: 24%
-2025-05-31T04:38:16.330Z: Found POI names: ["point1","point3","point2","point4"]
-2025-05-31T04:38:16.345Z: Valid POI names: ["point1","point3","point2","point4"]
-2025-05-31T04:38:16.352Z: POI validation successful - all points match config
-2025-05-31T04:38:16.586Z: Starting navigation to first waypoint
-2025-05-31T04:38:16.587Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:38:16.599Z: Starting navigation to point1 (index: 0)
-2025-05-31T04:38:16.612Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-[2025-05-31 12:38:17.048] Posemesh user login response code: 200
-[2025-05-31 12:38:17.057] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDg2Njk4OTYsImlhdC...
-[2025-05-31 12:38:17.062] Posemesh token received (first 10 chars): eyJhbGciOi...
-[2025-05-31 12:38:17.069] DDS authentication URL: https://api.auki.network/service/domains-access-token
-2025-05-31T04:38:17.232Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
-[2025-05-31 12:38:17.306] DDS authentication response code: 200
-[2025-05-31 12:38:17.312] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4NjY5ODk3LCJpYXQiOjE3NDg2NjYyOTcsImp0aSI6ImE0ZmNhYTZiLTRjZTItNDUxOC05MzI3LTY0Mzc5YjczYzY2MCJ9.9EGumRUW0qLer2oNNnWkrgSemslbSfXSz48hyzkqWiTVkOuyXePi1OF9fADhRmthH1KyhZfCJMuDdibFuZZA_g"}
-[2025-05-31 12:38:17.319] DDS token received (first 10 chars): eyJhbGciOi...
-[2025-05-31 12:38:17.326] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
-[2025-05-31 12:38:17.984] Domain authentication response code: 200
-[2025-05-31 12:38:17.988] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
-[2025-05-31 12:38:17.996] Updated domain info after token validation
-[2025-05-31 12:38:18.000] Token validation successful via re-authentication
-2025-05-31T04:38:18.003Z: Token validation successful: {"message":"Token is valid","valid":true}
-2025-05-31T04:38:32.503Z: Navigation to point1 completed
-2025-05-31T04:38:32.509Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:38:32.516Z: Starting navigation to point2 (index: 1)
-2025-05-31T04:38:32.525Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T04:38:46.220Z: [BATTERY] Battery status update event received
-2025-05-31T04:38:46.261Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":24}
-2025-05-31T04:38:46.267Z: [BATTERY] Battery level updated to: 24%
-2025-05-31T04:38:58.144Z: Navigation to point2 completed
-2025-05-31T04:38:58.150Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:38:58.156Z: Starting navigation to point3 (index: 2)
-2025-05-31T04:38:58.164Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T04:39:15.802Z: Navigation to point3 completed
-2025-05-31T04:39:15.809Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:39:15.822Z: Starting navigation to point4 (index: 3)
-2025-05-31T04:39:15.828Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T04:39:16.252Z: [BATTERY] Battery status update event received
-2025-05-31T04:39:16.330Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":24}
-2025-05-31T04:39:16.363Z: [BATTERY] Battery level updated to: 24%
-2025-05-31T04:39:43.457Z: Navigation to point4 completed
-2025-05-31T04:39:43.461Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:39:43.470Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T04:39:43.474Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:39:43.480Z: Starting navigation to point1 (index: 0)
-2025-05-31T04:39:43.485Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-2025-05-31T04:39:46.289Z: [BATTERY] Battery status update event received
-2025-05-31T04:39:46.310Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":24}
-2025-05-31T04:39:46.316Z: [BATTERY] Battery level updated to: 24%
-2025-05-31T04:39:57.215Z: Navigation to point1 completed
-2025-05-31T04:39:57.224Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:39:57.229Z: Starting navigation to point2 (index: 1)
-2025-05-31T04:39:57.234Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T04:40:16.321Z: [BATTERY] Battery status update event received
-2025-05-31T04:40:16.338Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":24}
-2025-05-31T04:40:16.344Z: [BATTERY] Battery level updated to: 24%
-2025-05-31T04:40:36.463Z: Navigation to point2 completed
-2025-05-31T04:40:36.474Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:40:36.478Z: Starting navigation to point3 (index: 2)
-2025-05-31T04:40:36.487Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T04:40:46.353Z: [BATTERY] Battery status update event received
-2025-05-31T04:40:46.370Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":24}
-2025-05-31T04:40:46.399Z: [BATTERY] Battery level updated to: 24%
-2025-05-31T04:40:52.392Z: Navigation to point3 completed
-2025-05-31T04:40:52.396Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:40:52.407Z: Starting navigation to point4 (index: 3)
-2025-05-31T04:40:52.417Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T04:41:16.385Z: [BATTERY] Battery status update event received
-2025-05-31T04:41:16.429Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":24}
-2025-05-31T04:41:16.434Z: [BATTERY] Battery level updated to: 24%
-2025-05-31T04:41:20.357Z: Navigation to point4 completed
-2025-05-31T04:41:20.363Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:41:20.369Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T04:41:20.376Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:41:20.381Z: Starting navigation to point1 (index: 0)
-2025-05-31T04:41:20.388Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-2025-05-31T04:41:33.728Z: Navigation to point1 completed
-2025-05-31T04:41:33.739Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:41:33.745Z: Starting navigation to point2 (index: 1)
-2025-05-31T04:41:33.752Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T04:41:46.394Z: [BATTERY] Battery status update event received
-2025-05-31T04:41:46.439Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":24}
-2025-05-31T04:41:46.445Z: [BATTERY] Battery level updated to: 24%
-2025-05-31T04:42:03.933Z: Navigation to point2 completed
-2025-05-31T04:42:03.942Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:42:03.946Z: Starting navigation to point3 (index: 2)
-2025-05-31T04:42:03.961Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T04:42:16.421Z: [BATTERY] Battery status update event received
-2025-05-31T04:42:16.458Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":24}
-2025-05-31T04:42:16.468Z: [BATTERY] Battery level updated to: 24%
-2025-05-31T04:42:22.293Z: Navigation to point3 completed
-2025-05-31T04:42:22.298Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:42:22.311Z: Starting navigation to point4 (index: 3)
-2025-05-31T04:42:22.316Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T04:42:46.438Z: [BATTERY] Battery status update event received
-2025-05-31T04:42:46.459Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":24}
-2025-05-31T04:42:46.466Z: [BATTERY] Battery level updated to: 24%
-2025-05-31T04:42:49.897Z: Navigation to point4 completed
-2025-05-31T04:42:49.905Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:42:49.913Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T04:42:49.924Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:42:49.931Z: Starting navigation to point1 (index: 0)
-2025-05-31T04:42:49.938Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-2025-05-31T04:43:07.007Z: Navigation to point1 completed
-2025-05-31T04:43:07.014Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:43:07.021Z: Starting navigation to point2 (index: 1)
-2025-05-31T04:43:07.026Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T04:43:16.473Z: [BATTERY] Battery status update event received
-2025-05-31T04:43:16.514Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":23}
-2025-05-31T04:43:16.520Z: [BATTERY] Battery level updated to: 23%
-2025-05-31T04:43:35.354Z: Navigation to point2 completed
-2025-05-31T04:43:35.358Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:43:35.364Z: Starting navigation to point3 (index: 2)
-2025-05-31T04:43:35.370Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T04:43:46.470Z: [BATTERY] Battery status update event received
-2025-05-31T04:43:46.491Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":23}
-2025-05-31T04:43:46.498Z: [BATTERY] Battery level updated to: 23%
-2025-05-31T04:43:52.888Z: Navigation to point3 completed
-2025-05-31T04:43:52.894Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:43:52.901Z: Starting navigation to point4 (index: 3)
-2025-05-31T04:43:52.912Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T04:44:16.501Z: [BATTERY] Battery status update event received
-2025-05-31T04:44:16.525Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":23}
-2025-05-31T04:44:16.533Z: [BATTERY] Battery level updated to: 23%
-2025-05-31T04:44:22.208Z: Navigation to point4 completed
-2025-05-31T04:44:22.219Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:44:22.224Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T04:44:22.231Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:44:22.238Z: Starting navigation to point1 (index: 0)
-2025-05-31T04:44:22.244Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-2025-05-31T04:44:33.492Z: Navigation to point1 completed
-2025-05-31T04:44:33.499Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:44:33.504Z: Starting navigation to point2 (index: 1)
-2025-05-31T04:44:33.516Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T04:44:46.533Z: [BATTERY] Battery status update event received
-2025-05-31T04:44:46.576Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":23}
-2025-05-31T04:44:46.605Z: [BATTERY] Battery level updated to: 23%
-2025-05-31T04:44:59.636Z: Navigation to point2 completed
-2025-05-31T04:44:59.647Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:44:59.656Z: Starting navigation to point3 (index: 2)
-2025-05-31T04:44:59.662Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T04:45:16.566Z: [BATTERY] Battery status update event received
-2025-05-31T04:45:16.583Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":23}
-2025-05-31T04:45:16.591Z: [BATTERY] Battery level updated to: 23%
-2025-05-31T04:45:18.126Z: Navigation to point3 completed
-2025-05-31T04:45:18.132Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:45:18.141Z: Starting navigation to point4 (index: 3)
-2025-05-31T04:45:18.147Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T04:45:45.978Z: Navigation to point4 completed
-2025-05-31T04:45:45.985Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:45:45.991Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T04:45:45.998Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:45:46.004Z: Starting navigation to point1 (index: 0)
-2025-05-31T04:45:46.009Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-2025-05-31T04:45:46.598Z: [BATTERY] Battery status update event received
-2025-05-31T04:45:46.627Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":23}
-2025-05-31T04:45:46.636Z: [BATTERY] Battery level updated to: 23%
-2025-05-31T04:46:02.359Z: Navigation to point1 completed
-2025-05-31T04:46:02.366Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:46:02.373Z: Starting navigation to point2 (index: 1)
-2025-05-31T04:46:02.378Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T04:46:16.609Z: [BATTERY] Battery status update event received
-2025-05-31T04:46:16.629Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":23}
-2025-05-31T04:46:16.636Z: [BATTERY] Battery level updated to: 23%
-2025-05-31T04:46:36.374Z: Navigation to point2 completed
-2025-05-31T04:46:36.383Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:46:36.389Z: Starting navigation to point3 (index: 2)
-2025-05-31T04:46:36.395Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T04:46:46.636Z: [BATTERY] Battery status update event received
-2025-05-31T04:46:46.689Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":23}
-2025-05-31T04:46:46.694Z: [BATTERY] Battery level updated to: 23%
-2025-05-31T04:46:54.873Z: Navigation to point3 completed
-2025-05-31T04:46:54.878Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:46:54.884Z: Starting navigation to point4 (index: 3)
-2025-05-31T04:46:54.889Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T04:47:16.664Z: [BATTERY] Battery status update event received
-2025-05-31T04:47:16.711Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":23}
-2025-05-31T04:47:16.717Z: [BATTERY] Battery level updated to: 23%
-2025-05-31T04:47:22.415Z: Navigation to point4 completed
-2025-05-31T04:47:22.430Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:47:22.436Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T04:47:22.441Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:47:22.448Z: Starting navigation to point1 (index: 0)
-2025-05-31T04:47:22.453Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-2025-05-31T04:47:35.293Z: Navigation to point1 completed
-2025-05-31T04:47:35.299Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:47:35.304Z: Starting navigation to point2 (index: 1)
-2025-05-31T04:47:35.310Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T04:47:46.695Z: [BATTERY] Battery status update event received
-2025-05-31T04:47:46.733Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":23}
-2025-05-31T04:47:46.754Z: [BATTERY] Battery level updated to: 23%
-2025-05-31T04:48:03.808Z: Navigation to point2 completed
-2025-05-31T04:48:03.813Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:48:03.818Z: Starting navigation to point3 (index: 2)
-2025-05-31T04:48:03.823Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T04:48:16.725Z: [BATTERY] Battery status update event received
-2025-05-31T04:48:16.747Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":23}
-2025-05-31T04:48:16.753Z: [BATTERY] Battery level updated to: 23%
-2025-05-31T04:48:19.644Z: Navigation to point3 completed
-2025-05-31T04:48:19.653Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:48:19.661Z: Starting navigation to point4 (index: 3)
-2025-05-31T04:48:19.679Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T04:48:46.746Z: [BATTERY] Battery status update event received
-2025-05-31T04:48:46.794Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":23}
-2025-05-31T04:48:46.799Z: [BATTERY] Battery level updated to: 23%
-2025-05-31T04:48:47.396Z: Navigation to point4 completed
-2025-05-31T04:48:47.403Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:48:47.406Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T04:48:47.412Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:48:47.419Z: Starting navigation to point1 (index: 0)
-2025-05-31T04:48:47.425Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-2025-05-31T04:49:03.947Z: Navigation to point1 completed
-2025-05-31T04:49:03.952Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:49:03.958Z: Starting navigation to point2 (index: 1)
-2025-05-31T04:49:03.963Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T04:49:16.764Z: [BATTERY] Battery status update event received
-2025-05-31T04:49:16.812Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":23}
-2025-05-31T04:49:16.818Z: [BATTERY] Battery level updated to: 23%
-2025-05-31T04:49:33.444Z: Navigation to point2 completed
-2025-05-31T04:49:33.451Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:49:33.457Z: Starting navigation to point3 (index: 2)
-2025-05-31T04:49:33.462Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T04:49:46.794Z: [BATTERY] Battery status update event received
-2025-05-31T04:49:46.835Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":23}
-2025-05-31T04:49:46.848Z: [BATTERY] Battery level updated to: 23%
-2025-05-31T04:49:51.133Z: Navigation to point3 completed
-2025-05-31T04:49:51.141Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:49:51.147Z: Starting navigation to point4 (index: 3)
-2025-05-31T04:49:51.159Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T04:50:16.809Z: [BATTERY] Battery status update event received
-2025-05-31T04:50:16.825Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":22}
-2025-05-31T04:50:16.835Z: [BATTERY] Battery level updated to: 22%
-2025-05-31T04:50:20.794Z: Navigation to point4 completed
-2025-05-31T04:50:20.801Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:50:20.815Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T04:50:20.822Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:50:20.828Z: Starting navigation to point1 (index: 0)
-2025-05-31T04:50:20.843Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-2025-05-31T04:50:37.093Z: Navigation to point1 completed
-2025-05-31T04:50:37.101Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:50:37.107Z: Starting navigation to point2 (index: 1)
-2025-05-31T04:50:37.113Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T04:50:46.822Z: [BATTERY] Battery status update event received
-2025-05-31T04:50:46.944Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":22}
-2025-05-31T04:50:46.950Z: [BATTERY] Battery level updated to: 22%
-2025-05-31T04:51:05.009Z: Navigation to point2 completed
-2025-05-31T04:51:05.017Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:51:05.022Z: Starting navigation to point3 (index: 2)
-2025-05-31T04:51:05.031Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T04:51:16.854Z: [BATTERY] Battery status update event received
-2025-05-31T04:51:16.898Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":22}
-2025-05-31T04:51:16.903Z: [BATTERY] Battery level updated to: 22%
-2025-05-31T04:51:21.993Z: Navigation to point3 completed
-2025-05-31T04:51:22.004Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:51:22.015Z: Starting navigation to point4 (index: 3)
-2025-05-31T04:51:22.022Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T04:51:46.883Z: [BATTERY] Battery status update event received
-2025-05-31T04:51:46.904Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":22}
-2025-05-31T04:51:46.911Z: [BATTERY] Battery level updated to: 22%
-2025-05-31T04:51:50.985Z: Navigation to point4 completed
-2025-05-31T04:51:50.991Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:51:50.997Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T04:51:51.005Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:51:51.013Z: Starting navigation to point1 (index: 0)
-2025-05-31T04:51:51.020Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-2025-05-31T04:52:03.383Z: Navigation to point1 completed
-2025-05-31T04:52:03.387Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:52:03.393Z: Starting navigation to point2 (index: 1)
-2025-05-31T04:52:03.399Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T04:52:16.906Z: [BATTERY] Battery status update event received
-2025-05-31T04:52:16.939Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":22}
-2025-05-31T04:52:16.944Z: [BATTERY] Battery level updated to: 22%
-2025-05-31T04:52:31.454Z: Navigation to point2 completed
-2025-05-31T04:52:31.464Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:52:31.481Z: Starting navigation to point3 (index: 2)
-2025-05-31T04:52:31.492Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T04:52:46.912Z: [BATTERY] Battery status update event received
-2025-05-31T04:52:46.929Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":22}
-2025-05-31T04:52:46.938Z: [BATTERY] Battery level updated to: 22%
-2025-05-31T04:52:49.327Z: Navigation to point3 completed
-2025-05-31T04:52:49.334Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:52:49.340Z: Starting navigation to point4 (index: 3)
-2025-05-31T04:52:49.346Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T04:53:16.131Z: validateToken called (force=false)
-2025-05-31T04:53:16.131Z: Proactively validating authentication token
-2025-05-31T04:53:16.132Z: validateToken called (force=false)
-2025-05-31T04:53:16.133Z: Token validation already in progress, skipping
-[2025-05-31 12:53:16.156] Starting token validation...
-[2025-05-31 12:53:16.161] Domain info from storage: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","created_at":"2024-02-02T00:35:47.24977Z","updated_at":"2025-05-02T06:00:55.444308Z","claimed_by_kazm_id":null,"owner_wallet_address":"","access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsiZG9tYWluOnJ3Il0sImRvbWFpbl9pZCI6IjgwOTNmOWJmLWMzNzQtNDE2Mi1hYjc0LWFiNjE5NDk2MjdmMSIsIm9yZyI6ImNiYWM0MGVmLTc0NTItNDA4ZS04MTdiLWFmZDRlOTEzYWQwYyIsInR5cGUiOiJ1c2VyLWFjY2VzcyIsImlzcyI6ImRkcyIsInN1YiI6IjNlMDNlMjk4LWY0NzEtNDk4Ni05YjEwLTgzOTlmMzUzMDYyMCIsImF1ZCI6WyJkZHMiLCJodHRwczovL2RvbWFpbi1zZXJ2ZXItdXMtZWFzdC0xLmF1a2l2ZXJzZS5jb20iXSwiZXhwIjoxNzQ4NjY5ODk3LCJpYXQiOjE3NDg2NjYyOTd9.fks57Z9xUWnb2HhfSmufhQgkW2CetPUAQir0s9kq2nPtdLo1QKcZvw_2DTel5AKG2cuwW83xJd2tekp3334WZA","domain_server":{"id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc392","organization_id":"00000000-0000-0000-0000-000000000001","name":"node-c1349ff69a9f4d46a6b","url":"https://domain-server-us-east-1.aukiverse.com","version":"v0.5.37","status":"online","created_at":"2024-01-18T09:08:31.358792Z","updated_at":"2025-05-26T09:17:22.865415Z","redirect_url":null,"mode":"public","variants":["auki"],"description":"","staking_status":"Staked","ip":"52.45.94.183","latitude":37.751,"longitude":-97.822,"asn":16509,"h3_cell_index":"8226e7fffffffff","cloud_region":""}}
-[2025-05-31 12:53:16.165] Re-authenticating with email: phil+aukilabs@aukilabs.com, domainId: 8093f9bf-c374-4162-ab74-ab61949627f1
-[2025-05-31 12:53:16.170] Posemesh user login URL: https://api.auki.network/user/login
-2025-05-31T04:53:16.941Z: [BATTERY] Battery status update event received
-2025-05-31T04:53:16.964Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":22}
-2025-05-31T04:53:16.970Z: [BATTERY] Battery level updated to: 22%
-[2025-05-31 12:53:17.139] Posemesh user login response code: 200
-[2025-05-31 12:53:17.147] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDg2NzA3OTYsImlhdC...
-[2025-05-31 12:53:17.152] Posemesh token received (first 10 chars): eyJhbGciOi...
-[2025-05-31 12:53:17.157] DDS authentication URL: https://api.auki.network/service/domains-access-token
-2025-05-31T04:53:17.184Z: Navigation to point4 completed
-2025-05-31T04:53:17.189Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:53:17.199Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T04:53:17.203Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:53:17.209Z: Starting navigation to point1 (index: 0)
-2025-05-31T04:53:17.216Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-[2025-05-31 12:53:17.802] DDS authentication response code: 200
-[2025-05-31 12:53:17.805] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4NjcwNzk3LCJpYXQiOjE3NDg2NjcxOTcsImp0aSI6IjM4ZTkxMzQ1LTM3ZTItNDIzNi1hYWE4LTQ1NDE5MWExODBkZSJ9.87DG9KYOtdQN1_5zkYDtvLPd_ukDBrUpwGkISUsGQM9uNqB5f8e-Pl8-oMMXXcYdRonxh3ucPn7YSs4zbABETw"}
-[2025-05-31 12:53:17.813] DDS token received (first 10 chars): eyJhbGciOi...
-[2025-05-31 12:53:17.820] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
-[2025-05-31 12:53:18.582] Domain authentication response code: 200
-[2025-05-31 12:53:18.592] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
-[2025-05-31 12:53:18.603] Updated domain info after token validation
-[2025-05-31 12:53:18.613] Token validation successful via re-authentication
-2025-05-31T04:53:18.616Z: Token validation successful: {"message":"Token is valid","valid":true}
-2025-05-31T04:53:31.048Z: Navigation to point1 completed
-2025-05-31T04:53:31.053Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:53:31.058Z: Starting navigation to point2 (index: 1)
-2025-05-31T04:53:31.064Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T04:53:46.959Z: [BATTERY] Battery status update event received
-2025-05-31T04:53:47.001Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":22}
-2025-05-31T04:53:47.007Z: [BATTERY] Battery level updated to: 22%
-2025-05-31T04:54:00.145Z: Navigation to point2 completed
-2025-05-31T04:54:00.150Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:54:00.166Z: Starting navigation to point3 (index: 2)
-2025-05-31T04:54:00.171Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T04:54:16.951Z: [BATTERY] Battery status update event received
-2025-05-31T04:54:16.969Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":22}
-2025-05-31T04:54:16.976Z: [BATTERY] Battery level updated to: 22%
-2025-05-31T04:54:17.671Z: Navigation to point3 completed
-2025-05-31T04:54:17.677Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:54:17.684Z: Starting navigation to point4 (index: 3)
-2025-05-31T04:54:17.691Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T04:54:45.272Z: Navigation to point4 completed
-2025-05-31T04:54:45.279Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:54:45.284Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T04:54:45.290Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:54:45.309Z: Starting navigation to point1 (index: 0)
-2025-05-31T04:54:45.314Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-2025-05-31T04:54:46.982Z: [BATTERY] Battery status update event received
-2025-05-31T04:54:46.999Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":22}
-2025-05-31T04:54:47.006Z: [BATTERY] Battery level updated to: 22%
-2025-05-31T04:54:57.670Z: Navigation to point1 completed
-2025-05-31T04:54:57.675Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:54:57.679Z: Starting navigation to point2 (index: 1)
-2025-05-31T04:54:57.685Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T04:55:17.015Z: [BATTERY] Battery status update event received
-2025-05-31T04:55:17.058Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":22}
-2025-05-31T04:55:17.067Z: [BATTERY] Battery level updated to: 22%
-2025-05-31T04:55:30.419Z: Navigation to point2 completed
-2025-05-31T04:55:30.424Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:55:30.429Z: Starting navigation to point3 (index: 2)
-2025-05-31T04:55:30.434Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T04:55:47.043Z: [BATTERY] Battery status update event received
-2025-05-31T04:55:47.066Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":22}
-2025-05-31T04:55:47.071Z: [BATTERY] Battery level updated to: 22%
-2025-05-31T04:55:48.277Z: Navigation to point3 completed
-2025-05-31T04:55:48.283Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:55:48.290Z: Starting navigation to point4 (index: 3)
-2025-05-31T04:55:48.297Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T04:56:15.790Z: Navigation to point4 completed
-2025-05-31T04:56:15.796Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:56:15.803Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T04:56:15.810Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:56:15.816Z: Starting navigation to point1 (index: 0)
-2025-05-31T04:56:15.823Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-2025-05-31T04:56:17.074Z: [BATTERY] Battery status update event received
-2025-05-31T04:56:17.136Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":22}
-2025-05-31T04:56:17.149Z: [BATTERY] Battery level updated to: 22%
-2025-05-31T04:56:32.672Z: Navigation to point1 completed
-2025-05-31T04:56:32.688Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:56:32.694Z: Starting navigation to point2 (index: 1)
-2025-05-31T04:56:32.699Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T04:56:47.106Z: [BATTERY] Battery status update event received
-2025-05-31T04:56:47.150Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":22}
-2025-05-31T04:56:47.157Z: [BATTERY] Battery level updated to: 22%
-2025-05-31T04:57:01.540Z: Navigation to point2 completed
-2025-05-31T04:57:01.545Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:57:01.551Z: Starting navigation to point3 (index: 2)
-2025-05-31T04:57:01.559Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T04:57:17.121Z: [BATTERY] Battery status update event received
-2025-05-31T04:57:17.147Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":22}
-2025-05-31T04:57:17.155Z: [BATTERY] Battery level updated to: 22%
-2025-05-31T04:57:19.395Z: Navigation to point3 completed
-2025-05-31T04:57:19.402Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:57:19.421Z: Starting navigation to point4 (index: 3)
-2025-05-31T04:57:19.427Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T04:57:47.151Z: [BATTERY] Battery status update event received
-2025-05-31T04:57:47.188Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":22}
-2025-05-31T04:57:47.193Z: [BATTERY] Battery level updated to: 22%
-2025-05-31T04:57:47.667Z: Navigation to point4 completed
-2025-05-31T04:57:47.673Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:57:47.679Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T04:57:47.684Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:57:47.691Z: Starting navigation to point1 (index: 0)
-2025-05-31T04:57:47.697Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-2025-05-31T04:57:59.498Z: Navigation to point1 completed
-2025-05-31T04:57:59.506Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:57:59.512Z: Starting navigation to point2 (index: 1)
-2025-05-31T04:57:59.517Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T04:58:17.203Z: [BATTERY] Battery status update event received
-2025-05-31T04:58:17.249Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":21}
-2025-05-31T04:58:17.254Z: [BATTERY] Battery level updated to: 21%
-2025-05-31T04:58:28.932Z: Navigation to point2 completed
-2025-05-31T04:58:28.937Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:58:28.942Z: Starting navigation to point3 (index: 2)
-2025-05-31T04:58:28.946Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T04:58:45.749Z: Navigation to point3 completed
-2025-05-31T04:58:45.753Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:58:45.771Z: Starting navigation to point4 (index: 3)
-2025-05-31T04:58:45.775Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T04:58:47.215Z: [BATTERY] Battery status update event received
-2025-05-31T04:58:47.250Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":21}
-2025-05-31T04:58:47.255Z: [BATTERY] Battery level updated to: 21%
-2025-05-31T04:59:14.566Z: Navigation to point4 completed
-2025-05-31T04:59:14.572Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:59:14.583Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T04:59:14.590Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:59:14.597Z: Starting navigation to point1 (index: 0)
-2025-05-31T04:59:14.603Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-2025-05-31T04:59:17.246Z: [BATTERY] Battery status update event received
-2025-05-31T04:59:17.288Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":21}
-2025-05-31T04:59:17.294Z: [BATTERY] Battery level updated to: 21%
-2025-05-31T04:59:30.597Z: Navigation to point1 completed
-2025-05-31T04:59:30.603Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:59:30.608Z: Starting navigation to point2 (index: 1)
-2025-05-31T04:59:30.618Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T04:59:47.300Z: [BATTERY] Battery status update event received
-2025-05-31T04:59:47.344Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":21}
-2025-05-31T04:59:47.351Z: [BATTERY] Battery level updated to: 21%
-2025-05-31T04:59:56.670Z: Navigation to point2 completed
-2025-05-31T04:59:56.686Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T04:59:56.693Z: Starting navigation to point3 (index: 2)
-2025-05-31T04:59:56.700Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T05:00:14.112Z: Navigation to point3 completed
-2025-05-31T05:00:14.120Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:00:14.126Z: Starting navigation to point4 (index: 3)
-2025-05-31T05:00:14.133Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T05:00:17.311Z: [BATTERY] Battery status update event received
-2025-05-31T05:00:17.337Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":21}
-2025-05-31T05:00:17.344Z: [BATTERY] Battery level updated to: 21%
-2025-05-31T05:00:43.885Z: Navigation to point4 completed
-2025-05-31T05:00:43.893Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:00:43.898Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T05:00:43.904Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:00:43.909Z: Starting navigation to point1 (index: 0)
-2025-05-31T05:00:43.915Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-2025-05-31T05:00:47.325Z: [BATTERY] Battery status update event received
-2025-05-31T05:00:47.362Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":21}
-2025-05-31T05:00:47.367Z: [BATTERY] Battery level updated to: 21%
-2025-05-31T05:00:55.561Z: Navigation to point1 completed
-2025-05-31T05:00:55.571Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:00:55.578Z: Starting navigation to point2 (index: 1)
-2025-05-31T05:00:55.585Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T05:01:17.372Z: [BATTERY] Battery status update event received
-2025-05-31T05:01:17.422Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":21}
-2025-05-31T05:01:17.428Z: [BATTERY] Battery level updated to: 21%
-2025-05-31T05:01:28.001Z: Navigation to point2 completed
-2025-05-31T05:01:28.008Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:01:28.022Z: Starting navigation to point3 (index: 2)
-2025-05-31T05:01:28.029Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T05:01:44.390Z: Navigation to point3 completed
-2025-05-31T05:01:44.398Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:01:44.403Z: Starting navigation to point4 (index: 3)
-2025-05-31T05:01:44.409Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T05:01:47.386Z: [BATTERY] Battery status update event received
-2025-05-31T05:01:47.412Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":21}
-2025-05-31T05:01:47.418Z: [BATTERY] Battery level updated to: 21%
-2025-05-31T05:02:08.425Z: Navigation to point4 completed
-2025-05-31T05:02:08.430Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:02:08.435Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T05:02:08.441Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:02:08.447Z: Starting navigation to point1 (index: 0)
-2025-05-31T05:02:08.453Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-2025-05-31T05:02:17.417Z: [BATTERY] Battery status update event received
-2025-05-31T05:02:17.439Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":21}
-2025-05-31T05:02:17.446Z: [BATTERY] Battery level updated to: 21%
-2025-05-31T05:02:24.381Z: Navigation to point1 completed
-2025-05-31T05:02:24.388Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:02:24.396Z: Starting navigation to point2 (index: 1)
-2025-05-31T05:02:24.401Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T05:02:47.447Z: [BATTERY] Battery status update event received
-2025-05-31T05:02:47.469Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":21}
-2025-05-31T05:02:47.475Z: [BATTERY] Battery level updated to: 21%
-2025-05-31T05:02:56.262Z: Navigation to point2 completed
-2025-05-31T05:02:56.268Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:02:56.278Z: Starting navigation to point3 (index: 2)
-2025-05-31T05:02:56.286Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T05:03:14.182Z: Navigation to point3 completed
-2025-05-31T05:03:14.191Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:03:14.196Z: Starting navigation to point4 (index: 3)
-2025-05-31T05:03:14.205Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T05:03:17.481Z: [BATTERY] Battery status update event received
-2025-05-31T05:03:17.517Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":21}
-2025-05-31T05:03:17.548Z: [BATTERY] Battery level updated to: 21%
-2025-05-31T05:03:42.836Z: Navigation to point4 completed
-2025-05-31T05:03:42.843Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:03:42.851Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T05:03:42.858Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:03:42.865Z: Starting navigation to point1 (index: 0)
-2025-05-31T05:03:42.875Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-2025-05-31T05:03:47.512Z: [BATTERY] Battery status update event received
-2025-05-31T05:03:47.534Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":21}
-2025-05-31T05:03:47.541Z: [BATTERY] Battery level updated to: 21%
-2025-05-31T05:03:55.719Z: Navigation to point1 completed
-2025-05-31T05:03:55.745Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:03:55.758Z: Starting navigation to point2 (index: 1)
-2025-05-31T05:03:55.769Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T05:04:17.544Z: [BATTERY] Battery status update event received
-2025-05-31T05:04:17.595Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":21}
-2025-05-31T05:04:17.606Z: [BATTERY] Battery level updated to: 21%
-2025-05-31T05:04:21.260Z: Navigation to point2 completed
-2025-05-31T05:04:21.274Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:04:21.287Z: Starting navigation to point3 (index: 2)
-2025-05-31T05:04:21.305Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T05:04:40.764Z: Navigation to point3 completed
-2025-05-31T05:04:40.770Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:04:40.775Z: Starting navigation to point4 (index: 3)
-2025-05-31T05:04:40.781Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T05:04:47.576Z: [BATTERY] Battery status update event received
-2025-05-31T05:04:47.616Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":21}
-2025-05-31T05:04:47.622Z: [BATTERY] Battery level updated to: 21%
-2025-05-31T05:05:10.435Z: Navigation to point4 completed
-2025-05-31T05:05:10.441Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:05:10.446Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T05:05:10.455Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:05:10.463Z: Starting navigation to point1 (index: 0)
-2025-05-31T05:05:10.468Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-2025-05-31T05:05:17.593Z: [BATTERY] Battery status update event received
-2025-05-31T05:05:17.615Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":21}
-2025-05-31T05:05:17.634Z: [BATTERY] Battery level updated to: 21%
-2025-05-31T05:05:24.337Z: Navigation to point1 completed
-2025-05-31T05:05:24.349Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:05:24.361Z: Starting navigation to point2 (index: 1)
-2025-05-31T05:05:24.369Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T05:05:47.618Z: [BATTERY] Battery status update event received
-2025-05-31T05:05:47.641Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":21}
-2025-05-31T05:05:47.650Z: [BATTERY] Battery level updated to: 21%
-2025-05-31T05:05:54.512Z: Navigation to point2 completed
-2025-05-31T05:05:54.526Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:05:54.531Z: Starting navigation to point3 (index: 2)
-2025-05-31T05:05:54.538Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T05:06:12.510Z: Navigation to point3 completed
-2025-05-31T05:06:12.515Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:06:12.522Z: Starting navigation to point4 (index: 3)
-2025-05-31T05:06:12.529Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T05:06:17.648Z: [BATTERY] Battery status update event received
-2025-05-31T05:06:17.703Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:06:17.709Z: [BATTERY] Battery level updated to: 20%
-2025-05-31T05:06:17.728Z: Initiating return to charger due to low battery
-2025-05-31T05:06:17.810Z: Navigation state changed to: NAVIGATING
-2025-05-31T05:06:17.812Z: Navigation status updated to: NAVIGATING
-2025-05-31T05:06:17.819Z: Starting polling in NAVIGATING state
-2025-05-31T05:06:17.830Z: [POSE POLLING] Wait-for-completion polling stopped
-2025-05-31T05:06:17.835Z: [POSE POLLING] Wait-for-completion polling started
-2025-05-31T05:06:18.194Z: Navigation to point4 completed
-2025-05-31T05:06:18.200Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:06:18.210Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T05:06:18.218Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:06:18.231Z: Starting navigation to point1 (index: 0)
-2025-05-31T05:06:18.240Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-2025-05-31T05:06:18.256Z: Navigation state changed to: PATROL
-2025-05-31T05:06:18.257Z: Navigation status updated to: PATROL
-2025-05-31T05:06:18.266Z: Starting polling in PATROL state
-2025-05-31T05:06:18.278Z: [POSE POLLING] Wait-for-completion polling stopped
-2025-05-31T05:06:18.289Z: [POSE POLLING] Wait-for-completion polling started
-2025-05-31T05:06:18.338Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:06:23.382Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:06:28.419Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:06:33.442Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:06:38.464Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:06:43.513Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:06:47.381Z: Navigation to point1 completed
-2025-05-31T05:06:47.395Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:06:47.401Z: Starting navigation to point2 (index: 1)
-2025-05-31T05:06:47.408Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T05:06:47.672Z: [BATTERY] Battery status update event received
-2025-05-31T05:06:47.687Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:06:47.693Z: [BATTERY] Battery level updated to: 20%
-2025-05-31T05:06:47.723Z: Initiating return to charger due to low battery
-2025-05-31T05:06:47.782Z: Navigation state changed to: NAVIGATING
-2025-05-31T05:06:47.782Z: Navigation status updated to: NAVIGATING
-2025-05-31T05:06:47.788Z: Starting polling in NAVIGATING state
-2025-05-31T05:06:47.799Z: [POSE POLLING] Wait-for-completion polling stopped
-2025-05-31T05:06:47.804Z: [POSE POLLING] Wait-for-completion polling started
-2025-05-31T05:06:47.979Z: Navigation to point2 completed
-2025-05-31T05:06:47.988Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:06:47.992Z: Starting navigation to point3 (index: 2)
-2025-05-31T05:06:47.996Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
-2025-05-31T05:06:48.023Z: Navigation state changed to: PATROL
-2025-05-31T05:06:48.025Z: Navigation status updated to: PATROL
-2025-05-31T05:06:48.029Z: Starting polling in PATROL state
-2025-05-31T05:06:48.040Z: [POSE POLLING] Wait-for-completion polling stopped
-2025-05-31T05:06:48.045Z: [POSE POLLING] Wait-for-completion polling started
-2025-05-31T05:06:48.290Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:06:48.541Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:06:53.323Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:06:53.555Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:06:58.401Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:06:58.598Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:03.423Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:03.627Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:08.442Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:08.665Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:13.461Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:13.697Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:17.704Z: [BATTERY] Battery status update event received
-2025-05-31T05:07:17.739Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:17.745Z: [BATTERY] Battery level updated to: 20%
-2025-05-31T05:07:17.750Z: Initiating return to charger due to low battery
-2025-05-31T05:07:17.817Z: Navigation state changed to: NAVIGATING
-2025-05-31T05:07:17.818Z: Navigation status updated to: NAVIGATING
-2025-05-31T05:07:17.822Z: Starting polling in NAVIGATING state
-2025-05-31T05:07:17.840Z: [POSE POLLING] Wait-for-completion polling stopped
-2025-05-31T05:07:17.847Z: [POSE POLLING] Wait-for-completion polling started
-2025-05-31T05:07:18.243Z: Navigation to point3 completed
-2025-05-31T05:07:18.249Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:07:18.258Z: Starting navigation to point4 (index: 3)
-2025-05-31T05:07:18.265Z: Navigating to coordinates: x=-1.03, y=0.01, yaw=1.57
-2025-05-31T05:07:18.303Z: Navigation state changed to: PATROL
-2025-05-31T05:07:18.304Z: Navigation status updated to: PATROL
-2025-05-31T05:07:18.312Z: Starting polling in PATROL state
-2025-05-31T05:07:18.324Z: [POSE POLLING] Wait-for-completion polling stopped
-2025-05-31T05:07:18.331Z: [POSE POLLING] Wait-for-completion polling started
-2025-05-31T05:07:18.340Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:18.487Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:18.725Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:23.390Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:23.531Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:23.743Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:28.407Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:28.614Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:28.789Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:33.468Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:33.670Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:33.809Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:38.562Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:38.698Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:38.854Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:43.623Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:43.758Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:43.878Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:47.730Z: [BATTERY] Battery status update event received
-2025-05-31T05:07:47.751Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:47.761Z: [BATTERY] Battery level updated to: 20%
-2025-05-31T05:07:47.769Z: Initiating return to charger due to low battery
-2025-05-31T05:07:47.813Z: Navigation state changed to: NAVIGATING
-2025-05-31T05:07:47.814Z: Navigation status updated to: NAVIGATING
-2025-05-31T05:07:47.824Z: Starting polling in NAVIGATING state
-2025-05-31T05:07:47.848Z: [POSE POLLING] Wait-for-completion polling stopped
-2025-05-31T05:07:47.852Z: [POSE POLLING] Wait-for-completion polling started
-2025-05-31T05:07:48.082Z: Navigation to point4 completed
-2025-05-31T05:07:48.090Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:07:48.102Z: Completed one cycle of waypoints, looping back to the beginning
-2025-05-31T05:07:48.107Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:07:48.113Z: Starting navigation to point1 (index: 0)
-2025-05-31T05:07:48.118Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
-2025-05-31T05:07:48.146Z: Navigation state changed to: PATROL
-2025-05-31T05:07:48.146Z: Navigation status updated to: PATROL
-2025-05-31T05:07:48.158Z: Starting polling in PATROL state
-2025-05-31T05:07:48.190Z: [POSE POLLING] Wait-for-completion polling stopped
-2025-05-31T05:07:48.197Z: [POSE POLLING] Wait-for-completion polling started
-2025-05-31T05:07:48.346Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:48.648Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:48.839Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:48.918Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:53.374Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:53.711Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:53.882Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:53.953Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:58.413Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:58.750Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:58.932Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:07:59.004Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:08:03.438Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:08:03.773Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:08:03.958Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:08:04.024Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:08:04.175Z: Navigation to point1 completed
-2025-05-31T05:08:04.181Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
-2025-05-31T05:08:04.186Z: Starting navigation to point2 (index: 1)
-2025-05-31T05:08:04.193Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
-2025-05-31T05:08:08.469Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:08:08.835Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:08:09.003Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:08:09.048Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:08:13.486Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:08:13.868Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:08:14.076Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-2025-05-31T05:08:14.115Z: Checking dock status: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":20}
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+2025-06-01T00:03:14.873Z: validateToken called (force=false)
+2025-06-01T00:03:14.873Z: Token validation already in progress, skipping
+2025-06-01T00:03:14.877Z: [POSE POLLING] Wait-for-completion polling started
+2025-06-01T00:03:14.905Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":true,"powerStage":"running","dockingStatus":"on_dock","sleepMode":"awake","batteryPercentage":62}
+2025-06-01T00:03:14.906Z: Initial POIs fetch: [{"pose":{"yaw":-1.57,"y":2.35,"x":-6.11},"metadata":{"type":"","group":"","display_name":"point2"},"id":"13e73c91-cc9e-40af-8c66-47d7c72a0257"},{"pose":{"yaw":1.57,"y":0.01,"x":-1.03},"metadata":{"type":"","group":"","display_name":"point4"},"id":"25a7edb7-4316-4c34-b55a-889fafa44e26"},{"pose":{"yaw":3.14,"y":2.21,"x":-1.14},"metadata":{"type":"","group":"","display_name":"point1"},"id":"bf80af2e-14eb-4782-bfd1-1ca1d80a77ed"},{"pose":{"yaw":0,"y":0.05,"x":-6.08},"metadata":{"type":"","group":"","display_name":"point3"},"id":"c64e2a39-4753-4301-a78a-b2860d1864f7"}]
+2025-06-01T00:03:14.946Z: Initial health check successful
+2025-06-01T00:03:14.953Z: [BATTERY] Battery level updated to: 62%
+2025-06-01T00:03:14.983Z: Found POI names: ["point2","point4","point1","point3"]
+2025-06-01T00:03:14.992Z: Valid POI names: ["point2","point4","point1","point3"]
+2025-06-01T00:03:15.017Z: POI validation successful - all points match config
+2025-06-01T00:03:15.190Z: Starting navigation to first waypoint
+2025-06-01T00:03:15.191Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-06-01T00:03:15.203Z: Starting navigation to point1 (index: 0)
+2025-06-01T00:03:15.212Z: Navigating to coordinates: x=-1.14, y=2.21, yaw=3.14
+2025-06-01T00:03:15.673Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+[2025-06-01 08:03:15.917] Posemesh user login response code: 200
+[2025-06-01 08:03:15.924] Posemesh user login response: {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiYWNjZXNzIiwiaXNzIjoiYXBpIiwic3ViIjoiM2UwM2UyOTgtZjQ3MS00OTg2LTliMTAtODM5OWYzNTMwNjIwIiwiYXVkIjpbImFwaSJdLCJleHAiOjE3NDg3Mzk3OTUsImlhdC...
+[2025-06-01 08:03:15.929] Posemesh token received (first 10 chars): eyJhbGciOi...
+[2025-06-01 08:03:15.935] DDS authentication URL: https://api.auki.network/service/domains-access-token
+[2025-06-01 08:03:16.794] DDS authentication response code: 200
+[2025-06-01 08:03:16.800] DDS authentication response: {"access_token":"eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJjYmFjNDBlZi03NDUyLTQwOGUtODE3Yi1hZmQ0ZTkxM2FkMGMiLCJ0eXBlIjoidXNlci1hY2Nlc3MiLCJpc3MiOiJhcGkiLCJzdWIiOiIzZTAzZTI5OC1mNDcxLTQ5ODYtOWIxMC04Mzk5ZjM1MzA2MjAiLCJhdWQiOlsiZG9tYWluLXNlcnZpY2UiXSwiZXhwIjoxNzQ4NzM5Nzk2LCJpYXQiOjE3NDg3MzYxOTYsImp0aSI6IjRhYjY3N2U2LTRmZGYtNGQzMi1hNGEzLTkwZDg0NmRiNmNjYyJ9.CcFSuqC75E6bO9q9h-4cdgWUxtL165ZG0w2Enkv0vNHKl91IJREDqKJTn4UZUTAPjSmL_7LNAyB6lrcayfZZiA"}
+[2025-06-01 08:03:16.814] DDS token received (first 10 chars): eyJhbGciOi...
+[2025-06-01 08:03:16.818] Domain authentication URL: https://dds.auki.network/api/v1/domains/8093f9bf-c374-4162-ab74-ab61949627f1/auth
+[2025-06-01 08:03:17.620] Domain authentication response code: 200
+[2025-06-01 08:03:17.629] Domain authentication response: {"id":"8093f9bf-c374-4162-ab74-ab61949627f1","name":"AUKI Demo Space","redirect_url":null,"organization_id":"cbac40ef-7452-408e-817b-afd4e913ad0c","domain_server_id":"c1349ff6-9a9f-4d46-a6bc-ce43446dc...
+[2025-06-01 08:03:17.633] Updated domain info after token validation
+[2025-06-01 08:03:17.641] Token validation successful via re-authentication
+2025-06-01T00:03:17.644Z: Token validation successful: {"message":"Token is valid","valid":true}
+2025-06-01T00:03:30.470Z: Navigation to point1 completed
+2025-06-01T00:03:30.475Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-06-01T00:03:30.481Z: Starting navigation to point2 (index: 1)
+2025-06-01T00:03:30.488Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
+2025-06-01T00:03:35.280Z: Inactivity timer clear called, but no timer was running
+2025-06-01T00:03:35.323Z: handleReturnToList - isReturningToCharger value: false
+2025-06-01T00:03:35.332Z: Waypoint sequence cancelled
+2025-06-01T00:03:35.373Z: Patrol state changed to: inactive
+2025-06-01T00:03:35.421Z: Robot movement stopped
+2025-06-01T00:03:35.428Z: Promotion active, starting inactivity timer after returning to list
+2025-06-01T00:03:35.553Z: Inactivity timer cleared
+2025-06-01T00:03:35.557Z: Polling for robot call data...
+2025-06-01T00:03:35.557Z: Started robot call polling
+2025-06-01T00:03:35.557Z: Navigation state changed to: IDLE
+2025-06-01T00:03:35.557Z: Navigation status updated to: IDLE
+2025-06-01T00:03:35.575Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:03:35.587Z: Polling stopped in IDLE state
+2025-06-01T00:03:35.839Z: Patrol conditions changed after navigation, not proceeding to next point
+2025-06-01T00:03:36.407Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:03:36.413Z: [POSE POLLING] Auto-stopped polling - not in NAVIGATING/PATROL state
+2025-06-01T00:03:36.940Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:03:37.324Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:03:37.332Z: [POSE POLLING] Auto-stopped polling - not in NAVIGATING/PATROL state
+2025-06-01T00:03:37.422Z: [POSE POLLING] Polling loop exited
+2025-06-01T00:03:38.356Z: [POSE POLLING] Polling loop exited
+2025-06-01T00:03:40.572Z: Polling for robot call data...
+2025-06-01T00:03:41.453Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:03:44.792Z: [BATTERY] Battery status update event received
+2025-06-01T00:03:44.810Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":62}
+2025-06-01T00:03:44.816Z: [BATTERY] Battery level updated to: 62%
+2025-06-01T00:03:45.589Z: Polling for robot call data...
+2025-06-01T00:03:46.555Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:03:50.606Z: Polling for robot call data...
+2025-06-01T00:03:52.186Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:03:55.556Z: restartPromotion called
+2025-06-01T00:03:55.561Z: Auto-restarting promotion after inactivity
+2025-06-01T00:03:55.636Z: Set robot speed to patrol mode: 0.25 m/s
+2025-06-01T00:03:55.645Z: Polling for robot call data...
+2025-06-01T00:03:55.650Z: Cleaned up robot call polling
+2025-06-01T00:03:55.653Z: Patrol state changed to: active
+2025-06-01T00:03:55.654Z: Navigation state changed to: PATROL
+2025-06-01T00:03:55.656Z: Navigation status updated to: PATROL
+2025-06-01T00:03:55.673Z: Starting polling in PATROL state
+2025-06-01T00:03:55.684Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:03:55.691Z: [POSE POLLING] Wait-for-completion polling started
+2025-06-01T00:03:56.598Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:03:56.655Z: Starting navigation to waypoint 2 after auto-restart
+2025-06-01T00:03:56.656Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-06-01T00:03:56.668Z: Starting navigation to point2 (index: 1)
+2025-06-01T00:03:56.675Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
+2025-06-01T00:04:00.455Z: Inactivity timer cleared
+2025-06-01T00:04:00.503Z: handleReturnToList - isReturningToCharger value: false
+2025-06-01T00:04:00.513Z: Waypoint sequence cancelled
+2025-06-01T00:04:00.528Z: Patrol state changed to: inactive
+2025-06-01T00:04:00.584Z: Robot movement stopped
+2025-06-01T00:04:00.590Z: Promotion active, starting inactivity timer after returning to list
+2025-06-01T00:04:00.695Z: Inactivity timer cleared
+2025-06-01T00:04:00.697Z: Polling for robot call data...
+2025-06-01T00:04:00.698Z: Started robot call polling
+2025-06-01T00:04:00.698Z: Navigation state changed to: IDLE
+2025-06-01T00:04:00.698Z: Navigation status updated to: IDLE
+2025-06-01T00:04:00.719Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:04:00.732Z: Polling stopped in IDLE state
+2025-06-01T00:04:00.834Z: Patrol conditions changed after navigation, not proceeding to next point
+2025-06-01T00:04:01.344Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:04:01.349Z: [POSE POLLING] Auto-stopped polling - not in NAVIGATING/PATROL state
+2025-06-01T00:04:01.598Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:04:02.371Z: [POSE POLLING] Polling loop exited
+2025-06-01T00:04:02.927Z: Inactivity timer cleared
+2025-06-01T00:04:02.928Z: resetInactivityTimer - promotionActive: true, promotionCancelled: false, isPatrolling: false
+2025-06-01T00:04:02.942Z: Starting inactivity timer - promotion is active and not cancelled
+2025-06-01T00:04:02.947Z: Inactivity timer clear called, but no timer was running
+2025-06-01T00:04:05.750Z: Polling for robot call data...
+2025-06-01T00:04:05.944Z: Inactivity timer cleared
+2025-06-01T00:04:05.945Z: resetInactivityTimer - promotionActive: true, promotionCancelled: false, isPatrolling: false
+2025-06-01T00:04:05.954Z: Starting inactivity timer - promotion is active and not cancelled
+2025-06-01T00:04:05.969Z: Inactivity timer clear called, but no timer was running
+2025-06-01T00:04:06.627Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:04:06.659Z: Inactivity timer cleared
+2025-06-01T00:04:06.659Z: Waypoint sequence cancelled due to product selection
+2025-06-01T00:04:07.014Z: Starting navigation to: Lounge Stage
+2025-06-01T00:04:07.051Z: Cleaned up robot call polling
+2025-06-01T00:04:07.052Z: Navigation state changed to: NAVIGATING
+2025-06-01T00:04:07.052Z: Navigation status updated to: NAVIGATING
+2025-06-01T00:04:07.063Z: Starting polling in NAVIGATING state
+2025-06-01T00:04:07.074Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:04:07.077Z: [POSE POLLING] Wait-for-completion polling started
+2025-06-01T00:04:07.179Z: Set robot speed to product search mode: 0.7 m/s
+2025-06-01T00:04:07.196Z: validateToken called (force=false)
+2025-06-01T00:04:07.196Z: Token validation was performed recently, skipping
+2025-06-01T00:04:07.208Z: Requesting navmesh coordinates for: {"x":1.8841,"y":0,"z":3.3539}
+2025-06-01T00:04:10.827Z: Received navTarget: {"debug":{"navmeshResult":{"deltaZ":-4.425048816258936e-8,"deltaX":-1.9548511108398436,"yaw":-0.0015926535897925476,"z":3.3538999557495117,"x":3.8389511108398438},"transformedCoords":{"z":-3.3539,"x":1.8841},"productCoords":{"z":3.3539,"x":1.8841}},"yaw":-0.0015926535897925476,"z":3.3538999557495117,"x":3.8389511108398438}
+2025-06-01T00:04:10.839Z: Raw targetCoords: {
+  "debug": {
+    "navmeshResult": {
+      "deltaZ": -4.425048816258936e-8,
+      "deltaX": -1.9548511108398436,
+      "yaw": -0.0015926535897925476,
+      "z": 3.3538999557495117,
+      "x": 3.8389511108398438
+    },
+    "transformedCoords": {
+      "z": -3.3539,
+      "x": 1.8841
+    },
+    "productCoords": {
+      "z": 3.3539,
+      "x": 1.8841
+    }
+  },
+  "yaw": -0.0015926535897925476,
+  "z": 3.3538999557495117,
+  "x": 3.8389511108398438
+}
+2025-06-01T00:04:10.850Z: Calling navigateProduct with exact params: {
+  "x": 3.8389511108398438,
+  "y": 3.3538999557495117,
+  "yaw": -0.0015926535897925476
+}
+2025-06-01T00:04:10.860Z: Starting navigation command...
+2025-06-01T00:04:14.825Z: [BATTERY] Battery status update event received
+2025-06-01T00:04:14.872Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":61}
+2025-06-01T00:04:14.885Z: [BATTERY] Battery level updated to: 61%
+2025-06-01T00:04:41.869Z: Navigation command completed
+2025-06-01T00:04:41.877Z: Setting navigation status to ARRIVED
+2025-06-01T00:04:41.891Z: Auto-promotion disabled, not starting inactivity timer
+2025-06-01T00:04:42.021Z: Navigation completed, showing arrival screen
+2025-06-01T00:04:42.083Z: Navigation state changed to: ARRIVED
+2025-06-01T00:04:42.083Z: Navigation status updated to: ARRIVED
+2025-06-01T00:04:42.089Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:04:42.096Z: Polling stopped in ARRIVED state
+2025-06-01T00:04:43.153Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:04:43.162Z: [POSE POLLING] Auto-stopped polling - not in NAVIGATING/PATROL state
+2025-06-01T00:04:44.186Z: [POSE POLLING] Polling loop exited
+2025-06-01T00:04:44.857Z: [BATTERY] Battery status update event received
+2025-06-01T00:04:44.878Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":60}
+2025-06-01T00:04:44.884Z: [BATTERY] Battery level updated to: 60%
+2025-06-01T00:04:47.104Z: handleReturnToList - isReturningToCharger value: false
+2025-06-01T00:04:47.109Z: Waypoint sequence cancelled
+2025-06-01T00:04:47.126Z: Robot movement stopped
+2025-06-01T00:04:47.140Z: Promotion active, starting inactivity timer after returning to list
+2025-06-01T00:04:47.283Z: Inactivity timer clear called, but no timer was running
+2025-06-01T00:04:47.285Z: Polling for robot call data...
+2025-06-01T00:04:47.286Z: Started robot call polling
+2025-06-01T00:04:47.286Z: Navigation state changed to: IDLE
+2025-06-01T00:04:47.286Z: Navigation status updated to: IDLE
+2025-06-01T00:04:47.307Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:04:47.318Z: Polling stopped in IDLE state
+2025-06-01T00:04:48.303Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:04:52.303Z: Polling for robot call data...
+2025-06-01T00:04:54.038Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:04:57.320Z: Polling for robot call data...
+2025-06-01T00:04:58.348Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:05:02.335Z: Polling for robot call data...
+2025-06-01T00:05:03.767Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:05:07.298Z: restartPromotion called
+2025-06-01T00:05:07.304Z: Auto-restarting promotion after inactivity
+2025-06-01T00:05:07.385Z: Set robot speed to patrol mode: 0.25 m/s
+2025-06-01T00:05:07.391Z: Polling for robot call data...
+2025-06-01T00:05:07.395Z: Cleaned up robot call polling
+2025-06-01T00:05:07.397Z: Patrol state changed to: active
+2025-06-01T00:05:07.398Z: Navigation state changed to: PATROL
+2025-06-01T00:05:07.399Z: Navigation status updated to: PATROL
+2025-06-01T00:05:07.440Z: Starting polling in PATROL state
+2025-06-01T00:05:07.447Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:05:07.453Z: [POSE POLLING] Wait-for-completion polling started
+2025-06-01T00:05:08.402Z: Starting navigation to waypoint 2 after auto-restart
+2025-06-01T00:05:08.403Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-06-01T00:05:08.413Z: Starting navigation to point2 (index: 1)
+2025-06-01T00:05:08.421Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
+2025-06-01T00:05:08.946Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:05:14.885Z: [BATTERY] Battery status update event received
+2025-06-01T00:05:14.937Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":58}
+2025-06-01T00:05:14.944Z: [BATTERY] Battery level updated to: 58%
+2025-06-01T00:05:44.902Z: [BATTERY] Battery status update event received
+2025-06-01T00:05:44.925Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":58}
+2025-06-01T00:05:44.932Z: [BATTERY] Battery level updated to: 58%
+2025-06-01T00:06:14.952Z: [BATTERY] Battery status update event received
+2025-06-01T00:06:14.967Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":57}
+2025-06-01T00:06:14.972Z: [BATTERY] Battery level updated to: 57%
+2025-06-01T00:06:14.999Z: Initiating return to charger due to low battery
+2025-06-01T00:06:15.007Z: Inactivity timer cleared
+2025-06-01T00:06:15.008Z: Cleared inactivity timer due to return to charger
+2025-06-01T00:06:15.021Z: isReturningToCharger value after setting: false
+2025-06-01T00:06:15.038Z: handleReturnToList - isReturningToCharger value: false
+2025-06-01T00:06:15.045Z: Waypoint sequence cancelled
+2025-06-01T00:06:15.057Z: Patrol state changed to: inactive
+2025-06-01T00:06:15.141Z: Robot movement stopped
+2025-06-01T00:06:15.155Z: Promotion active, starting inactivity timer after returning to list
+2025-06-01T00:06:15.300Z: Inactivity timer clear called, but no timer was running
+2025-06-01T00:06:15.306Z: Polling for robot call data...
+2025-06-01T00:06:15.308Z: Started robot call polling
+2025-06-01T00:06:15.309Z: Navigation state changed to: IDLE
+2025-06-01T00:06:15.310Z: Navigation status updated to: IDLE
+2025-06-01T00:06:15.328Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:06:15.356Z: Polling stopped in IDLE state
+2025-06-01T00:06:15.463Z: Patrol conditions changed after navigation, not proceeding to next point
+2025-06-01T00:06:15.467Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:06:15.595Z: [POSE POLLING] Auto-stopped polling - not in NAVIGATING/PATROL state
+2025-06-01T00:06:16.201Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:06:16.614Z: [POSE POLLING] Polling loop exited
+2025-06-01T00:06:20.317Z: Polling for robot call data...
+2025-06-01T00:06:21.692Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:06:25.333Z: Polling for robot call data...
+2025-06-01T00:06:26.402Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:06:30.350Z: Polling for robot call data...
+2025-06-01T00:06:31.942Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:06:35.317Z: restartPromotion called
+2025-06-01T00:06:35.324Z: Auto-restarting promotion after inactivity
+2025-06-01T00:06:35.391Z: Set robot speed to patrol mode: 0.25 m/s
+2025-06-01T00:06:35.392Z: Polling for robot call data...
+2025-06-01T00:06:35.397Z: Cleaned up robot call polling
+2025-06-01T00:06:35.399Z: Patrol state changed to: active
+2025-06-01T00:06:35.400Z: Navigation state changed to: PATROL
+2025-06-01T00:06:35.400Z: Navigation status updated to: PATROL
+2025-06-01T00:06:35.435Z: Starting polling in PATROL state
+2025-06-01T00:06:35.455Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:06:35.462Z: [POSE POLLING] Wait-for-completion polling started
+2025-06-01T00:06:36.316Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:06:36.413Z: Starting navigation to waypoint 2 after auto-restart
+2025-06-01T00:06:36.414Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-06-01T00:06:36.425Z: Starting navigation to point2 (index: 1)
+2025-06-01T00:06:36.434Z: Navigating to coordinates: x=-6.11, y=2.35, yaw=-1.57
+2025-06-01T00:06:39.556Z: Navigation to point2 completed
+2025-06-01T00:06:39.561Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-06-01T00:06:39.573Z: Starting navigation to point3 (index: 2)
+2025-06-01T00:06:39.584Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
+2025-06-01T00:06:44.986Z: [BATTERY] Battery status update event received
+2025-06-01T00:06:45.030Z: [BATTERY] Power status response: {"isDCConnected":false,"isCharging":false,"powerStage":"running","dockingStatus":"not_on_dock","sleepMode":"awake","batteryPercentage":56}
+2025-06-01T00:06:45.034Z: [BATTERY] Battery level updated to: 56%
+2025-06-01T00:06:45.071Z: Initiating return to charger due to low battery
+2025-06-01T00:06:45.076Z: Inactivity timer cleared
+2025-06-01T00:06:45.076Z: Cleared inactivity timer due to return to charger
+2025-06-01T00:06:45.120Z: isReturningToCharger value after setting: false
+2025-06-01T00:06:45.134Z: handleReturnToList - isReturningToCharger value: false
+2025-06-01T00:06:45.144Z: Waypoint sequence cancelled
+2025-06-01T00:06:45.161Z: Patrol state changed to: inactive
+2025-06-01T00:06:45.200Z: Robot movement stopped
+2025-06-01T00:06:45.204Z: Promotion active, starting inactivity timer after returning to list
+2025-06-01T00:06:45.320Z: Inactivity timer clear called, but no timer was running
+2025-06-01T00:06:45.321Z: Patrol conditions changed after navigation, not proceeding to next point
+2025-06-01T00:06:45.323Z: Polling for robot call data...
+2025-06-01T00:06:45.324Z: Started robot call polling
+2025-06-01T00:06:45.325Z: Navigation state changed to: IDLE
+2025-06-01T00:06:45.326Z: Navigation status updated to: IDLE
+2025-06-01T00:06:45.344Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:06:45.351Z: Polling stopped in IDLE state
+2025-06-01T00:06:46.221Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:06:47.154Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:06:47.161Z: [POSE POLLING] Auto-stopped polling - not in NAVIGATING/PATROL state
+2025-06-01T00:06:48.185Z: [POSE POLLING] Polling loop exited
+2025-06-01T00:06:50.332Z: Polling for robot call data...
+2025-06-01T00:06:51.389Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:06:55.347Z: Polling for robot call data...
+2025-06-01T00:06:56.309Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:07:00.368Z: Polling for robot call data...
+2025-06-01T00:07:01.833Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+2025-06-01T00:07:05.330Z: restartPromotion called
+2025-06-01T00:07:05.331Z: Auto-restarting promotion after inactivity
+2025-06-01T00:07:05.406Z: Set robot speed to patrol mode: 0.25 m/s
+2025-06-01T00:07:05.407Z: Polling for robot call data...
+2025-06-01T00:07:05.411Z: Cleaned up robot call polling
+2025-06-01T00:07:05.413Z: Patrol state changed to: active
+2025-06-01T00:07:05.413Z: Navigation state changed to: PATROL
+2025-06-01T00:07:05.414Z: Navigation status updated to: PATROL
+2025-06-01T00:07:05.491Z: Starting polling in PATROL state
+2025-06-01T00:07:05.522Z: [POSE POLLING] Wait-for-completion polling stopped
+2025-06-01T00:07:05.528Z: [POSE POLLING] Wait-for-completion polling started
+2025-06-01T00:07:06.430Z: Starting navigation to waypoint 3 after auto-restart
+2025-06-01T00:07:06.431Z: navigateToNextPoint called. State: isPatrolling=true, isMounted=true, navigationCancelled=false, promotionCancelled=false
+2025-06-01T00:07:06.440Z: Starting navigation to point3 (index: 2)
+2025-06-01T00:07:06.446Z: Navigating to coordinates: x=-6.08, y=0.05, yaw=0
+2025-06-01T00:07:06.993Z: Received robot call data: {"data":"{\"id\":null}","metadata":{"created_at":"2025-04-11T03:40:58.60862Z","data_type":"robot_pose_json","name":"robot_call","id":"6af3308f-a5c4-431b-9f89-ad20d1f32c9c"}}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
