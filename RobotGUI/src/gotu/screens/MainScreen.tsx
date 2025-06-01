@@ -107,8 +107,9 @@ const AuthState = {
 };
 
 interface MainScreenProps {
-  products: any[];
-  onReady?: () => void;
+  onClose: () => void;
+  onConfigPress: () => void;
+  initialProducts: any[];
 }
 
 interface Product {
@@ -175,9 +176,10 @@ globalAny.startPromotion = async () => {
   }
 };
 
-const MainScreen = ({ products, onReady }: MainScreenProps): React.JSX.Element => {
+const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps): React.JSX.Element => {
   const [searchText, setSearchText] = useState('');
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>(initialProducts);
   const [isLoading, setIsLoading] = useState(false);
   const [navigationStatus, setNavigationStatus] = useState<NavigationStatus>(NavigationStatus.IDLE);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -1935,96 +1937,33 @@ const MainScreen = ({ products, onReady }: MainScreenProps): React.JSX.Element =
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        // Initialize logging first
-        await LogUtils.initializeLogging();
-        await LogUtils.writeDebugToFile('Starting MainScreen initialization...');
+        // Perform health check first
+        LogUtils.writeDebugToFile('Performing initial health check in MainScreen...');
+        const healthCheck = await NativeModules.SlamtecUtils.checkConnection();
+        LogUtils.writeDebugToFile('Initial health check response: ' + JSON.stringify(healthCheck, null, 2));
 
-        // Get device identifiers early and store them globally
-        try {
-          const identifiers = await NativeModules.DomainUtils.getDeviceIdentifiers();
-          DeviceStorage.setIdentifiers(identifiers.deviceId, identifiers.macAddress);
-          await LogUtils.writeDebugToFile(`Device identifiers initialized: deviceId=${identifiers.deviceId}, macAddress=${identifiers.macAddress}`);
-        } catch (identifierError: any) {
-          await LogUtils.writeDebugToFile(`Error initializing device identifiers: ${identifierError.message}`);
+        if (!healthCheck.slamApiAvailable) {
+          throw new Error('Robot not ready');
         }
 
-        // First authenticate with stored credentials
-        await LogUtils.writeDebugToFile('Attempting authentication...');
-        
-        // Use the regular authentication system, not gotu credentials
-        let authSuccess = false;
-        let authAttempts = 0;
-        const maxAuthAttempts = 3;
-        
-        while (!authSuccess && authAttempts < maxAuthAttempts) {
-          try {
-            authAttempts++;
-            await LogUtils.writeDebugToFile(`Authentication attempt ${authAttempts}/${maxAuthAttempts}`);
-            
-            // This uses the existing authentication system with stored credentials
-            await NativeModules.DomainUtils.authenticate(null, null, null);
-            await LogUtils.writeDebugToFile('Authentication successful');
-            authSuccess = true;
+        // Only proceed with token validation if health check passes
+        await validateToken();
 
-            // First try to get existing robot pose data ID
-            try {
-              await LogUtils.writeDebugToFile('Checking for existing robot pose data ID...');
-              const dataIdResult = await NativeModules.DomainUtils.getRobotPoseDataId();
-              
-              if (dataIdResult.exists) {
-                // Use existing data ID if available
-                DeviceStorage.setRobotPoseDataId(dataIdResult.dataId);
-                await LogUtils.writeDebugToFile(`Found existing robot pose data ID: ${dataIdResult.dataId}`);
-              } else {
-                // Only if no existing data ID, send test robot pose data with POST method
-                await LogUtils.writeDebugToFile('No existing data ID found. Sending test robot pose data with POST method...');
-                const testData = '{"Test 1 2 3 4"}';
-                const result = await NativeModules.DomainUtils.writeRobotPose(testData, 'POST', null);
-                await LogUtils.writeDebugToFile(`Robot pose test data sent successfully with ${result.method} method`);
-                
-                // Store the data ID from POST result
-                if (result.dataId) {
-                  DeviceStorage.setRobotPoseDataId(result.dataId);
-                  await LogUtils.writeDebugToFile(`Robot pose data ID from POST: ${result.dataId}`);
-                } else {
-                  await LogUtils.writeDebugToFile('No robot pose data ID returned from POST. Will create one with the first pose update.');
-                }
-              }
-            } catch (poseError: any) {
-              await LogUtils.writeDebugToFile(`Error handling robot pose data: ${poseError.message}`);
-            }
-          } catch (authError: any) {
-            await LogUtils.writeDebugToFile(`Authentication error on attempt ${authAttempts}: ${authError.message}`);
-            
-            // Log more detailed error information
-            if (authError.code) {
-              await LogUtils.writeDebugToFile(`Error code: ${authError.code}`);
-            }
-            
-            // Implement exponential backoff between retries
-            if (authAttempts < maxAuthAttempts) {
-              const backoffDelay = Math.pow(2, authAttempts - 1) * 1000; // 1s, 2s, 4s
-              await LogUtils.writeDebugToFile(`Retrying authentication in ${backoffDelay}ms...`);
-              await new Promise(resolve => setTimeout(resolve, backoffDelay));
-            }
-          }
-        }
-        
-        if (!authSuccess) {
-          await LogUtils.writeDebugToFile('All authentication attempts failed, proceeding with limited functionality');
-        }
-
-        // Call onReady when everything is initialized
-        onReady?.();
+        // Then proceed with map operations
+        LogUtils.writeDebugToFile('Initial health check successful');
       } catch (error) {
-        console.error('Error during initialization:', error);
-        // Still call onReady even if there's an error, so we don't get stuck on splash screen
-        onReady?.();
+        LogUtils.writeDebugToFile('Initial health check failed: ' + (error instanceof Error ? error.message : String(error)));
+        
+        Alert.alert(
+          'Connection Error',
+          'Please wait for the robot to be ready before proceeding.',
+          [{ text: 'OK' }]
+        );
       }
     };
 
     initializeApp();
-  }, [onReady]);
+  }, []);
 
   const [isInputFocused, setIsInputFocused] = useState(false);
 
@@ -2201,21 +2140,6 @@ const MainScreen = ({ products, onReady }: MainScreenProps): React.JSX.Element =
     );
   };
 
-  useEffect(() => {
-    const initialize = async () => {
-      try {
-        // ... existing initialization code ...
-
-        // Call onReady when everything is initialized
-        onReady?.();
-      } catch (error) {
-        console.error('Error during initialization:', error);
-      }
-    };
-
-    initialize();
-  }, [onReady]);
-
   return (
     <SafeAreaView 
       style={styles.container}
@@ -2261,7 +2185,7 @@ const MainScreen = ({ products, onReady }: MainScreenProps): React.JSX.Element =
               LogUtils.writeDebugToFile('Config screen opened, cleared inactivity timer');
               // Set flag that we're navigating to config
               navigatingToConfig = true;
-              onReady?.();
+              onConfigPress();
             }}
             delayLongPress={3000}
           >
