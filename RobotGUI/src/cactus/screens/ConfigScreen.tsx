@@ -445,7 +445,7 @@ function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Ele
                   // @ts-ignore - startPromotion is added to window in MainScreen
                   if (typeof globalAny.startPromotion === 'function') {
                     // First activate the promotion globally
-                    await globalAny.startPromotion();
+                    globalAny.promotionActive = true;
                     
                     // Set the remountFromConfig flag to false before closing
                     // This ensures promotion will start when MainScreen mounts
