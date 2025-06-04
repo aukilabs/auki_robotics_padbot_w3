@@ -1742,25 +1742,36 @@ class DomainUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
     
     // Helper function to convert quaternion to yaw (-π to π)
     private fun quaternionToYaw(x: Double, y: Double, z: Double, w: Double): Double {
-        // Calculate yaw (rotation around Y axis) from quaternion
-        // Formula: atan2(2 * (w*y + x*z), 1 - 2 * (y*y + x*x))
-        
-        var yaw = Math.atan2(2.0 * (w * y + x * z), 1.0 - 2.0 * (y * y + x * x))
-        
-        // Rotate 180 degrees (add π radians)
+        // Rotation order Z (yaw), X (pitch), Y (roll)
+
+        val sinp = 2.0 * (w * x - y * z)
+        val pitch = if (Math.abs(sinp) >= 1)
+            Math.copySign(Math.PI / 2, sinp)
+        else
+            Math.asin(sinp)
+
+        val sinr_cosp = 2.0 * (w * y + x * z)
+        val cosr_cosp = 1.0 - 2.0 * (x * x + y * y)
+        val roll = Math.atan2(sinr_cosp, cosr_cosp)
+
+        val siny_cosp = 2.0 * (w * z + y * x)
+        val cosy_cosp = 1.0 - 2.0 * (z * z + x * x)
+        var yaw = Math.atan2(siny_cosp, cosy_cosp)
+
+        // Rotate yaw by 180 degrees (PI radians)
         yaw += Math.PI
-        
+
+        // Normalize to [-π, π]
+        while (yaw > Math.PI) yaw -= 2 * Math.PI
+        while (yaw < -Math.PI) yaw += 2 * Math.PI
+
         // Round to 2 decimal places
         yaw = Math.round(yaw * 100.0) / 100.0
-        
-        // Normalize to range [-π, π]
-        while (yaw > Math.PI) {
-            yaw -= 2 * Math.PI
-        }
-        while (yaw < -Math.PI) {
-            yaw += 2 * Math.PI
-        }
-        
+        Math.round(pitch * 100.0) / 100.0
+        Math.round(roll * 100.0) / 100.0
+
+        logToFile("Yaw: $yaw, Pitch: $pitch, Roll: $roll")
+
         return yaw
     }
     
