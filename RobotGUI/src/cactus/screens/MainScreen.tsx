@@ -2435,7 +2435,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 60, // Moved from 10 to 60 to avoid overlapping with config button
-    zIndex: 1000,
+    zIndex: 9,
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderRadius: 8,
     padding: 4,

@@ -2534,6 +2534,7 @@ const styles = StyleSheet.create({
   },
   batteryContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    zIndex: 9,
     borderRadius: 8,
     padding: 4,
     shadowColor: '#000',
