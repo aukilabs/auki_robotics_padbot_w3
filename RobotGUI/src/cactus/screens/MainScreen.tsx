@@ -1972,8 +1972,9 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
     LogUtils.writeDebugToFile(`Current promotion state - Active: ${globalAny.promotionActive}, Cancelled: ${promotionCancelled}`);
     
     setIsPatrolling(false);
-    promotionCancelled = true;
+    //promotionCancelled = true;
     globalAny.promotionActive = false;
+    // Don't clear startPromotion function as it's needed for future patrol starts
     await LogUtils.writeDebugToFile(`Waypoint sequence cancelled (reason: ${reason})`);
     
     LogUtils.writeDebugToFile('Patrol cancelled - Flags updated');
@@ -2199,13 +2200,19 @@ const MainScreen = ({ onClose, onConfigPress, initialProducts }: MainScreenProps
         <TouchableOpacity 
           style={styles.configButton}
           onPress={undefined}
-          onLongPress={() => {
-            // Clear inactivity timer when config screen is opened
-            clearInactivityTimer();
-            LogUtils.writeDebugToFile('Config screen opened, cleared inactivity timer');
-            // Set flag that we're navigating to config
-            navigatingToConfig = true;
-            onConfigPress();
+          onLongPress={async () => {
+            try { 
+              await cancelPatrol('config_press');
+              await LogUtils.writeDebugToFile('Patrol cancelled before opening config');
+              // Clear inactivity timer when config screen is opened
+              clearInactivityTimer();
+              LogUtils.writeDebugToFile('Config screen opened, cleared inactivity timer');
+              // Set flag that we're navigating to config
+              navigatingToConfig = true;
+              onConfigPress();
+            } catch (error) {
+              LogUtils.writeDebugToFile(`Error in config button press: ${error}`);
+            }
           }}
           delayLongPress={3000}
         >
