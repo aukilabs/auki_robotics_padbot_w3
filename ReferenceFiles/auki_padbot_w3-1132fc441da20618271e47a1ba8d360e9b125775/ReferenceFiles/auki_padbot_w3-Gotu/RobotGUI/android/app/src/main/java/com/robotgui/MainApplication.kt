@@ -22,10 +22,9 @@ class MainApplication : Application(), ReactApplication {
             val packages = PackageList(this).packages.toMutableList()
             packages.add(SlamtecUtilsPackage())
             packages.add(DomainUtilsPackage())
-            packages.add(CactusPackage())
             packages.add(FileUtilsPackage())
             packages.add(ConfigManagerPackage())
-            packages.add(GotuPackage())
+            packages.add(AukiPadbotW3Package())
             return packages
         }
 

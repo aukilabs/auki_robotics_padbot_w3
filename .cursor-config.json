@@ -1,14 +1,13 @@
 {
     "project_info": {
         "name": "auki_padbot_w3",
-        "description": "Robot GUI project with Cactus and GoTu variants"
+        "description": "Robot GUI project with Auki Padbot W3 variant"
     },
     "build_instructions": {
         "android": {
             "command": "cd RobotGUI/android && ./gradlew clean && ./gradlew assembleRelease",
             "output_paths": {
-                "cactus": "RobotGUI/android/app/build/outputs/apk/cactus/release/Cactus.apk",
-                "gotu": "RobotGUI/android/app/build/outputs/apk/gotu/release/GoTu.apk"
+                "auki_padbot_w3": "RobotGUI/android/app/build/outputs/apk/auki_padbot_w3/release/Auki_padbot_w3.apk"
             }
         }
     },
@@ -20,14 +19,12 @@
         "source_structure": {
             "android": {
                 "main": "RobotGUI/android/app/src/main",
-                "cactus": "RobotGUI/android/app/src/cactus",
-                "gotu": "RobotGUI/android/app/src/gotu",
+                "auki_padbot_w3": "RobotGUI/android/app/src/auki_padbot_w3",
                 "debug": "RobotGUI/android/app/src/debug"
             },
             "react": {
                 "utils": "RobotGUI/src/utils",
-                "cactus": "RobotGUI/src/cactus",
-                "gotu": "RobotGUI/src/gotu"
+                "auki_padbot_w3": "RobotGUI/src/auki_padbot_w3"
             }
         }
     },
@@ -39,17 +36,17 @@
         "health_check": {
             "interval": 60000,
             "locations": {
-                "main_screen": "RobotGUI/src/gotu/screens/MainScreen.tsx",
-                "config_screen": "RobotGUI/src/gotu/screens/ConfigScreen.tsx"
+                "main_screen": "RobotGUI/src/auki_padbot_w3/screens/MainScreen.tsx",
+                "config_screen": "RobotGUI/src/auki_padbot_w3/screens/ConfigScreen.tsx"
             }
         },
         "navigation": {
-            "main_screen": "RobotGUI/src/gotu/screens/MainScreen.tsx",
+            "main_screen": "RobotGUI/src/auki_padbot_w3/screens/MainScreen.tsx",
             "native_module": "RobotGUI/android/app/src/main/java/com/auki/padbot/SlamtecUtilsModule.java"
         },
         "authentication": {
             "domain_utils": "RobotGUI/android/app/src/main/java/com/auki/padbot/DomainUtilsModule.java",
-            "config_screen": "RobotGUI/src/gotu/screens/ConfigScreen.tsx"
+            "config_screen": "RobotGUI/src/auki_padbot_w3/screens/ConfigScreen.tsx"
         }
     },
     "logging": {

@@ -108,19 +108,12 @@ android {
     // Define product flavors for different apps
     flavorDimensions "app"
     productFlavors {
-        cactus {
+        auki_padbot_w3 {
             dimension "app"
-            applicationId "com.robotgui.cactus"
-            versionNameSuffix ".cactus"
-            resValue "string", "app_name", "CactusAssistant"
-            buildConfigField "String", "APP_VARIANT", "\"cactus\""
-        }
-        gotu {
-            dimension "app"
-            applicationId "com.robotgui.gotu" 
-            versionNameSuffix ".gotu"
-            resValue "string", "app_name", "GoTu"
-            buildConfigField "String", "APP_VARIANT", "\"gotu\""
+            applicationId "com.robotgui.auki_padbot_w3" 
+            versionNameSuffix ".auki_padbot_w3"
+            resValue "string", "app_name", "Auki Padbot W3"
+            buildConfigField "String", "APP_VARIANT", "\"auki_padbot_w3\""
         }
     }
 
@@ -136,19 +129,12 @@ android {
         main {
             assets.srcDirs = ['src/main/assets']
         }
-        cactus {
+        auki_padbot_w3 {
             // Flavor-specific source folders
-            java.srcDirs = ['src/cactus/java']
-            res.srcDirs = ['src/cactus/res']
-            assets.srcDirs = ['src/cactus/assets']
-            // Any overridden resources for cactus
-        }
-        gotu {
-            // Flavor-specific source folders
-            java.srcDirs = ['src/gotu/java']
-            res.srcDirs = ['src/gotu/res']
-            assets.srcDirs = ['src/gotu/assets']
-            // Any overridden resources for gotu
+            java.srcDirs = ['src/auki_padbot_w3/java']
+            res.srcDirs = ['src/auki_padbot_w3/res']
+            assets.srcDirs = ['src/auki_padbot_w3/assets']
+            // Any overridden resources for auki_padbot_w3
         }
     }
 }
