@@ -388,30 +388,6 @@ function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Ele
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Gotu Authentication</Text>
-            <TouchableOpacity 
-              style={[styles.button, styles.testButton]}
-              onPress={async () => {
-                try {
-                  const result = await NativeModules.CactusUtils.getProducts();
-                  Alert.alert(
-                    'Gotu Auth Test',
-                    'Authentication successful!\n\n' +
-                    'Products retrieved: ' + result.length
-                  );
-                } catch (error: any) {
-                  Alert.alert(
-                    'Gotu Auth Test Failed',
-                    'Error: ' + (error.message || 'Unknown error')
-                  );
-                }
-              }}
-            >
-              <Text style={styles.buttonText}>Test Gotu Auth</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.section}>
             <Text style={styles.sectionTitle}>Promotion Mode</Text>
             <TouchableOpacity 
               style={[styles.button, styles.promotionButton]}

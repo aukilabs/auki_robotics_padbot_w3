@@ -381,14 +381,11 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
         <View style={styles.contentContainer}>
           <View style={styles.logoContainer}>
             <Image 
-              source={require('../assets/AppIcon_Gotu.png')}
+              source={require('../assets/app_icon.png')}
               style={styles.logo}
               resizeMode="contain"
             />
           </View>
-          <Text style={styles.welcomeText}>
-            Welcome to Gotu
-          </Text>
           <Text style={styles.loadingText}>{loadingText}</Text>
         </View>
       </Animated.View>
@@ -431,13 +428,6 @@ const styles = StyleSheet.create({
   logo: {
     width: '100%',
     height: '100%',
-  },
-  welcomeText: {
-    color: '#101010',
-    fontSize: 36,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 20,
   },
   loadingText: {
     color: '#2670F8',
