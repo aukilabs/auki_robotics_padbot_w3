@@ -13,7 +13,7 @@ import { LogUtils } from '../utils/logging';
 import DeviceStorage from '../../utils/deviceStorage';
 
 interface SplashScreenProps {
-  onFinish: (products: any[], options?: { goToConfig?: boolean }) => void;
+  onFinish: (options?: { goToConfig?: boolean }) => void;
 }
 
 const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
@@ -52,12 +52,12 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
         const hasCreds = creds && creds.email && creds.password && creds.domainId && creds.email.length > 0 && creds.password.length > 0 && creds.domainId.length > 0;
         if (!hasCreds) {
           // Skip initialization and go to ConfigScreen
-          onFinish([], { goToConfig: true });
+          onFinish({ goToConfig: true });
           return false;
         }
         return true;
       } catch (e) {
-        onFinish([], { goToConfig: true });
+        onFinish({ goToConfig: true });
         return false;
       }
     };
@@ -284,50 +284,21 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
             await new Promise(resolve => setTimeout(resolve, 5000));
           }
         }
-         
-        // Load items from Gotu endpoint
-        if (isMounted) {
-          setLoadingText('Loading items...');
-          await LogUtils.writeDebugToFile('Loading Gotu items...');
-        }
-        
-        try {
-          const products = await NativeModules.GotuUtils.getItems();
-          const sortedProducts = [...products].sort((a, b) => a.name.localeCompare(b.name));
-          await LogUtils.writeDebugToFile(`Loaded ${products.length} items`);
 
-          if (isMounted) {
-            // Add a short delay before transition
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            await LogUtils.writeDebugToFile('Initialization complete, transitioning to main screen...');
-            
-            // Create fade-out animation
-            Animated.timing(opacity, {
-              toValue: 0,
-              duration: 500,
-              easing: Easing.out(Easing.cubic),
-              useNativeDriver: true,
-            }).start(() => {
-              onFinish(sortedProducts);
-            });
-          }
-        } catch (itemsError: any) {
-          await LogUtils.writeDebugToFile(`Error loading items: ${itemsError.message}`);
-          if (isMounted) {
-            setLoadingText('Error loading items. Please restart the application.');
-            setTimeout(() => {
-              if (isMounted) {
-                Animated.timing(opacity, {
-                  toValue: 0,
-                  duration: 500,
-                  easing: Easing.out(Easing.cubic),
-                  useNativeDriver: true,
-                }).start(() => {
-                  onFinish([], { goToConfig: true });
-                });
-              }
-            }, 2000);
-          }
+        if (isMounted) {
+          // Add a short delay before transition
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          await LogUtils.writeDebugToFile('Initialization complete, transitioning to config screen...');
+          
+          // Create fade-out animation
+          Animated.timing(opacity, {
+            toValue: 0,
+            duration: 500,
+            easing: Easing.out(Easing.cubic),
+            useNativeDriver: true,
+          }).start(() => {
+            onFinish({ goToConfig: true });
+          });
         }
       } catch (error: any) {
         if (isMounted) {
@@ -344,7 +315,7 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
                 easing: Easing.out(Easing.cubic),
                 useNativeDriver: true,
               }).start(() => {
-                onFinish([], { goToConfig: true });
+                onFinish({ goToConfig: true });
               });
             }
           }, 2000);
@@ -363,7 +334,7 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
           easing: Easing.out(Easing.cubic),
           useNativeDriver: true,
         }).start(() => {
-          onFinish([], { goToConfig: true });
+          onFinish({ goToConfig: true });
         });
       }
     }, 30000);

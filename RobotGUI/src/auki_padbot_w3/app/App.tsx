@@ -8,23 +8,11 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import SplashScreen from '../screens/SplashScreen';
-import MainScreen from '../screens/MainScreen';
 import ConfigScreen from '../screens/ConfigScreen';
 
 enum AppScreen {
   SPLASH,
-  MAIN,
   CONFIG
-}
-
-interface Product {
-  name: string;
-  eslCode: string;
-  pose: {
-    x: number;
-    y: number;
-    z: number;
-  };
 }
 
 interface ConfigScreenProps {
@@ -34,23 +22,13 @@ interface ConfigScreenProps {
 
 const App = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>(AppScreen.SPLASH);
-  const [products, setProducts] = useState<Product[]>([]);
 
-  const handleSplashFinish = (loadedProducts: Product[], options?: { goToConfig?: boolean }) => {
-    if (options && options.goToConfig) {
-      setCurrentScreen(AppScreen.CONFIG);
-      return;
-    }
-    setProducts(loadedProducts);
-    setCurrentScreen(AppScreen.MAIN);
-  };
-
-  const handleConfigPress = () => {
+  const handleSplashFinish = (options?: { goToConfig?: boolean }) => {
     setCurrentScreen(AppScreen.CONFIG);
   };
 
   const handleClose = () => {
-    setCurrentScreen(AppScreen.MAIN);
+    setCurrentScreen(AppScreen.CONFIG);
   };
 
   const restartApp = () => {
@@ -61,8 +39,6 @@ const App = () => {
     switch (currentScreen) {
       case AppScreen.SPLASH:
         return <SplashScreen onFinish={handleSplashFinish} />;
-      case AppScreen.MAIN:
-        return <MainScreen onClose={handleClose} onConfigPress={handleConfigPress} initialProducts={products} />;
       case AppScreen.CONFIG:
         return <ConfigScreen onClose={handleClose} restartApp={restartApp} />;
     }

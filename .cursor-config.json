@@ -36,12 +36,10 @@
         "health_check": {
             "interval": 60000,
             "locations": {
-                "main_screen": "RobotGUI/src/auki_padbot_w3/screens/MainScreen.tsx",
                 "config_screen": "RobotGUI/src/auki_padbot_w3/screens/ConfigScreen.tsx"
             }
         },
         "navigation": {
-            "main_screen": "RobotGUI/src/auki_padbot_w3/screens/MainScreen.tsx",
             "native_module": "RobotGUI/android/app/src/main/java/com/auki/padbot/SlamtecUtilsModule.java"
         },
         "authentication": {
