@@ -9,7 +9,7 @@ import {
   ScrollView,
   NativeModules,
 } from 'react-native';
-import { LogUtils } from '../utils/LogUtils';
+import { LogUtils } from '../utils/logging';
 
 // Access the global object in a way that works in React Native
 const globalAny: any = global;

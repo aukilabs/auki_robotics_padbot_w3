@@ -352,7 +352,7 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
         <View style={styles.contentContainer}>
           <View style={styles.logoContainer}>
             <Image 
-              source={require('../assets/app_icon.png')}
+              source={require('../assets/Auki Logo Black.png')}
               style={styles.logo}
               resizeMode="contain"
             />
