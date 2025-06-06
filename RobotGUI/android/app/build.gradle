@@ -152,7 +152,6 @@ dependencies {
     implementation 'org.yaml:snakeyaml:2.2'
     implementation 'com.squareup.okhttp3:okhttp:4.9.1'
     implementation 'com.squareup.okhttp3:okhttp-urlconnection:4.9.1'
-    implementation files('libs/slamware_sdk_android.jar')
 }
 
 project.ext.vectoricons = [
