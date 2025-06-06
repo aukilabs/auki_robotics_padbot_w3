@@ -10,7 +10,6 @@ import {
   Modal,
 } from 'react-native';
 import { LogUtils } from '../utils/logging';
-import DeviceStorage from '../../utils/deviceStorage';
 
 interface SplashScreenProps {
   onFinish: (options?: { goToConfig?: boolean }) => void;
@@ -95,7 +94,6 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
           }
           
           const identifiers = await NativeModules.DomainUtils.getDeviceIdentifiers();
-          DeviceStorage.setIdentifiers(identifiers.deviceId, identifiers.macAddress);
           await LogUtils.writeDebugToFile(`Device identifiers initialized: deviceId=${identifiers.deviceId}, macAddress=${identifiers.macAddress}`);
         } catch (identifierError: any) {
           await LogUtils.writeDebugToFile(`Error initializing device identifiers: ${identifierError.message}`);
@@ -121,34 +119,6 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
             await NativeModules.DomainUtils.authenticate(null, null, null);
             await LogUtils.writeDebugToFile('Authentication successful');
             authSuccess = true;
-
-            // First try to get existing robot pose data ID
-            try {
-              await LogUtils.writeDebugToFile('Checking for existing robot pose data ID...');
-              const dataIdResult = await NativeModules.DomainUtils.getRobotPoseDataId();
-              
-              if (dataIdResult.exists) {
-                // Use existing data ID if available
-                DeviceStorage.setRobotPoseDataId(dataIdResult.dataId);
-                await LogUtils.writeDebugToFile(`Found existing robot pose data ID: ${dataIdResult.dataId}`);
-              } else {
-                // Only if no existing data ID, send test robot pose data with POST method
-                await LogUtils.writeDebugToFile('No existing data ID found. Sending test robot pose data with POST method...');
-                const testData = '{"Test 1 2 3 4"}';
-                const result = await NativeModules.DomainUtils.writeRobotPose(testData, 'POST', null);
-                await LogUtils.writeDebugToFile(`Robot pose test data sent successfully with ${result.method} method`);
-                
-                // Store the data ID from POST result
-                if (result.dataId) {
-                  DeviceStorage.setRobotPoseDataId(result.dataId);
-                  await LogUtils.writeDebugToFile(`Robot pose data ID from POST: ${result.dataId}`);
-                } else {
-                  await LogUtils.writeDebugToFile('No robot pose data ID returned from POST. Will create one with the first pose update.');
-                }
-              }
-            } catch (poseError: any) {
-              await LogUtils.writeDebugToFile(`Error handling robot pose data: ${poseError.message}`);
-            }
           } catch (authError: any) {
             await LogUtils.writeDebugToFile(`Authentication error on attempt ${authAttempts}: ${authError.message}`);
             

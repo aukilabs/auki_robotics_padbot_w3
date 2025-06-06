@@ -38,6 +38,7 @@ function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Ele
   const [hasStoredPassword, setHasStoredPassword] = useState(false);
   const [domainServerUrl, setDomainServerUrl] = useState('');
   const [restartEnabled, setRestartEnabled] = useState(false);
+  const [authSuccess, setAuthSuccess] = useState(false);
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -211,6 +212,7 @@ function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Ele
       
       // Store the domain server URL
       setDomainServerUrl(response.url);
+      setAuthSuccess(true);
       
       Alert.alert(
         'Test Results', 
@@ -221,6 +223,7 @@ function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Ele
         'Full Response:\n' + JSON.stringify(response, null, 2)
       );
     } catch (error: any) {
+      setAuthSuccess(false);
       console.error('Auth Error:', error);
       Alert.alert(
         'Test Failed',
@@ -348,23 +351,21 @@ function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Ele
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
               <TouchableOpacity
                 style={[styles.button, styles.testButton, { flex: 1, marginRight: 5 }]}
-                onPress={async () => {
-                  await handleTestAuth();
-                  setRestartEnabled(true);
-                }}
+                onPress={handleTestAuth}
               >
                 <Text style={styles.buttonText}>Test Connection</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, { flex: 1, marginLeft: 5, backgroundColor: restartEnabled ? '#FF9800' : '#BDBDBD' }]}
-                disabled={!restartEnabled}
-                onPress={() => {
-                  setRestartEnabled(false);
-                  restartApp();
-                }}
-              >
-                <Text style={styles.buttonText}>Restart App</Text>
-              </TouchableOpacity>
+              {authSuccess && (
+                <TouchableOpacity
+                  style={[styles.button, { flex: 1, marginLeft: 5, backgroundColor: '#FF9800' }]}
+                  onPress={() => {
+                    setAuthSuccess(false);
+                    restartApp();
+                  }}
+                >
+                  <Text style={styles.buttonText}>Restart App</Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
 
