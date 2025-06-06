@@ -279,25 +279,6 @@ function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Ele
     }
   };
 
-  const handleTestSeries = async () => {
-    try {
-      // Fetch the series_move_to array from native
-      const series = await NativeModules.ConfigManagerModule.getSeriesMoveTo();
-      if (!Array.isArray(series) || series.length === 0) {
-        Alert.alert('Error', 'No series_move_to found in config.');
-        return;
-      }
-      // Build targets: {x, y, z: 0} for each, yaw from last
-      const targets = series.map(([x, y]) => ({ x, y, z: 0 }));
-      const last = series[series.length - 1];
-      const yaw = last[2] || 0;
-      await NativeModules.SlamtecUtils.seriesNavigate(targets, yaw);
-      Alert.alert('Success', 'Series navigation started.');
-    } catch (e) {
-      Alert.alert('Error', e.message || 'Failed to start series navigation.');
-    }
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -388,38 +369,6 @@ function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Ele
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Promotion Mode</Text>
-            <TouchableOpacity 
-              style={[styles.button, styles.promotionButton]}
-              onPress={async () => {
-                try {
-                  // @ts-ignore - startPromotion is added to window in MainScreen
-                  if (typeof globalAny.startPromotion === 'function') {
-                    // First activate the promotion globally
-                    await globalAny.startPromotion();
-                    
-                    // Then close the config screen
-                    onClose();
-                  } else {
-                    Alert.alert(
-                      'Feature Not Available',
-                      'The promotion feature is not available. Please make sure the robot is connected and try again.'
-                    );
-                  }
-                } catch (error: any) {
-                  console.error('Error starting promotion:', error);
-                  Alert.alert(
-                    'Promotion Start Failed',
-                    'Error: ' + (error.message || 'Unknown error')
-                  );
-                }
-              }}
-            >
-              <Text style={styles.buttonText}>Start Promotion</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.section}>
             <Text style={styles.sectionTitle}>Robot Control</Text>
             <TouchableOpacity 
               style={[styles.button, styles.homeButton]}
@@ -477,169 +426,6 @@ function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Ele
           </View>
           
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Robot Call Test</Text>
-            
-            <TouchableOpacity 
-              style={[styles.button, styles.testButton]}
-              onPress={async () => {
-                try {
-                  // Read current robot call data
-                  const currentData = await NativeModules.DomainUtils.getRobotCall();
-                  console.log('Current robot call data:', currentData);
-                  
-                  Alert.alert(
-                    'Current Robot Call Data',
-                    `Data: ${JSON.stringify(currentData, null, 2)}`
-                  );
-                } catch (error: any) {
-                  console.error('Error reading robot call data:', error);
-                  Alert.alert(
-                    'Read Failed',
-                    'Error: ' + (error.message || 'Unknown error')
-                  );
-                }
-              }}
-            >
-              <Text style={styles.buttonText}>Read Robot Call</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={[styles.button, styles.nullButton]}
-              onPress={async () => {
-                try {
-                  // Write null value using PUT method
-                  const result = await NativeModules.DomainUtils.writeRobotCall(JSON.stringify({ id: null }), "PUT");
-                  console.log('Write null result:', result);
-                  
-                  Alert.alert(
-                    'Write Completed',
-                    `Wrote { id: null } using PUT method.\nResult: ${JSON.stringify(result, null, 2)}`
-                  );
-                  
-                  // Read back to confirm
-                  const updatedData = await NativeModules.DomainUtils.getRobotCall();
-                  Alert.alert(
-                    'Verification',
-                    `Current data after write: ${JSON.stringify(updatedData, null, 2)}`
-                  );
-                } catch (error: any) {
-                  console.error('Error writing robot call data:', error);
-                  Alert.alert(
-                    'Write Failed',
-                    'Error: ' + (error.message || 'Unknown error')
-                  );
-                }
-              }}
-            >
-              <Text style={styles.buttonText}>Write NULL ID (PUT)</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={[styles.button, styles.emptyButton]}
-              onPress={async () => {
-                try {
-                  // Write empty string value using PUT method
-                  const result = await NativeModules.DomainUtils.writeRobotCall(JSON.stringify({ id: "" }), "PUT");
-                  console.log('Write empty string result:', result);
-                  
-                  Alert.alert(
-                    'Write Completed',
-                    `Wrote { id: "" } using PUT method.\nResult: ${JSON.stringify(result, null, 2)}`
-                  );
-                  
-                  // Read back to confirm
-                  const updatedData = await NativeModules.DomainUtils.getRobotCall();
-                  Alert.alert(
-                    'Verification',
-                    `Current data after write: ${JSON.stringify(updatedData, null, 2)}`
-                  );
-                } catch (error: any) {
-                  console.error('Error writing robot call data:', error);
-                  Alert.alert(
-                    'Write Failed',
-                    'Error: ' + (error.message || 'Unknown error')
-                  );
-                }
-              }}
-            >
-              <Text style={styles.buttonText}>Write Empty ID (PUT)</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={[styles.button, styles.testButton]}
-              onPress={async () => {
-                try {
-                  // Write test value using PUT method
-                  const result = await NativeModules.DomainUtils.writeRobotCall(JSON.stringify({ id: "test-id-123" }), "PUT");
-                  console.log('Write test ID result:', result);
-                  
-                  Alert.alert(
-                    'Write Completed',
-                    `Wrote { id: "test-id-123" } using PUT method.\nResult: ${JSON.stringify(result, null, 2)}`
-                  );
-                  
-                  // Read back to confirm
-                  const updatedData = await NativeModules.DomainUtils.getRobotCall();
-                  Alert.alert(
-                    'Verification',
-                    `Current data after write: ${JSON.stringify(updatedData, null, 2)}`
-                  );
-                } catch (error: any) {
-                  console.error('Error writing robot call data:', error);
-                  Alert.alert(
-                    'Write Failed',
-                    'Error: ' + (error.message || 'Unknown error')
-                  );
-                }
-              }}
-            >
-              <Text style={styles.buttonText}>Write Test ID (PUT)</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Device ID Management</Text>
-            
-            <TouchableOpacity 
-              style={[styles.button, styles.dangerButton]}
-              onPress={async () => {
-                try {
-                  // Confirm with the user before clearing
-                  Alert.alert(
-                    'Clear Device ID',
-                    'This will clear the stored device ID used for robot pose data. The app will generate a new ID on next startup. Continue?',
-                    [
-                      {
-                        text: 'Cancel',
-                        style: 'cancel'
-                      },
-                      {
-                        text: 'Clear ID',
-                        style: 'destructive',
-                        onPress: async () => {
-                          await NativeModules.DomainUtils.clearDeviceId();
-                          Alert.alert(
-                            'Success',
-                            'Device ID has been cleared. A new ID will be generated on next data transfer.'
-                          );
-                        }
-                      }
-                    ]
-                  );
-                } catch (error: any) {
-                  console.error('Error clearing device ID:', error);
-                  Alert.alert(
-                    'Operation Failed',
-                    'Error: ' + (error.message || 'Unknown error')
-                  );
-                }
-              }}
-            >
-              <Text style={styles.buttonText}>Clear Device ID</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.section}>
             <Text style={styles.sectionTitle}>Lighthouse Data</Text>
             
             <TouchableOpacity 
@@ -693,13 +479,6 @@ function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Ele
               }}
             >
               <Text style={styles.buttonText}>Get Lighthouse Data</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Test Series</Text>
-            <TouchableOpacity style={styles.button} onPress={handleTestSeries}>
-              <Text style={styles.buttonText}>Test Series</Text>
             </TouchableOpacity>
           </View>
         </View>
