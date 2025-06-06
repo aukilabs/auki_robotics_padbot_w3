@@ -40,6 +40,11 @@ function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Ele
   const [restartEnabled, setRestartEnabled] = useState(false);
   const [authSuccess, setAuthSuccess] = useState(false);
 
+  const [targetX, setTargetX] = useState('');
+  const [targetY, setTargetY] = useState('');
+  const [targetZ, setTargetZ] = useState('');
+  const [targetYaw, setTargetYaw] = useState('');
+
   useEffect(() => {
     const loadInitialData = async () => {
       await Promise.all([
@@ -282,6 +287,34 @@ function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Ele
     }
   };
 
+  // Helper to normalize yaw between -π and +π
+  const normalizeYaw = (yaw: number) => {
+    const pi = Math.PI;
+    let normalized = yaw;
+    while (normalized > pi) normalized -= 2 * pi;
+    while (normalized < -pi) normalized += 2 * pi;
+    return Number(normalized.toFixed(2));
+  };
+
+  const handleProceedToTarget = async () => {
+    const x = parseFloat(targetX);
+    const z = parseFloat(targetZ);
+    let y = -z;
+    let yaw = parseFloat(targetYaw);
+    if (isNaN(x) || isNaN(z) || isNaN(yaw)) {
+      Alert.alert('Invalid Input', 'Please enter valid numbers for all fields.');
+      return;
+    }
+    yaw = normalizeYaw(yaw);
+    setTargetYaw(yaw.toString()); // Update field to normalized value
+    try {
+      await NativeModules.SlamtecUtils.navigate(x, y, yaw);
+      Alert.alert('Navigation Started', `Navigating to x: ${x}, y: ${y}, yaw: ${yaw}`);
+    } catch (error) {
+      Alert.alert('Navigation Failed', error?.message || 'Unknown error');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -371,6 +404,46 @@ function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Ele
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Robot Control</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+              <TextInput
+                style={[styles.input, { flex: 1, marginRight: 5 }]}
+                placeholder="x"
+                value={targetX}
+                onChangeText={text => setTargetX(text.replace(/[^-\d.]/g, ''))}
+                keyboardType="numeric"
+                autoCapitalize="none"
+              />
+              <TextInput
+                style={[styles.input, { flex: 1, marginRight: 5 }]}
+                placeholder="y"
+                value={targetY}
+                onChangeText={text => setTargetY(text.replace(/[^-\d.]/g, ''))}
+                keyboardType="numeric"
+                autoCapitalize="none"
+              />
+              <TextInput
+                style={[styles.input, { flex: 1, marginRight: 5 }]}
+                placeholder="z"
+                value={targetZ}
+                onChangeText={text => setTargetZ(text.replace(/[^-\d.]/g, ''))}
+                keyboardType="numeric"
+                autoCapitalize="none"
+              />
+              <TextInput
+                style={[styles.input, { flex: 1 }]}
+                placeholder="yaw"
+                value={targetYaw}
+                onChangeText={text => setTargetYaw(text.replace(/[^-\d.]/g, ''))}
+                keyboardType="numeric"
+                autoCapitalize="none"
+              />
+            </View>
+            <TouchableOpacity
+              style={[styles.button, { marginBottom: 10 }]}
+              onPress={handleProceedToTarget}
+            >
+              <Text style={styles.buttonText}>Proceed to Target</Text>
+            </TouchableOpacity>
             <TouchableOpacity 
               style={[styles.button, styles.homeButton]}
               onPress={async () => {
