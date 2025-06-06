@@ -8,6 +8,7 @@ import {
   Alert,
   ScrollView,
   NativeModules,
+  DeviceEventEmitter,
 } from 'react-native';
 import { LogUtils } from '../utils/logging';
 
@@ -45,6 +46,15 @@ function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Ele
   const [targetZ, setTargetZ] = useState('');
   const [targetYaw, setTargetYaw] = useState('');
 
+  const [connectionDetails, setConnectionDetails] = useState('');
+  const [showConnectionDetails, setShowConnectionDetails] = useState(false);
+  const [powerStatus, setPowerStatus] = useState<{
+    batteryPercentage: number;
+    isCharging: boolean;
+    dockingStatus: string;
+    powerStage: string;
+  } | null>(null);
+
   useEffect(() => {
     const loadInitialData = async () => {
       await Promise.all([
@@ -58,8 +68,25 @@ function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Ele
     // Set up an interval to check connection periodically
     const connectionInterval = setInterval(checkConnection, 5000);
 
+    // Set up power status monitoring
+    const checkPowerStatus = async () => {
+      try {
+        const status = await NativeModules.SlamtecUtils.getPowerStatus();
+        setPowerStatus(status);
+      } catch (error) {
+        console.error('Error getting power status:', error);
+      }
+    };
+
+    // Initial check
+    checkPowerStatus();
+
+    // Set up interval for regular checks
+    const powerStatusInterval = setInterval(checkPowerStatus, 30000);
+
     return () => {
       clearInterval(connectionInterval);
+      clearInterval(powerStatusInterval);
     };
   }, []);
 
@@ -555,6 +582,27 @@ function ConfigScreen({ onClose, restartApp }: ConfigScreenProps): React.JSX.Ele
               <Text style={styles.buttonText}>Get Lighthouse Data</Text>
             </TouchableOpacity>
           </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Connection State</Text>
+            <TouchableOpacity 
+              style={styles.button} 
+              onPress={() => setShowConnectionDetails(!showConnectionDetails)}
+            >
+              <Text style={styles.buttonText}>Show Connection Details</Text>
+            </TouchableOpacity>
+            {showConnectionDetails && (
+              <Text style={styles.connectionDetails}>{connectionDetails}</Text>
+            )}
+            <View style={styles.batteryContainer}>
+              <Text style={styles.batteryText}>
+                Battery: {powerStatus ? `${powerStatus.batteryPercentage}%` : 'Unknown'}
+              </Text>
+              <Text style={styles.batteryText}>
+                Docking: {powerStatus ? powerStatus.dockingStatus : 'Unknown'}
+              </Text>
+            </View>
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -675,6 +723,22 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '500',
+  },
+  connectionDetails: {
+    marginTop: 10,
+    fontSize: 14,
+    color: '#333',
+  },
+  batteryContainer: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 5,
+  },
+  batteryText: {
+    fontSize: 16,
+    color: '#333',
+    marginVertical: 2,
   },
 });
 
