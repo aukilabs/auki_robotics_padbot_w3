@@ -1,20 +1,19 @@
-# Auki Padbot W3
 
 <div align="center">
-  <img src="RobotGUI/src/auki_padbot_w3/assets/Auki Logo Black.png" alt="Auki Logo" width="200"/>
+  <img src="RobotGUI/src/auki_padbot_x3/assets/Auki Logo Black.png" alt="Auki Logo" width="200"/>
   <br/>
-  <em>Demonstrating posemesh domain map deployment and REST-based navigation on Padbot W3 robots</em>
+  <em>Demonstrating posemesh domain map deployment on Padbot X3 and W2 robots</em>
 </div>
 
 ## Overview
 
-This project demonstrates how to integrate and deploy **posemesh domain maps** on the Padbot W3 robot. The system provides a complete solution for autonomous robot navigation using spatial domain data, enabling the W3 to understand its environment and navigate intelligently within defined domains using REST APIs.
+This project demonstrates how to integrate and deploy **posemesh domain maps** on Padbot robots (X3 and W2 models). The system provides a complete solution for autonomous robot navigation using spatial domain data, enabling robots to understand their environment and navigate intelligently within defined domains.
 
 ## Key Features
 
 ### 🤖 Robot Integration
-- **Padbot W3 Support**: Full compatibility with the W3 robot model
-- **SLAM Integration (REST API)**: Real-time Simultaneous Localization and Mapping via REST
+- **Padbot X3 & W2 Support**: Full compatibility with both robot models
+- **SLAM Integration**: Real-time Simultaneous Localization and Mapping
 - **Autonomous Navigation**: Intelligent pathfinding using domain maps
 - **Pose Tracking**: Continuous robot position and orientation monitoring
 
@@ -40,14 +39,14 @@ This project demonstrates how to integrate and deploy **posemesh domain maps** o
 
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   React Native  │    │   REST API       │    │   Padbot W3     │
-│      GUI        │◄──►│   Integration    │◄──►│   Robot         │
+│   React Native  │    │   Android SDK    │    │   Padbot Robot  │
+│      GUI        │◄──►│   Integration    │◄──►│   (X3/W2)       │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
          │                       │                       │
          ▼                       ▼                       ▼
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Domain Utils  │    │   SLAM Utils     │    │   Hardware      │
-│   (Posemesh)    │    │   (REST)         │    │   (W3)          │
+│   Domain Utils  │    │   SLAM Utils     │    │   Hardware SDK  │
+│   (Posemesh)    │    │   (Slamtec)      │    │   (Padbot)      │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
          │                       │
          ▼                       ▼
@@ -61,7 +60,7 @@ This project demonstrates how to integrate and deploy **posemesh domain maps** o
 ## Prerequisites
 
 ### Hardware Requirements
-- **Padbot W3** robot
+- **Padbot X3** or **Padbot W2** robot
 - Android device or emulator for GUI
 - Network connectivity for domain access
 
@@ -75,6 +74,8 @@ This project demonstrates how to integrate and deploy **posemesh domain maps** o
 ### Dependencies
 - React Native 0.78.0
 - React 19.0.0
+- Slamtec SDK for Android
+- Padbot Robot SDK
 
 ## Installation & Setup
 
@@ -101,21 +102,21 @@ cd android
 ```
 
 ### 4. Configuration
-Edit `RobotGUI/android/app/src/auki_padbot_w3/assets/config.yaml`:
+Edit `RobotGUI/android/app/src/auki_padbot_x3/assets/config.yaml`:
 
 ```yaml
 # Default configuration
 email: "your-email@example.com"
 domain_id: "your-domain-id"
-slam_ip: "127.0.0.1"  # W3 Robot IP address
-slam_port: 1448
+slam_ip: "192.168.11.1"  # Robot IP address
+slam_port: 1445
 timeout_ms: 1000
 
+# Domain Configuration
 domain:
   map_endpoint: "https://dsc.auki.network/spatial/crosssection"
   raycast_endpoint: "https://dsc.auki.network/spatial/raycast"
   navmesh_endpoint: "https://dsc.auki.network/spatial/restricttonavmesh"
-```
 
 ### 5. Build and Run
 ```bash
@@ -135,7 +136,7 @@ npm run android
 4. **Set Home Position**: Configure the robot's home dock location
 
 ### Robot Control
-- **Connect**: Establish connection with the Padbot W3 robot
+- **Connect**: Establish connection with the Padbot robot
 - **Download Map**: Retrieve domain-specific spatial map
 - **Set Pose**: Initialize robot position and orientation
 - **Navigate**: Execute autonomous navigation commands
@@ -163,22 +164,22 @@ getNavmeshCoord(coordinates: CoordMap): Promise<NavmeshResult>
 writeRobotPose(poseData: string, method: string, dataId?: string): Promise<PoseResult>
 ```
 
-### SLAM Utils Module (REST)
+### SLAM Utils Module
 ```typescript
 // Connection Management
-checkConnection(): Promise<ConnectionStatus>
+checkConnectionSdk(): Promise<ConnectionStatus>
 connectToRobot(ip: string, port: number): Promise<ConnectionResult>
 
 // Navigation
-navigateHome(x: number, y: number, yaw: number): Promise<NavigationResult>
+navigateHomeWithSdk(x: number, y: number, yaw: number): Promise<NavigationResult>
 setHomeDock(x: number, y: number, z: number, yaw: number, pitch: number, roll: number): Promise<HomeDockResult>
 ```
 
 ## Configuration Options
 
 ### Robot Settings
-- **IP Address**: Robot network address (default: 127.0.0.1)
-- **Port**: SLAM service port (default: 1448)
+- **IP Address**: Robot network address (default: 192.168.11.1)
+- **Port**: SLAM service port (default: 1445)
 - **Timeout**: Connection timeout in milliseconds
 
 ### Domain Settings
@@ -198,10 +199,10 @@ setHomeDock(x: number, y: number, z: number, yaw: number, pitch: number, roll: n
 #### Connection Problems
 ```bash
 # Check robot network connectivity
-ping 127.0.0.1
+ping 192.168.11.1
 
 # Verify SLAM service is running
-telnet 127.0.0.1 1448
+telnet 192.168.11.1 1445
 ```
 
 #### Authentication Errors
@@ -228,27 +229,23 @@ Enable debug logging by checking the logs in:
 ## Development
 
 ### Project Structure
-
 ```
 auki_padbot_w3/
-└── RobotGUI/                  # React Native application
-    ├── android/               # Android-specific code and native modules
-    ├── src/
-    │   ├── auki_padbot_w3/
-    │   │   ├── assets/        # Images, config, and static files
-    │   │   ├── components/    # Reusable UI components
-    │   │   ├── screens/       # Application screens
-    │   │   ├── utils/         # Utility functions
-    │   │   └── app/           # App entry point
-    │   └── ...
-    ├── package.json
-    └── ...
+├── RobotGUI/                 # React Native application
+│   ├── android/             # Android-specific code
+│   │   └── auki_padbot_x3/  # Main application code
+│   │       ├── components/  # Reusable UI components
+│   │       ├── screens/     # Application screens
+│   │       └── utils/       # Utility functions
+│   └── package.json
+├── ReferenceFiles/          # Reference implementations
+└── sdk_analysis/           # SDK documentation
 ```
 
 ### Adding New Features
 1. **Native Modules**: Add Android/Kotlin modules in `android/app/src/main/java/`
-2. **React Components**: Create new components in `src/auki_padbot_w3/components/`
-3. **Screens**: Add new screens in `src/auki_padbot_w3/screens/`
+2. **React Components**: Create new components in `src/auki_padbot_x3/components/`
+3. **Screens**: Add new screens in `src/auki_padbot_x3/screens/`
 4. **Configuration**: Update `config.yaml` for new settings
 
 ## Contributing
@@ -267,6 +264,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For technical support or questions:
 - **Email**: robotics@aukilabs.com
+- **Documentation**: Check the `ReferenceFiles/` directory for additional documentation
 - **Issues**: Report bugs and feature requests through the project repository
 
 ---

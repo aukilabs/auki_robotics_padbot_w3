@@ -118,3 +118,6 @@ path/to/videos/
 
 # Config files
 # android/app/src/main/assets/config.yaml  # Comment out to include config file 
+
+# Cursor config and rules
+.cursor/ 
