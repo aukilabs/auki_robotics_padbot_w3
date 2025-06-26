@@ -6,7 +6,7 @@
  */
 
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, BackHandler } from 'react-native';
 import SplashScreen from '../screens/SplashScreen';
 import ConfigScreen from '../screens/ConfigScreen';
 
@@ -28,7 +28,8 @@ const App = () => {
   };
 
   const handleClose = () => {
-    setCurrentScreen(AppScreen.CONFIG);
+    // Exit the app
+    BackHandler.exitApp();
   };
 
   const restartApp = () => {

@@ -237,15 +237,23 @@ const SplashScreen = ({ onFinish }: SplashScreenProps): React.JSX.Element => {
   return (
     <View style={styles.background}>
       <Animated.View style={[styles.container, { opacity }]}>
-        <View style={styles.contentContainer}>
+        <View style={styles.topContainer}>
           <View style={styles.logoContainer}>
-            <Image 
+            <Image
               source={require('../assets/Auki Logo Black.png')}
               style={styles.logo}
               resizeMode="contain"
             />
           </View>
+          <Text style={styles.welcomeText}>Welcome to Auki Robotics</Text>
           <Text style={styles.loadingText}>{loadingText}</Text>
+        </View>
+        <View style={styles.padbotImageContainer}>
+          <Image
+            source={require('../assets/padbot.jpg')}
+            style={styles.padbotImage}
+            resizeMode="contain"
+          />
         </View>
       </Animated.View>
       <Modal
@@ -273,10 +281,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  contentContainer: {
-    padding: 30,
+  topContainer: {
     alignItems: 'center',
     width: '80%',
+    marginBottom: 40,
   },
   logoContainer: {
     width: 200,
@@ -288,10 +296,23 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  loadingText: {
-    color: '#2670F8',
+  welcomeText: {
+    color: '#101010',
     fontSize: 24,
     textAlign: 'center',
+  },
+  loadingText: {
+    color: '#101010',
+    fontSize: 24,
+    textAlign: 'center',
+  },
+  padbotImageContainer: {
+    width: '50%',
+    aspectRatio: 4,
+  },
+  padbotImage: {
+    width: '100%',
+    height: '100%',
   },
   modalOverlay: {
     flex: 1,
